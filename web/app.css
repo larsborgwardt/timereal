@@ -1,0 +1,248 @@
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #102542;
+  background: #f8fafb;
+  font-size: 16px;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  border-bottom: 1px solid #c7d4da;
+  background: white;
+}
+.kopf,
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 0 32px;
+}
+.kopf,
+.zeile,
+.aktionen,
+.register,
+.daten {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.kopf {
+  min-height: 72px;
+  gap: 36px;
+}
+.kopf strong {
+  font-size: 1.5rem;
+  letter-spacing: -0.04em;
+}
+.kopf nav {
+  align-self: stretch;
+  display: flex;
+}
+.kopf nav button,
+.register button,
+.text {
+  background: none;
+  color: #27405a;
+  border-radius: 0;
+}
+.kopf nav button[aria-current],
+.register button[aria-pressed="true"] {
+  color: #00766a;
+  box-shadow: inset 0 -3px #00766a;
+}
+.kopf #logout {
+  margin-left: auto;
+}
+.zeile {
+  justify-content: space-between;
+}
+main {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: -0.045em;
+  margin: 14px 0 24px;
+}
+h2 {
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+}
+.karte,
+dialog {
+  border: 1px solid #c2ced6;
+  border-radius: 12px;
+  padding: 24px;
+  background: #fff;
+}
+.karte {
+  margin-bottom: 18px;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  background: #08796f;
+  color: white;
+  font-weight: 650;
+  border: 0;
+  padding: 11px 17px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 44px;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.sek {
+  color: #086e66;
+  border: 1px solid #08796f;
+  background: white;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #568dd3;
+  outline-offset: 2px;
+}
+input,
+select,
+textarea {
+  background: white;
+  border: 1px solid #8499a7;
+  border-radius: 6px;
+  padding: 10px;
+  color: inherit;
+  width: 100%;
+  margin-top: 5px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin: 12px 0;
+}
+.check input {
+  width: auto;
+}
+.suche {
+  font-size: 0.9rem;
+}
+.ziel,
+.eintrag {
+  border-top: 1px solid #dce4e8;
+  padding: 14px 0;
+}
+.ziel:last-child,
+.eintrag:last-child {
+  padding-bottom: 0;
+}
+.ziel strong,
+.eintrag strong {
+  display: block;
+}
+small,
+.neben {
+  color: #4b6475;
+}
+.timerzeit {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 740;
+  letter-spacing: -0.04em;
+}
+.filter {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.filter label {
+  flex: 1;
+  min-width: 145px;
+  margin: 0;
+}
+.register {
+  margin-bottom: 12px;
+}
+.login {
+  max-width: 420px;
+}
+dialog {
+  color: inherit;
+  width: min(92vw, 480px);
+}
+dialog::backdrop {
+  background: #15294166;
+}
+.aktionen {
+  margin-top: 14px;
+}
+.daten {
+  justify-content: space-between;
+}
+.eintrag p {
+  white-space: pre-line;
+}
+.meldung,
+#meldung {
+  background: #fff6dc;
+  color: #483719;
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+.notizzeile {
+  white-space: pre-wrap;
+}
+.stand {
+  border-left: 3px solid #8ca8a6;
+  padding-left: 12px;
+}
+[hidden] {
+  display: none !important;
+}
+@media (max-width: 640px) {
+  .kopf,
+  main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .kopf {
+    gap: 8px;
+    flex-wrap: nowrap;
+    min-height: 60px;
+  }
+  .kopf strong {
+    font-size: 1.15rem;
+  }
+  .kopf button {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+  .karte {
+    padding: 16px;
+  }
+  .ziel button {
+    margin-left: 0;
+  }
+  .zeile {
+    gap: 8px;
+  }
+  .filter label {
+    min-width: 110px;
+  }
+  .text {
+    padding: 4px;
+  }
+}
