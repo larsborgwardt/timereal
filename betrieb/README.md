@@ -36,3 +36,11 @@ Setze `BACKUP` vorher auf den Pfad des Dumps. Für eine Sicherung des gesamten G
 ## Stand des Piloten
 
 Der Installationsstand dient dem lokalen Testnetz. Eine öffentliche Adresse mit bestehendem Reverse Proxy, vertrauenswürdigem öffentlichem Zertifikat, automatisch zugestellten Einladungen und geplanten externen Sicherungen wird beim anschließenden Pilotbetrieb eingerichtet. Die Browsererweiterung folgt auf die Rückmeldung zum Arbeitstag.
+
+## Erprobter Installationsstand
+
+Am 17. November 2026 lief der Anwendungsstand `7fcf58b` im unprivilegierten Debian-13.7-LXC mit PostgreSQL 17.12 und Node.js 24.22.3. Der Erstinstallationsablauf endete mit Exitcode 0. HTTPS lieferte über die Container-IP mit der exportierten CA den Gesundheitsstatus. Systemd meldete Anwendung, HTTPS und Sicherungstimer aktiv.
+
+Über zwei getrennte HTTPS-Sitzungen wurden Ticket A, Termin B und erneut Ticket A gestartet. Eine Wiederholung desselben Wechsels lieferte das ursprüngliche Ergebnis. Nach Pause und Fortsetzen war ein vierter Abschnitt vorhanden. Stopp beendete die Erfassung. Ein separater Chromium-Browser öffnete die Historie bei 390 Pixel Breite. Nach einem Neustart des Anwendungsdienstes blieben die Einträge vorhanden.
+
+Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückgespielt. Der Inhaltsvergleich von Konten, Kunden, Buchungszielen, Zeitabschnitten, Aufträgen und Sitzungen ergab keine Differenz.
