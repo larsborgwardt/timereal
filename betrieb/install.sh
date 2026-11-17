@@ -49,6 +49,7 @@ cat > /etc/timereal/Caddyfile <<EOF
 {
   admin off
   auto_https disable_redirects
+  default_sni $adresse
   skip_install_trust
 }
 https://$adresse {
