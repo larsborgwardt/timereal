@@ -11,7 +11,10 @@ if (
   );
   process.exit(2);
 }
-const client = new pg.Client();
+const client = new pg.Client({
+  host: process.env.PGHOST || "/var/run/postgresql",
+  database: process.env.PGDATABASE || "timereal",
+});
 await client.connect();
 try {
   await client.query("BEGIN");
