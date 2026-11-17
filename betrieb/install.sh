@@ -12,9 +12,12 @@ adresse=${TIMEREAL_HOST:-$(hostname -I | awk '{print $1}')}
 [[ $adresse =~ ^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?$ ]] || {
   echo 'Bitte TIMEREAL_HOST auf den DNS-Namen oder die IPv4-Adresse des Containers setzen.' >&2; exit 2;
 }
+caddy_vorhanden=false
+if dpkg-query -W -f='\${db:Status-Status}' caddy 2>/dev/null | grep -qx installed; then caddy_vorhanden=true; fi
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends ca-certificates curl xz-utils postgresql postgresql-contrib caddy
+if [[ $caddy_vorhanden == false ]]; then systemctl disable --now caddy.service; fi
 case "$(dpkg --print-architecture)" in
   amd64) arch=x64; sum=4f2b175a6d53a5c617a80dba2676238a0688cef28c6da4eba35c7d844e66fcfb;;
   arm64) arch=arm64; sum=6e51a2ada00f0011cc266f65d98922b403d7ad88f809ca2aa615a5fe1ce6e86c;;
@@ -58,6 +61,7 @@ install -m 644 betrieb/*.service betrieb/*.timer /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable timereal.service timereal-https.service
 systemctl enable --now timereal-backup.timer
+systemctl reset-failed timereal.service timereal-https.service
 systemctl restart timereal.service timereal-https.service
 ca=/var/lib/timereal-https/caddy/pki/authorities/local/root.crt
 for _ in $(seq 1 30); do

@@ -16,9 +16,7 @@ EnvironmentFile=/etc/timereal/dienst.conf
 Restart=on-failure
 RestartSec=2
 NoNewPrivileges=true
-ProtectSystem=strict
-ProtectHome=true
-PrivateTmp=true
+CapabilityBoundingSet=
 UMask=0077
 
 [Install]

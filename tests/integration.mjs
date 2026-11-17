@@ -336,3 +336,71 @@ test("Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Ro
     await owner.end();
   }
 });
+
+test("Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung", async () => {
+  const owner = new pg.Client({
+    connectionString: process.env.TEST_DATABASE_URL,
+  });
+  await owner.connect();
+  const {
+    rows: [konto],
+  } = await owner.query(
+    "insert into konto(login_referenz) values('sperrprobe') returning id",
+  );
+  const url = new URL(process.env.TEST_DATABASE_URL);
+  url.username = "timereal_app";
+  url.password = "nur-fuer-diese-wegwerfdatenbank";
+  const app = createApp(new pg.Pool({ connectionString: url.href }), {
+    secure: true,
+  });
+  const { issueSession } = await import("../dist/session.js");
+  try {
+    const web = await issueSession(owner, konto.id, "web");
+    const popup = await issueSession(owner, konto.id, "erweiterung");
+    const headers = {
+      cookie: "timereal=" + web,
+      origin: "https://probe.test",
+      host: "probe.test",
+      "idempotency-key": crypto.randomUUID(),
+    };
+    const begonnen = await app.inject({
+      method: "POST",
+      url: "/api/v1/timer/start",
+      headers,
+      payload: { version: "0", art: "vorlaeufig" },
+    });
+    assert.equal(begonnen.statusCode, 200, begonnen.body);
+    const lesen = (auth) =>
+      app.inject({ method: "GET", url: "/api/v1/timer", headers: auth });
+    assert.equal(
+      (await lesen({ authorization: "Bearer " + popup })).json().aktiv.id,
+      begonnen.json().aktiv.id,
+    );
+    assert.equal(
+      (await lesen({ authorization: "Bearer " + web })).statusCode,
+      401,
+    );
+    assert.equal(
+      (await lesen({ cookie: "timereal=" + popup })).statusCode,
+      401,
+    );
+    await owner.query("update konto set aktiv=false where id=$1", [konto.id]);
+    assert.equal((await lesen(headers)).statusCode, 401);
+    assert.equal(
+      (await lesen({ authorization: "Bearer " + popup })).statusCode,
+      401,
+    );
+    const {
+      rows: [schluss],
+    } = await owner.query(
+      "select ende is not null as beendet,pruefen from zeitabschnitt where konto_id=$1",
+      [konto.id],
+    );
+    assert.deepEqual(schluss, { beendet: true, pruefen: true });
+    await owner.query("update konto set aktiv=true where id=$1", [konto.id]);
+    assert.equal((await lesen(headers)).statusCode, 401);
+  } finally {
+    await app.close();
+    await owner.end();
+  }
+});

@@ -52,4 +52,4 @@ Unter **Nachweise → Historie** findest du deine abgeschlossenen Abschnitte, au
 
 ![Sofortstart, rückwirkende Unterbrechung und Vergleich eines Nachweises](mockups/06-korrektur-und-sofortstart.png)
 
-Die erste Testrunde konzentriert sich auf den laufenden Timer, den Gerätewechsel und den persönlichen Verlauf. PostgreSQL ist als Grundlage bestätigt. Der [technische Entwurf](ARCHITEKTUR.md) beschreibt den gemeinsamen Vertrag für Browser und Erweiterung.
+Die Bedienung dieser drei Entwürfe wird nach dem ersten Arbeitstag beurteilt. Die erste Testrunde konzentriert sich auf den laufenden Timer, den Gerätewechsel und den persönlichen Verlauf. PostgreSQL ist als Grundlage bestätigt. Der [technische Entwurf](ARCHITEKTUR.md) beschreibt den gemeinsamen Vertrag für Browser und Erweiterung.
