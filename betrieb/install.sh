@@ -13,7 +13,7 @@ adresse=${TIMEREAL_HOST:-$(hostname -I | awk '{print $1}')}
   echo 'Bitte TIMEREAL_HOST auf den DNS-Namen oder die IPv4-Adresse des Containers setzen.' >&2; exit 2;
 }
 caddy_vorhanden=false
-if dpkg-query -W -f='\${db:Status-Status}' caddy 2>/dev/null | grep -qx installed; then caddy_vorhanden=true; fi
+if systemctl cat caddy.service >/dev/null 2>&1; then caddy_vorhanden=true; fi
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends ca-certificates curl xz-utils postgresql postgresql-contrib caddy
