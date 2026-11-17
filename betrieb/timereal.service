@@ -1,0 +1,23 @@
+[Unit]
+Description=Timereal Zeiterfassung
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=timereal_app
+Group=timereal_app
+WorkingDirectory=/opt/timereal
+ExecStart=/opt/timereal-node/bin/node /opt/timereal/dist/server.js
+Environment=NODE_ENV=production
+Environment=PGHOST=/var/run/postgresql
+Environment=PGUSER=timereal_app
+Environment=PGDATABASE=timereal
+EnvironmentFile=/etc/timereal/dienst.conf
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+CapabilityBoundingSet=
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

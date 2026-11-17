@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Zeitnachweis · Timereal</title>
+    <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="kopf">
+        <strong>Zeitnachweis</strong>
+        <nav aria-label="Hauptnavigation" hidden>
+          <button data-page="heute">Heute</button
+          ><button data-page="nachweise">Nachweise</button>
+        </nav>
+        <button id="logout" class="text" hidden>Abmelden</button>
+      </div>
+    </header>
+    <main>
+      <p id="meldung" role="status" hidden></p>
+      <section id="login" hidden>
+        <h1>Anmelden</h1>
+        <form id="anmelden" class="karte login">
+          <label
+            >Anmeldename<input
+              name="login"
+              required
+              autocomplete="username" /></label
+          ><label
+            >Passwort<input
+              type="password"
+              name="passwort"
+              required
+              autocomplete="current-password" /></label
+          ><button>Anmelden</button>
+        </form>
+      </section>
+      <section id="heute" hidden>
+        <h1>Heute</h1>
+        <section class="karte" id="timer" aria-label="Timer"></section>
+        <section class="karte">
+          <div class="zeile">
+            <h2>Buchungsziel wählen</h2>
+            <button id="neu">+ Neues Buchungsziel</button>
+          </div>
+          <label class="suche"
+            >Suchen<input
+              id="suche"
+              type="search"
+              placeholder="Kunde, Ticket oder Termin"
+          /></label>
+          <div id="ziele"></div>
+        </section>
+      </section>
+      <section id="nachweise" hidden>
+        <h1>Stundennachweise</h1>
+        <div class="register">
+          <button id="liste">Übernahme</button
+          ><button id="historie">Historie</button>
+        </div>
+        <form id="filter" class="karte filter">
+          <label>Von<input type="date" name="von" required /></label
+          ><label>Bis<input type="date" name="bis" required /></label
+          ><label
+            >Kunde oder Buchungsziel<input name="suche" type="search" /></label
+          ><button>Filtern</button>
+        </form>
+        <div id="eintraege" class="karte"></div>
+      </section>
+    </main>
+    <dialog id="zielfenster">
+      <form id="zielform">
+        <h2>Neues Buchungsziel</h2>
+        <label
+          >Kunde<input
+            name="kunde"
+            list="kunden"
+            maxlength="150"
+            required /><datalist id="kunden"></datalist></label
+        ><label
+          >Art<select name="art">
+            <option>Ticket</option>
+            <option>Termin</option>
+            <option>Projekt</option>
+          </select></label
+        ><label
+          >Bezeichnung<input
+            name="bezeichnung"
+            required
+            maxlength="240" /></label
+        ><label>Projekt (optional)<select name="projektId"></select></label
+        ><label class="check"
+          ><input name="abrechenbar" type="checkbox" checked />
+          Abrechenbar</label
+        >
+        <div class="aktionen">
+          <button id="zielspeichern">Speichern und starten</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="notizfenster">
+      <form id="notizform">
+        <h2>Leistungstext</h2>
+        <label id="notizbez" for="notiz">Tätigkeit</label
+        ><textarea id="notiz" rows="5" maxlength="4000"></textarea>
+        <div class="aktionen">
+          <button>Speichern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

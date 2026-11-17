@@ -1,0 +1,13 @@
+[Unit]
+Description=Timereal Datenbank sichern
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=postgres
+Group=postgres
+StateDirectory=timereal-backups
+StateDirectoryMode=0700
+ExecStart=/bin/bash /opt/timereal/betrieb/sichern.sh
+NoNewPrivileges=true
+UMask=0077
