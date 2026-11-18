@@ -10,4 +10,8 @@ SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=2) AS erweitern \
 \if :erweitern
 \ir migrationen/002-pilot.sql
 \endif
+SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=3) AS konten \gset
+\if :konten
+\ir migrationen/003-konten.sql
+\endif
 SELECT pg_advisory_unlock(675039138012);

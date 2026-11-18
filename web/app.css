@@ -246,3 +246,31 @@ dialog::backdrop {
     padding: 4px;
   }
 }
+
+.kopf {
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.kopf nav {
+  flex-wrap: wrap;
+}
+#mailhinweis {
+  flex-basis: 100%;
+  margin: 0;
+}
+#verwaltung .neben,
+#einstellungen .neben {
+  display: block;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .kopf nav {
+    order: 3;
+    width: 100%;
+  }
+  .kopf #logout {
+    margin-left: auto;
+  }
+}

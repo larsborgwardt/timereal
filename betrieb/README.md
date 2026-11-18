@@ -1,9 +1,9 @@
 # Betrieb im Testcontainer
 
-Die App läuft als `timereal_app`, HTTPS als `timereal_proxy`. PostgreSQL prüft die lokale Dienstidentität am Unix-Socket. Das erste Konto wird bei der Installation angelegt. Weitere Konten lassen sich aus der Root-Konsole verwalten. Das Passwort wird verdeckt eingelesen.
+Die App läuft als `timereal_app`, HTTPS als `timereal_proxy`. PostgreSQL prüft die lokale Dienstidentität am Unix-Socket. Das erste Konto wird bei der Installation angelegt. Weitere Berater werden ab 0.3.0 in der Webverwaltung eingeladen. Für die Wiederherstellung lassen sich Konten aus der Root-Konsole verwalten. Das Passwort wird verdeckt eingelesen.
 
 ```bash
-cd /opt/timereal
+cd /opt/timereal-current
 read -r -p 'Anmeldename: ' login
 read -rs -p 'Passwort: ' pass && echo
 printf '%s' "$pass" | runuser -u postgres -- env PGDATABASE=timereal /opt/timereal-node/bin/node dist/konto-cli.js anlegen "$login"
@@ -35,7 +35,7 @@ Setze `BACKUP` vorher auf den Pfad des Dumps. Für eine Sicherung des gesamten G
 
 ## Stand des Piloten
 
-Der Installationsstand dient dem lokalen Testnetz. Eine öffentliche Adresse mit bestehendem Reverse Proxy, vertrauenswürdigem öffentlichem Zertifikat, automatisch zugestellten Einladungen und geplanten externen Sicherungen wird beim anschließenden Pilotbetrieb eingerichtet. Die Browsererweiterung folgt auf die Rückmeldung zum Arbeitstag.
+Der Installationsstand dient dem lokalen Testnetz. Eine öffentliche Adresse mit bestehendem Reverse Proxy, vertrauenswürdigem öffentlichem Zertifikat, automatisch zugestellten Einladungen und geplanten externen Sicherungen wird beim anschließenden Pilotbetrieb eingerichtet. Die Browsererweiterung wird entsprechend dem freigegebenen Versionsplan ergänzt.
 
 ## Erprobter Installationsstand
 
@@ -63,3 +63,17 @@ Für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg
 Sicherungen vor dem Update liegen getrennt von der täglichen Aufbewahrung unter `/var/lib/timereal-updates/`. Dort bleiben `before.dump`, die ursprünglichen Dienstdateien, Versionsangaben und das Migrationsprotokoll erhalten. Diese Verzeichnisse werden nicht automatisch gelöscht. Die HTTPS-Konfiguration, Zugangsdaten und Test-CA werden beim Update nicht ersetzt.
 
 Bei einem Startfehler kehrt das Skript zur vorherigen Anwendung zurück. Additive Datenbankänderungen bleiben bestehen. Ein Stromausfall oder ein nicht startbarer alter Dienst erfordert die Prüfung der Ausgabe und des Verzeichnisses; ein automatisches Zurückspielen des Dumps findet nicht statt. Vor einer bewussten Rücksicherung müssen die seit dem Dump erfassten Zeiten gesichert und der Anwendungsdienst angehalten werden.
+
+## Berater einladen (ab 0.3.0)
+
+Das erste bei der Installation angelegte Konto ist Administrator. Nach dem Update erscheinen **Verwaltung** und **Einstellungen**. In der Verwaltung kannst du andere Berater per E-Mail einladen, offene Einladungen erneut senden oder widerrufen und Beraterkonten sperren. Eine Sperre beendet einen laufenden Timer als prüfpflichtigen Abschnitt und widerruft die Sitzungen. Administratorkonten sind in dieser Ansicht gegen eine Sperre geschützt; die vorhandene Konten-CLI bleibt für die Wiederherstellung im Container verfügbar.
+
+Richte zuerst SMTP in der Root-Konsole ein:
+
+```bash
+bash /opt/timereal-current/betrieb/mail-einrichten.sh
+```
+
+Das Skript fragt Server, Port, TLS, Absender und Zugang ab. Das Passwort wird verdeckt gelesen. Es prüft die SMTP-Verbindung ohne eine Einladung zu versenden, speichert die Konfiguration in `/etc/timereal/mail.json` (root, Gruppe timereal_app, Modus 640) und startet den Anwendungsdienst neu. Bei externen Servern muss TLS direkt oder über STARTTLS funktionieren. Ein nicht authentifizierendes lokales Relay ist für die lokale Prüfung möglich. Einladungen versendest du danach ausdrücklich über **Verwaltung → Berater einladen**.
+
+Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Senden entwertet den alten Einladungslink. Der Berater legt ein eigenes Passwort fest und meldet sich mit seiner E-Mail-Adresse an. In **Einstellungen** kannst du deinem bestehenden Pilotkonto eine E-Mail-Adresse zuordnen, dein Passwort ändern und Sitzungen einzeln abmelden. Nach einem Passwortwechsel oder einer Zurücksetzung werden die vorherigen Sitzungen ungültig.

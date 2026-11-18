@@ -15,5 +15,6 @@ docker cp datenmodell "$container:/tmp/datenmodell"
 docker exec "$container" psql -X -U postgres -f /tmp/datenmodell/entwurf.sql
 npm run build
 npm run test:db
-node --test tests/version.test.mjs tests/update.test.mjs
-if [[ ${BROWSER_TEST:-0} == 1 ]]; then node tests/browser.mjs; fi
+node --test tests/konten.mjs
+node --test tests/version.test.mjs tests/update.test.mjs tests/mail-cli.test.mjs
+if [[ ${BROWSER_TEST:-0} == 1 ]]; then node tests/browser.mjs; node tests/konten-browser.mjs; fi

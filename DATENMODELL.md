@@ -56,3 +56,7 @@ erDiagram
 **Kontotrennung und Sitzungen.** Datenbankschlüssel enthalten die Konto-ID. RLS schränkt die Dienstrolle pro Transaktion auf dieses Konto ein. Sitzungstabellen und Passworthashes haben eigene Zugriffsrechte. Eine Sperre schließt den aktiven Abschnitt, setzt die Prüfmarkierung, hebt die Pause auf und widerruft die Sitzungen gemeinsam.
 
 Die [Integrationstests](tests/integration.mjs) prüfen diese Regeln mit echten Datenbankrollen und getrennten Verbindungen. Der [Browsertest](tests/browser.mjs) startet zwei getrennte Browsersitzungen für den Gerätewechsel.
+
+## Kontozugänge ab 0.3.0
+
+Migration 003 ergänzt die optionale eindeutige Konto-E-Mail und öffentliche Sitzungs-IDs, während Sitzungsschlüssel als Hash gespeichert bleiben. `kontolink` enthält Einladungen und Passwortzurücksetzungen mit Hash, Ablauf, Verbrauch und Widerruf. Diese Tabelle ist für die Anwendungsrolle nur über begrenzte Funktionen erreichbar. Verwaltungsfunktionen prüfen die aktive Administratorrolle; die bestehenden Zeittabellen behalten ihre Kontotrennung. Die Sitzungsanlage verwendet eine explizite Spaltenliste, damit die vorherige Anwendung nach der additiven Migration weiterlaufen kann.

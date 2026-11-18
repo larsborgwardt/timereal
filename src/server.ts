@@ -1,3 +1,4 @@
+import { smtpKonfiguration } from "./config.js";
 import pg from "pg";
 import { createApp } from "./app.js";
 const origin = new URL(process.env.PUBLIC_ORIGIN || "https://localhost").origin;
@@ -7,7 +8,13 @@ const app = createApp(
     connectionString: process.env.DATABASE_URL,
     options: "-c timezone=UTC",
   }),
-  { secure: origin.startsWith("https:"), origin },
+  {
+    secure: origin.startsWith("https:"),
+    origin,
+    smtp: smtpKonfiguration(
+      process.env.TIMEREAL_SMTP_FILE || "/etc/timereal/mail.json",
+    ),
+  },
 );
 for (const signal of ["SIGINT", "SIGTERM"])
   process.once(signal, () => void app.close());

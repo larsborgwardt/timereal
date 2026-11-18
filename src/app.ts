@@ -1,3 +1,6 @@
+import { kontenRouten } from "./konten-routen.js";
+import type { MailConfig } from "./mail.js";
+import { id, version, wort, tag, objekt } from "./http.js";
 import Fastify, { type FastifyRequest } from "fastify";
 import type { Pool, PoolClient } from "pg";
 import { readFile } from "node:fs/promises";
@@ -15,19 +18,6 @@ import {
 } from "./korrektur.js";
 import { historie, bestaetigen } from "./nachweise.js";
 
-const id = { type: "string", pattern: "^[1-9][0-9]{0,17}$" };
-const version = { type: "string", pattern: "^(0|[1-9][0-9]{0,17})$" };
-const wort = (maxLength: number) => ({
-  type: "string",
-  minLength: 1,
-  maxLength,
-  pattern: "\\S",
-});
-const tag = { type: "string", format: "date" };
-const objekt = (
-  properties: Record<string, unknown>,
-  required: string[] = [],
-) => ({ type: "object", properties, required, additionalProperties: false });
 const zielSchema = objekt(
   {
     kunde: wort(150),
@@ -52,7 +42,7 @@ function webToken(req: FastifyRequest) {
 }
 export function createApp(
   pool: Pool,
-  options: { secure: boolean; origin?: string },
+  options: { secure: boolean; origin?: string; smtp?: MailConfig },
 ) {
   const app = Fastify({
     bodyLimit: 32768,
@@ -91,12 +81,14 @@ export function createApp(
     (err: Error & { statusCode?: number; code?: string }, req, reply) => {
       if (err instanceof Fehler)
         return reply.code(err.status).send({ fehler: err.message });
-      if (err.code === "23P01" || err.code === "23505")
+      if (err.code === "42501")
         return reply
-          .code(409)
-          .send({
-            fehler: "Die Buchung kollidiert mit einem vorhandenen Eintrag.",
-          });
+          .code(403)
+          .send({ fehler: "Keine Berechtigung für die Verwaltung." });
+      if (err.code === "23P01" || err.code === "23505")
+        return reply.code(409).send({
+          fehler: "Die Buchung kollidiert mit einem vorhandenen Eintrag.",
+        });
       if (
         err.code === "23503" ||
         err.code === "23514" ||
@@ -124,7 +116,8 @@ export function createApp(
   ) =>
     transaktion(pool, async (db) => {
       const auth = req.headers.authorization;
-      if (auth && !/^Bearer [a-f0-9]{64}$/.test(auth)) throw new Fehler(401, "Bitte erneut anmelden.");
+      if (auth && !/^Bearer [a-f0-9]{64}$/.test(auth))
+        throw new Fehler(401, "Bitte erneut anmelden.");
       await bindSession(
         db,
         auth ? auth.replace(/^Bearer /, "") : webToken(req),
@@ -135,6 +128,7 @@ export function createApp(
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
     ["/app.js", "app.js", "text/javascript"],
+    ["/konten.js", "konten.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],
   ]) {
     app.get(url, async (_, reply) =>
@@ -147,7 +141,7 @@ export function createApp(
     await pool.query("select 1");
     return { status: "ok" };
   });
-  app.get('/api/v1/version', async () => release);
+  app.get("/api/v1/version", async () => release);
   app.post<{ Body: { login: string; passwort: string } }>(
     "/api/v1/anmeldung",
     {
@@ -330,5 +324,6 @@ export function createApp(
     (req) =>
       privat(req, (db) => stornieren(db, req.params.id, req.body.fassung)),
   );
+  kontenRouten(app, pool, privat, options);
   return app;
 }

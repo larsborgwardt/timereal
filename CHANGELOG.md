@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.3.0 — 19. November 2026
+
+- Verwaltung mit Beraterkonten, Einladungen, erneutem Versand, Widerruf und Sperren.
+- Einladung mit eigenem Passwort, Passwortzurücksetzung und Passwortwechsel.
+- Einstellungen mit E-Mail-Adresse, Version und einzeln widerrufbaren Sitzungen.
+- SMTP-Einrichtung mit Verbindungsprüfung und geschützter Konfigurationsdatei.
+- Kontometadaten für Administratoren; fremde Kunden und Zeiten bleiben getrennt.
+
 ## 0.2.0 — 19. November 2026
 
 - Versionsauskunft unter `/api/v1/version`.

@@ -13,7 +13,11 @@
         <strong>Zeitnachweis</strong>
         <nav aria-label="Hauptnavigation" hidden>
           <button data-page="heute">Heute</button
-          ><button data-page="nachweise">Nachweise</button>
+          ><button data-page="nachweise">Nachweise</button
+          ><button data-page="einstellungen">Einstellungen</button
+          ><button data-page="verwaltung" id="admin-nav" hidden>
+            Verwaltung
+          </button>
         </nav>
         <button id="logout" class="text" hidden>Abmelden</button>
       </div>
@@ -36,6 +40,7 @@
               autocomplete="current-password" /></label
           ><button>Anmelden</button>
         </form>
+        <button id="vergessen" class="text">Passwort vergessen?</button>
       </section>
       <section id="heute" hidden>
         <h1>Heute</h1>
@@ -68,6 +73,71 @@
           ><button>Filtern</button>
         </form>
         <div id="eintraege" class="karte"></div>
+      </section>
+      <section id="verwaltung" hidden>
+        <h1>Verwaltung</h1>
+        <p>
+          Berater einladen und Zugänge verwalten. Jeder erfasst seine eigenen
+          Kunden und Zeiten.
+        </p>
+        <form id="einladen" class="karte filter">
+          <label
+            >E-Mail-Adresse<input
+              name="email"
+              type="email"
+              required
+              maxlength="250" /></label
+          ><button>Berater einladen</button>
+          <p id="mailhinweis"></p>
+        </form>
+        <section class="karte">
+          <h2>Beraterkonten</h2>
+          <div id="kontoliste"></div>
+        </section>
+        <section class="karte">
+          <h2>Einladungen</h2>
+          <div id="einladungsliste"></div>
+        </section>
+      </section>
+      <section id="einstellungen" hidden>
+        <h1>Einstellungen</h1>
+        <p id="kontoname"></p>
+        <form class="karte" id="profilform">
+          <h2>Mein Konto</h2>
+          <label
+            >E-Mail-Adresse für die Passwortzurücksetzung<input
+              name="email"
+              type="email"
+              required
+              maxlength="250"
+              autocomplete="email" /></label
+          ><button>Adresse speichern</button>
+        </form>
+        <form class="karte" id="passwortform">
+          <h2>Passwort ändern</h2>
+          <label
+            >Bisheriges Passwort<input
+              type="password"
+              name="alt"
+              required
+              autocomplete="current-password"
+              maxlength="512" /></label
+          ><label
+            >Neues Passwort · mindestens 12 Zeichen<input
+              type="password"
+              name="neu"
+              required
+              minlength="12"
+              maxlength="512"
+              autocomplete="new-password" /></label
+          ><button>Passwort ändern und abmelden</button>
+        </form>
+        <section class="karte">
+          <h2>Angemeldete Geräte</h2>
+          <p>Du kannst Browser und Erweiterung einzeln abmelden.</p>
+          <div id="sitzungsliste"></div>
+        </section>
+        <p id="versionsnummer" class="neben"></p>
       </section>
     </main>
     <dialog id="zielfenster">
@@ -108,6 +178,49 @@
         ><textarea id="notiz" rows="5" maxlength="4000"></textarea>
         <div class="aktionen">
           <button>Speichern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="resetfenster">
+      <form id="resetform">
+        <h2>Passwort vergessen?</h2>
+        <label
+          >E-Mail-Adresse<input
+            type="email"
+            name="email"
+            required
+            maxlength="250"
+            autocomplete="email"
+        /></label>
+        <div class="aktionen">
+          <button>Rücksetzlink anfordern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="linkfenster">
+      <form id="linkform">
+        <h2 id="linktitel">Passwort festlegen</h2>
+        <label
+          >Passwort · mindestens 12 Zeichen<input
+            type="password"
+            name="passwort"
+            required
+            minlength="12"
+            maxlength="512"
+            autocomplete="new-password" /></label
+        ><label
+          >Passwort wiederholen<input
+            type="password"
+            name="wiederholung"
+            required
+            minlength="12"
+            maxlength="512"
+            autocomplete="new-password"
+        /></label>
+        <div class="aktionen">
+          <button>Passwort speichern</button
           ><button type="button" class="sek" data-close>Abbrechen</button>
         </div>
       </form>

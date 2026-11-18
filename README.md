@@ -16,7 +16,7 @@ bash /opt/timereal/betrieb/install.sh
 
 Das Skript fragt den Anmeldenamen und das Passwort für dein erstes Konto ab und gibt die HTTPS-Adresse aus. Der Pilot verwendet eine eigene Zertifizierungsstelle. Übertrage **nur das öffentliche Zertifikat** `/root/timereal-test-ca.crt` über deinen vertrauten Containerzugang auf die Testgeräte und vertraue ihm dort für Websites. Auf dem iPhone muss für ein installiertes CA-Profil zusätzlich das volle Vertrauen aktiviert werden. Verwende bei einer Namensbindung denselben DNS-Namen auf beiden Geräten. Für diesen Fall starte den Installer mit `TIMEREAL_HOST=zeit.test.example bash /opt/timereal/betrieb/install.sh` und ersetze den Namen durch deinen auflösbaren Testnamen.
 
-Der Installer lässt sich mit `bash /opt/timereal/betrieb/install.sh` wiederholen. Er verwendet die bestehende Datenbank und bestehende Konten. Dienststatus und Startfehler zeigt `journalctl -u timereal -u timereal-https -b`.
+Bestehende Installationen aktualisierst du über den [versionierten Updateweg](betrieb/README.md#versioniert-aktualisieren-ab-02), einschließlich Sicherung. Verwende dafür nicht erneut den Installer. Dienststatus und Startfehler zeigt `journalctl -u timereal -u timereal-https -b`.
 
 ## Ein Vormittag zum Ausprobieren
 

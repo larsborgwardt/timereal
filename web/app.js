@@ -1,3 +1,4 @@
+import { kontenOberflaeche } from "./konten.js";
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) =>
   String(value ?? "").replace(
@@ -37,6 +38,15 @@ function melden(msg = "") {
   const box = $("#meldung");
   box.textContent = msg;
   box.hidden = !msg;
+  document.querySelectorAll(".dialogmeldung").forEach((e) => e.remove());
+  const dialog = document.querySelector("dialog[open]");
+  if (msg && dialog) {
+    const hinweis = document.createElement("p");
+    hinweis.className = "dialogmeldung meldung";
+    hinweis.setAttribute("role", "alert");
+    hinweis.textContent = msg;
+    dialog.querySelector("form").prepend(hinweis);
+  }
 }
 async function request(pfad, methode = "GET", body, key) {
   const response = await fetch(api + pfad, {
@@ -64,7 +74,9 @@ function zeigeLogin() {
   ziele = [];
   eintraege = [];
   notiz = null;
-  document.querySelectorAll("dialog[open]").forEach((d) => d.close());
+  document.querySelectorAll("dialog[open]").forEach((d) => {
+    if (d.id !== "linkfenster" && d.id !== "resetfenster") d.close();
+  });
   $("#notiz").value = "";
   $("#timer").replaceChildren();
   $("#ziele").replaceChildren();
@@ -72,7 +84,13 @@ function zeigeLogin() {
   panels();
 }
 function panels() {
-  for (const id of ["login", "heute", "nachweise"])
+  for (const id of [
+    "login",
+    "heute",
+    "nachweise",
+    "verwaltung",
+    "einstellungen",
+  ])
     $("#" + id).hidden = seite !== id;
   $("nav").hidden = $("#logout").hidden = seite === "login";
   document
@@ -242,8 +260,10 @@ function zeigeEintraege() {
 async function laden() {
   const nr = ++refreshNr;
   const [stand, liste] = await Promise.all([
+    // Profil wird über dieselbe geprüfte Sitzung gelesen.
     request("/timer"),
     request("/ziele"),
+    konten.aktualisieren(),
   ]);
   if (nr !== refreshNr) return;
   state = stand;
@@ -252,6 +272,10 @@ async function laden() {
   panels();
   if (seite === "heute") {
     zeigeTimer();
+    return;
+  }
+  if (["verwaltung", "einstellungen"].includes(seite)) {
+    await konten.laden(seite);
     return;
   }
   const f = $("#filter").elements;
@@ -288,7 +312,7 @@ async function bediene(fn) {
   melden();
   try {
     await fn();
-    await laden();
+    if (seite !== "login" || state) await laden();
   } catch (e) {
     melden(e.message);
     if (e.status === 409) await laden().catch(() => {});
@@ -463,6 +487,14 @@ function aktualisieren() {
 window.addEventListener("focus", aktualisieren);
 setInterval(aktualisieren, 10000);
 setInterval(dauer, 1000);
+const konten = kontenOberflaeche({
+  $,
+  esc,
+  request,
+  bediene,
+  melden,
+  abmelden: zeigeLogin,
+});
 laden().catch((e) => {
   if (e.status !== 401) melden(e.message);
 });

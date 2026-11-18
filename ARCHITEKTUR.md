@@ -75,6 +75,6 @@ Für Notizen gilt `PATCH /api/v1/abschnitte/{id}/notiz` mit Leistungstext und ge
 
 ## Pilot und anschließender Ausbau
 
-Der erste Pilottest funktioniert ohne Mailserver. Die Konten werden im Gast angelegt. Für den Betrieb mit Einladungen folgen Einmal-Token mit Ablauf und Hash, Versand über SMTP, Passwortzurücksetzung und die Verwaltungsansicht für Kontosperren. Die technische Sperre widerruft bereits Sitzungen und schließt einen laufenden Abschnitt als prüfpflichtig.
+Der erste Pilottest funktioniert ohne Mailserver. Die Konten werden im Gast angelegt. Ab Version 0.3.0 sind Einmal-Token mit Ablauf und Hash, Versand über SMTP, Passwortzurücksetzung und die Verwaltungsansicht für Kontosperren implementiert. Das Modul `konten` übernimmt die Fachlogik; `konten-routen` bindet sie an HTTP. Administrationsfunktionen in PostgreSQL geben Kontometadaten aus, ohne Zugriff auf fremde Kunden oder Zeiten zu gewähren. Die technische Sperre widerruft bereits Sitzungen und schließt einen laufenden Abschnitt als prüfpflichtig.
 
 Die Erweiterung folgt auf den Arbeitstag im Pilot. Ihr Popup verwendet diese Timer- und Notizbefehle. Zum Anmelden ist ein eigener Autorisierungsablauf mit PKCE, exakt registriertem Rücksprungziel und widerrufbarer Erweiterungssitzung vorgesehen. Die Berechtigung gilt für die Timereal-Adresse. Das Popup benötigt für die manuelle Zielauswahl keinen Zugriff auf Inhalte anderer Tabs. Offline vorgemerkte Wechsel müssen nach dem Wiederverbinden gegen den aktuellen Stand bestätigt werden.
