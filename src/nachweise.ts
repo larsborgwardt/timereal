@@ -17,7 +17,7 @@ const verlauf = `select a.id,a.art,a.beginn,a.ende,a.ziel_id,a.kunde_id,a.fassun
   left join buchungsziel z on (z.konto_id,z.id)=(a.konto_id,a.ziel_id)
   left join buchungsziel p on (p.konto_id,p.id)=(z.konto_id,z.projekt_id)`;
 
-const mitStatus = `select h.*,case
+export const mitStatus = `select h.*,case
   when storniert and uebertragene_fassung is not null and not storno_bestaetigt then 'Storno offen'
   when storniert then 'Storniert'
   when ende is null then 'Läuft'
@@ -31,7 +31,10 @@ const mitStatus = `select h.*,case
 
 export async function historie(db: PoolClient, von: string, bis: string) {
   const { rows } = await db.query(
-    mitStatus + " where tag >= $1 and tag <= $2 order by beginn desc,id desc",
+    mitStatus +
+      ` where beginn < (($2::date+1)::timestamp at time zone (select zeitzone from konto))
+ and (ende > ($1::date::timestamp at time zone (select zeitzone from konto))
+ or ende is null or (ende=beginn and tag::date>=$1::date)) order by beginn desc,id desc`,
     [von, bis],
   );
   return rows;

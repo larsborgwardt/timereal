@@ -76,6 +76,12 @@ export function kontenOberflaeche({
     if (seite === "einstellungen") {
       $("#profilform").elements.email.value = profil.email ?? "";
       $("#kontoname").textContent = profil.login;
+      $("#grundeinstellungen").elements.nachkommastellen.value = String(
+        profil.nachkommastellen,
+      );
+      $("#grundeinstellungen").elements.pruefminuten.value = String(
+        profil.pruefminuten,
+      );
       const [sessions, release] = await Promise.all([
         request("/sitzungen"),
         request("/version"),
@@ -135,6 +141,17 @@ export function kontenOberflaeche({
         email: ev.target.elements.email.value,
       });
       melden("E-Mail-Adresse gespeichert.");
+    });
+  };
+  $("#grundeinstellungen").onsubmit = (ev) => {
+    ev.preventDefault();
+    void bediene(async () => {
+      const f = ev.target.elements;
+      await request("/einstellungen", "PATCH", {
+        nachkommastellen: Number(f.nachkommastellen.value),
+        pruefminuten: Number(f.pruefminuten.value),
+      });
+      melden("Einstellungen gespeichert.");
     });
   };
   $("#passwortform").onsubmit = (ev) => {

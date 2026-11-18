@@ -1,3 +1,4 @@
+import { stammdatenRouten } from "./stammdaten-routen.js";
 import { kontenRouten } from "./konten-routen.js";
 import type { MailConfig } from "./mail.js";
 import { id, version, wort, tag, objekt } from "./http.js";
@@ -129,6 +130,8 @@ export function createApp(
     ["/", "index.html", "text/html"],
     ["/app.js", "app.js", "text/javascript"],
     ["/konten.js", "konten.js", "text/javascript"],
+    ["/zeit.js", "zeit.js", "text/javascript"],
+    ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],
   ]) {
     app.get(url, async (_, reply) =>
@@ -221,7 +224,7 @@ export function createApp(
       req,
       async (db) =>
         (
-          await db.query(`select z.id,z.kunde_id,z.art,z.bezeichnung,z.projekt_id,k.name as kunde
+          await db.query(`select z.id,z.kunde_id,z.art,z.bezeichnung,z.projekt_id,z.abrechenbar,z.fassung,k.name as kunde
       from buchungsziel z join kunde k on (k.konto_id,k.id)=(z.konto_id,z.kunde_id) order by k.name,z.bezeichnung,z.id`)
         ).rows,
     ),
@@ -325,5 +328,6 @@ export function createApp(
       privat(req, (db) => stornieren(db, req.params.id, req.body.fassung)),
   );
   kontenRouten(app, pool, privat, options);
+  stammdatenRouten(app, privat);
   return app;
 }

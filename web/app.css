@@ -274,3 +274,78 @@ dialog::backdrop {
     margin-left: auto;
   }
 }
+
+.zeitfelder,
+.vergleich,
+.kennzahlen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.kennzahlen {
+  margin: 24px 0;
+}
+.kennzahlen > div {
+  padding: 20px;
+  background: #e4f6f1;
+  border-radius: 10px;
+}
+.kennzahlen strong {
+  display: block;
+  font-size: 2rem;
+}
+.tabelle {
+  overflow: auto;
+  margin: 20px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #dce4e8;
+}
+td {
+  overflow-wrap: anywhere;
+}
+dt {
+  font-weight: 600;
+  margin-top: 12px;
+}
+dd {
+  margin: 3px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.geaendert {
+  background: #fff6dc;
+  padding: 5px;
+}
+#vergleichfenster {
+  width: min(94vw, 850px);
+}
+#zeitfenster {
+  width: min(94vw, 660px);
+}
+#eintraege {
+  margin-top: 18px;
+}
+@media (max-width: 640px) {
+  .zeitfelder,
+  .vergleich {
+    grid-template-columns: 1fr;
+  }
+  .kennzahlen {
+    gap: 8px;
+  }
+  .kennzahlen > div {
+    padding: 12px;
+  }
+  th,
+  td {
+    padding: 8px;
+  }
+}

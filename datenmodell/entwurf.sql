@@ -14,4 +14,8 @@ SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=3) AS konten \gse
 \if :konten
 \ir migrationen/003-konten.sql
 \endif
+SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=4) AS arbeitsablauf \gset
+\if :arbeitsablauf
+\ir migrationen/004-arbeitsablauf.sql
+\endif
 SELECT pg_advisory_unlock(675039138012);

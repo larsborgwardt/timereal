@@ -1,3 +1,4 @@
+import { arbeitsablaufOberflaeche } from "./arbeitsablauf.js";
 import { kontenOberflaeche } from "./konten.js";
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) =>
@@ -28,6 +29,7 @@ let seite = "heute",
   modus = "uebernahme",
   state,
   ziele = [],
+  kunden = [],
   eintraege = [],
   notiz,
   busy = false,
@@ -45,7 +47,7 @@ function melden(msg = "") {
     hinweis.className = "dialogmeldung meldung";
     hinweis.setAttribute("role", "alert");
     hinweis.textContent = msg;
-    dialog.querySelector("form").prepend(hinweis);
+    (dialog.querySelector("form") ?? dialog).prepend(hinweis);
   }
 }
 async function request(pfad, methode = "GET", body, key) {
@@ -72,6 +74,7 @@ function zeigeLogin() {
   state = null;
   pending = null;
   ziele = [];
+  kunden = [];
   eintraege = [];
   notiz = null;
   document.querySelectorAll("dialog[open]").forEach((d) => {
@@ -80,7 +83,19 @@ function zeigeLogin() {
   $("#notiz").value = "";
   $("#timer").replaceChildren();
   $("#ziele").replaceChildren();
-  $("#eintraege").replaceChildren();
+  for (const id of [
+    "eintraege",
+    "tageseintraege",
+    "wochenzeilen",
+    "kontoliste",
+    "einladungsliste",
+    "sitzungsliste",
+    "vergleichinhalt",
+  ])
+    $("#" + id).replaceChildren();
+  document.querySelectorAll("dialog form").forEach((f) => {
+    if (!["linkform", "resetform"].includes(f.id)) f.reset();
+  });
   panels();
 }
 function panels() {
@@ -90,6 +105,7 @@ function panels() {
     "nachweise",
     "verwaltung",
     "einstellungen",
+    "woche",
   ])
     $("#" + id).hidden = seite !== id;
   $("nav").hidden = $("#logout").hidden = seite === "login";
@@ -161,6 +177,9 @@ function dauer() {
     ":" +
     String(min % 60).padStart(2, "0");
 }
+function arbeitButton(text, aktion, id) {
+  return `<button type="button" class="sek" data-arbeit="${aktion}" data-id="${esc(id)}">${text}</button>`;
+}
 function zeigeZiele() {
   const suche = $("#suche").value.trim().toLocaleLowerCase("de");
   const liste = ziele.filter((z) =>
@@ -184,18 +203,22 @@ function zeigeZiele() {
                 "ziel-" + z.id,
                 "",
               )) +
+          arbeitButton("Bearbeiten", "zielpflege", z.id) +
           "</div>",
       )
       .join("") || "<p>Kein passendes Buchungsziel.</p>";
 }
-function zeigeEintraege() {
+function zeigeEintraege(ziel = "#eintraege", alle = false) {
   $("#liste").setAttribute("aria-pressed", modus === "uebernahme");
   $("#historie").setAttribute("aria-pressed", modus === "historie");
-  const suche = $("#filter").elements.suche.value.trim().toLowerCase();
+  const suche = alle
+    ? ""
+    : $("#filter").elements.suche.value.trim().toLowerCase();
   const rows = eintraege.filter(
     (e) =>
       e.ende &&
-      (modus === "historie" ||
+      (alle ||
+        modus === "historie" ||
         !["Storniert", "Nicht abrechenbar", "Übertragen"].includes(e.status)) &&
       [e.kunde, e.ziel, e.projekt].join(" ").toLowerCase().includes(suche),
   );
@@ -206,7 +229,7 @@ function zeigeEintraege() {
       Number(a.id) - Number(b.id),
   );
   let day = "";
-  $("#eintraege").innerHTML =
+  $(ziel).innerHTML =
     rows
       .map((e) => {
         const titel =
@@ -247,7 +270,17 @@ function zeigeEintraege() {
               "</p>"
             : "") +
           '<div class="aktionen">' +
-          (e.storniert ? "" : btn("Leistungstext", "notiz-" + e.id)) +
+          (e.storniert
+            ? ""
+            : btn("Leistungstext", "notiz-" + e.id) +
+              arbeitButton("Korrigieren", "korrektur", e.id) +
+              (Number(e.minuten) >= 3
+                ? arbeitButton("Unterbrechung einfügen", "unterbrechung", e.id)
+                : "") +
+              arbeitButton("Stornieren", "storno", e.id)) +
+          (e.uebertragener_stand
+            ? arbeitButton("Buchung vergleichen", "vergleich", e.id)
+            : "") +
           (bereit
             ? btn("Kopieren", "kopie-" + e.id) +
               btn("Übernahme bestätigen", "uebernahme-" + e.id, "")
@@ -259,19 +292,31 @@ function zeigeEintraege() {
 }
 async function laden() {
   const nr = ++refreshNr;
-  const [stand, liste] = await Promise.all([
+  const [stand, liste, profil, kundenliste] = await Promise.all([
     // Profil wird über dieselbe geprüfte Sitzung gelesen.
     request("/timer"),
     request("/ziele"),
     konten.aktualisieren(),
+    request("/kunden"),
   ]);
   if (nr !== refreshNr) return;
   state = stand;
   ziele = liste;
+  kunden = kundenliste;
   if (seite === "login") seite = "heute";
   panels();
   if (seite === "heute") {
     zeigeTimer();
+    const heute = tag(new Date());
+    const rows = await request("/historie?von=" + heute + "&bis=" + heute);
+    if (nr === refreshNr) {
+      eintraege = rows;
+      zeigeEintraege("#tageseintraege", true);
+    }
+    return;
+  }
+  if (seite === "woche") {
+    await arbeitsablauf.ladeWoche();
     return;
   }
   if (["verwaltung", "einstellungen"].includes(seite)) {
@@ -288,6 +333,7 @@ async function laden() {
   }
 }
 async function kommando(action, felder = {}) {
+  if (action === "auto") action = state.aktiv ? "wechsel" : "start";
   const input = { version: state.version, ...felder };
   const signatur = JSON.stringify([action, input]);
   const key =
@@ -458,6 +504,16 @@ $("#logout").onclick = async () => {
   }
 };
 $("#suche").oninput = zeigeZiele;
+$("#filter-reset").onclick = () =>
+  void bediene(async () => {
+    const h = new Date(),
+      v = new Date(h);
+    v.setDate(v.getDate() - 6);
+    const f = $("#filter").elements;
+    f.von.value = tag(v);
+    f.bis.value = tag(h);
+    f.suche.value = "";
+  });
 $("#filter").onsubmit = (ev) => {
   ev.preventDefault();
   void bediene(async () => {});
@@ -487,6 +543,27 @@ function aktualisieren() {
 window.addEventListener("focus", aktualisieren);
 setInterval(aktualisieren, 10000);
 setInterval(dauer, 1000);
+const arbeitsablauf = arbeitsablaufOberflaeche({
+  $,
+  esc,
+  request,
+  bediene,
+  melden,
+  getZiele: () => ziele,
+  getKunden: () => kunden,
+  getEintraege: () => eintraege,
+  getZone: () => zone,
+  kommando,
+  heute: () => tag(new Date()),
+  zuNachweisen: (von, bis) => {
+    seite = "nachweise";
+    modus = "uebernahme";
+    const f = $("#filter").elements;
+    f.von.value = von;
+    f.bis.value = bis;
+    f.suche.value = "";
+  },
+});
 const konten = kontenOberflaeche({
   $,
   esc,

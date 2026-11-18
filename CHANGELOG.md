@@ -1,5 +1,14 @@
 # Änderungen
 
+## 0.4.0 — 19. November 2026
+
+- Sofortstart ohne festes Buchungsziel, interne Zeiten und Tagesverlauf.
+- Nachtragen, Korrigieren, Unterbrechungen mit Vorschau und Stornieren in der Oberfläche.
+- Gegenüberstellung des zuletzt übertragenen und aktuellen Buchungsstands.
+- Wochenübersicht mit Minuten je Tag, Kunde und Projekt; Aufteilung über Mitternacht und echte Dauer bei Zeitumstellung.
+- Kunden-/Buchungszielpflege mit Versionskonflikten und gemeinsamem Speichern; Nachkommastellen und Prüfschwelle in den Einstellungen.
+- Historienfilter zurücksetzen; die gespeicherten Buchungen bleiben erhalten.
+
 ## 0.3.0 — 19. November 2026
 
 - Verwaltung mit Beraterkonten, Einladungen, erneutem Versand, Widerruf und Sperren.

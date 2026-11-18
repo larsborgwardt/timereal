@@ -35,3 +35,9 @@ Bestehende Installationen aktualisierst du über den [versionierten Updateweg](b
 ## Entwicklung
 
 Node.js 24 und PostgreSQL 17 oder 18. Mit `npm ci && npm test` starten die Integrationstests eine getrennte, vorübergehende PostgreSQL-Instanz über Docker. Für PostgreSQL 17 setze `POSTGRES_IMAGE=postgres:17-alpine`. Für den echten Browsertest zuerst `npx playwright-core install chromium` und anschließend `BROWSER_TEST=1 npm test` ausführen. Ein vorhandenes Chromium lässt sich mit `CHROMIUM_PATH` angeben.
+
+## Arbeitstag bearbeiten (ab 0.4)
+
+Unter **Heute** beginnt „Sofort starten“ eine vorläufige Zeit, wahlweise mit Kunde. „Interne Zeit“ erfasst eine nicht abrechenbare Tätigkeit. Im Tagesverlauf und unter Nachweise lassen sich abgeschlossene Zeiten nachtragen, korrigieren, teilen oder stornieren. Beim Verschieben einer gemeinsamen Grenze wird der direkt anschließende Abschnitt mit angepasst.
+
+„Buchung vergleichen“ zeigt den zuletzt bestätigten Übertragungsstand neben den aktuellen Werten. Korrigiere deinen externen Stundennachweis und bestätige danach die Übernahme. Die Wochenansicht summiert Minuten; Filter zurücksetzen leert lediglich die Suchfilter. Kundenname und Buchungsziel bearbeitest du über „Bearbeiten“ beim jeweiligen Ziel.

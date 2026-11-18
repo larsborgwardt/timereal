@@ -13,6 +13,7 @@
         <strong>Zeitnachweis</strong>
         <nav aria-label="Hauptnavigation" hidden>
           <button data-page="heute">Heute</button
+          ><button data-page="woche">Woche</button
           ><button data-page="nachweise">Nachweise</button
           ><button data-page="einstellungen">Einstellungen</button
           ><button data-page="verwaltung" id="admin-nav" hidden>
@@ -43,7 +44,13 @@
         <button id="vergessen" class="text">Passwort vergessen?</button>
       </section>
       <section id="heute" hidden>
-        <h1>Heute</h1>
+        <div class="zeile">
+          <h1>Heute</h1>
+          <div class="aktionen">
+            <button id="sofort">Sofort starten</button
+            ><button id="intern" class="sek">Interne Zeit</button>
+          </div>
+        </div>
         <section class="karte" id="timer" aria-label="Timer"></section>
         <section class="karte">
           <div class="zeile">
@@ -58,6 +65,49 @@
           /></label>
           <div id="ziele"></div>
         </section>
+        <section class="karte">
+          <div class="zeile">
+            <h2>Tagesverlauf</h2>
+            <button type="button" data-arbeit="nachtrag">
+              Zeit nachtragen
+            </button>
+          </div>
+          <div id="tageseintraege"></div>
+        </section>
+      </section>
+      <section id="woche" hidden>
+        <h1>Wochenübersicht</h1>
+        <p>
+          Erfasste Minuten einschließlich des laufenden Timers. Stornierte
+          Abschnitte zählen nicht mit.
+        </p>
+        <div class="karte">
+          <div class="zeile">
+            <button id="woche-vorher" class="sek">← Vorherige Woche</button
+            ><strong id="wochentitel"></strong
+            ><button id="woche-nachher" class="sek">Nächste Woche →</button>
+          </div>
+          <div class="kennzahlen">
+            <div><span>Erfasst</span><strong id="wochensumme"></strong></div>
+            <div>
+              <span>Abrechenbar</span><strong id="wochenabrechenbar"></strong>
+            </div>
+          </div>
+          <div class="tabelle">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tag</th>
+                  <th>Kunde</th>
+                  <th>Projekt</th>
+                  <th>Dauer</th>
+                </tr>
+              </thead>
+              <tbody id="wochenzeilen"></tbody>
+            </table>
+          </div>
+          <button id="wochennacharbeit">Offene Nacharbeiten</button>
+        </div>
       </section>
       <section id="nachweise" hidden>
         <h1>Stundennachweise</h1>
@@ -72,6 +122,9 @@
             >Kunde oder Buchungsziel<input name="suche" type="search" /></label
           ><button>Filtern</button>
         </form>
+        <button type="button" class="sek" id="filter-reset">
+          Filter zurücksetzen</button
+        ><button type="button" data-arbeit="nachtrag">Zeit nachtragen</button>
         <div id="eintraege" class="karte"></div>
       </section>
       <section id="verwaltung" hidden>
@@ -102,6 +155,28 @@
       <section id="einstellungen" hidden>
         <h1>Einstellungen</h1>
         <p id="kontoname"></p>
+        <form id="grundeinstellungen" class="karte">
+          <h2>Zeiterfassung</h2>
+          <label
+            >Nachkommastellen<select name="nachkommastellen">
+              <option value="2">2 Nachkommastellen</option>
+              <option value="3">3 Nachkommastellen</option>
+            </select></label
+          >
+          <p>
+            Die erfassten Minuten bleiben unverändert. Eine andere Ausgabe kann
+            bereits übertragene Nachweise zur erneuten Prüfung markieren.
+          </p>
+          <label
+            >Lange Buchungen ab (Minuten)<input
+              name="pruefminuten"
+              type="number"
+              min="1"
+              max="1440"
+              step="1"
+              required /></label
+          ><button>Einstellungen speichern</button>
+        </form>
         <form class="karte" id="profilform">
           <h2>Mein Konto</h2>
           <label
@@ -221,6 +296,87 @@
         /></label>
         <div class="aktionen">
           <button>Passwort speichern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="sofortfenster">
+      <form id="sofortform">
+        <h2>Sofort starten</h2>
+        <label>Kunde (optional)<select name="kundeId"></select></label>
+        <p>
+          Ticket oder Termin ordnest du später zu. Ein laufender Abschnitt wird
+          beim Start beendet.
+        </p>
+        <div class="aktionen">
+          <button>Timer starten</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="zeitfenster">
+      <form id="zeitform">
+        <h2 id="zeittitel">Zeit nachtragen</h2>
+        <p id="grenzenhinweis">
+          Gemeinsame Grenzen werden zusammen mit den angrenzenden Abschnitten
+          verschoben. Echte Pausen bleiben erhalten.
+        </p>
+        <p>Uhrzeiten in Europe/Berlin.</p>
+        <div class="zeitfelder">
+          <label
+            >Von<input type="datetime-local" name="beginn" required /></label
+          ><label
+            >Bis<input type="datetime-local" name="ende" required
+          /></label>
+        </div>
+        <label hidden
+          >Beginn bei Zeitumstellung<select name="beginnOffset"></select></label
+        ><label hidden
+          >Ende bei Zeitumstellung<select name="endeOffset"></select
+        ></label>
+        <label>Tätigkeit<select name="auswahl"></select></label
+        ><label>Kunde (optional)<select name="kundeId"></select></label
+        ><label
+          >Leistungstext<textarea
+            name="leistungstext"
+            maxlength="4000"
+            rows="3"
+          ></textarea></label
+        ><label class="check"
+          ><input name="abrechenbar" type="checkbox" /> Abrechenbar</label
+        >
+        <div id="zeitvorschau"></div>
+        <div class="aktionen">
+          <button>Übernehmen</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="vergleichfenster">
+      <h2>Buchung vergleichen</h2>
+      <div id="vergleichinhalt"></div>
+      <button type="button" class="sek" data-close>Schließen</button>
+    </dialog>
+    <dialog id="zielpflegefenster">
+      <form id="zielpflegeform">
+        <h2>Buchungsziel bearbeiten</h2>
+        <label>Kundenname<input name="kunde" maxlength="150" required /></label>
+        <p>
+          Ein geänderter Kundenname gilt für seine Buchungsziele und Nachweise.
+          Der zuletzt übertragene Stand bleibt erhalten.
+        </p>
+        <label
+          >Bezeichnung<input
+            name="bezeichnung"
+            required
+            maxlength="240" /></label
+        ><label>Projekt (optional)<select name="projektId"></select></label
+        ><label class="check"
+          ><input type="checkbox" name="abrechenbar" /> Abrechenbar bei neuen
+          Abschnitten</label
+        >
+        <div class="aktionen">
+          <button>Änderungen speichern</button
           ><button type="button" class="sek" data-close>Abbrechen</button>
         </div>
       </form>
