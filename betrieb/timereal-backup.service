@@ -8,6 +8,6 @@ User=postgres
 Group=postgres
 StateDirectory=timereal-backups
 StateDirectoryMode=0700
-ExecStart=/bin/bash /opt/timereal/betrieb/sichern.sh
+ExecStart=/bin/bash /opt/timereal-current/betrieb/sichern.sh
 NoNewPrivileges=true
 UMask=0077

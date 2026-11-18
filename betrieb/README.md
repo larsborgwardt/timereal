@@ -44,3 +44,22 @@ Am 17. November 2026 lief der Anwendungsstand `7fcf58b` im unprivilegierten Debi
 Über zwei getrennte HTTPS-Sitzungen wurden Ticket A, Termin B und erneut Ticket A gestartet. Eine Wiederholung desselben Wechsels lieferte das ursprüngliche Ergebnis. Nach Pause und Fortsetzen war ein vierter Abschnitt vorhanden. Stopp beendete die Erfassung. Ein separater Chromium-Browser öffnete die Historie bei 390 Pixel Breite. Nach einem Neustart des Anwendungsdienstes blieben die Einträge vorhanden.
 
 Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückgespielt. Der Inhaltsvergleich von Konten, Kunden, Buchungszielen, Zeitabschnitten, Aufträgen und Sitzungen ergab keine Differenz.
+
+## Versioniert aktualisieren (ab 0.2)
+
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. `v0.2.0` steht hier für den ersten Update-Schritt; verwende anschließend den im Änderungsprotokoll veröffentlichten Ziel-Tag. Ein neuer Container ist nicht nötig.
+
+```bash
+git -C /opt/timereal fetch --tags origin
+git -C /opt/timereal show v0.2.0:betrieb/update.sh > /root/timereal-update.sh
+bash /root/timereal-update.sh --check v0.2.0
+bash /root/timereal-update.sh v0.2.0
+```
+
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Die App-Version lässt sich über `/api/v1/version` prüfen.
+
+Für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg; neue Tags vorher wieder mit `git fetch --tags origin` abholen. Der Updateweg verwendet `/opt/timereal` nur als Git-Quelle, `/opt/timereal-releases` für gebaute Stände und `/opt/timereal-current` als aktiven Zeiger. `git pull` oder ein erneuter Aufruf von `install.sh` ist auf einer versionierten Installation kein Updateweg.
+
+Sicherungen vor dem Update liegen getrennt von der täglichen Aufbewahrung unter `/var/lib/timereal-updates/`. Dort bleiben `before.dump`, die ursprünglichen Dienstdateien, Versionsangaben und das Migrationsprotokoll erhalten. Diese Verzeichnisse werden nicht automatisch gelöscht. Die HTTPS-Konfiguration, Zugangsdaten und Test-CA werden beim Update nicht ersetzt.
+
+Bei einem Startfehler kehrt das Skript zur vorherigen Anwendung zurück. Additive Datenbankänderungen bleiben bestehen. Ein Stromausfall oder ein nicht startbarer alter Dienst erfordert die Prüfung der Ausgabe und des Verzeichnisses; ein automatisches Zurückspielen des Dumps findet nicht statt. Vor einer bewussten Rücksicherung müssen die seit dem Dump erfassten Zeiten gesichert und der Anwendungsdienst angehalten werden.

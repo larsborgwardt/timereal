@@ -2,6 +2,9 @@
 set -euo pipefail
 umask 022
 cd /opt/timereal
+if [[ -L /opt/timereal-current && $(readlink -f /opt/timereal-current) != /opt/timereal ]]; then
+  echo 'Ein versionierter Stand ist aktiv. Zum Aktualisieren betrieb/update.sh verwenden.' >&2; exit 2;
+fi
 source /etc/os-release
 [[ $EUID == 0 && $ID == debian && $VERSION_ID == 13 && -d /run/systemd/system ]] || {
   echo 'Als root im gestarteten Debian-13-Testcontainer ausführen.' >&2; exit 2;
@@ -34,6 +37,7 @@ fi
 export PATH=/opt/timereal-node/bin:$PATH
 npm ci --ignore-scripts --no-audit --no-fund
 npm run build
+ln -sfn /opt/timereal /opt/timereal-current
 getent passwd timereal_app >/dev/null || useradd --system --user-group --no-create-home --shell /usr/sbin/nologin timereal_app
 getent passwd timereal_proxy >/dev/null || useradd --system --user-group --no-create-home --shell /usr/sbin/nologin timereal_proxy
 systemctl start postgresql

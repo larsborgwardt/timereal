@@ -3,6 +3,7 @@ import type { Pool, PoolClient } from "pg";
 import { readFile } from "node:fs/promises";
 import { Fehler, transaktion } from "./db.js";
 import { bindSession, digest, issueSession, verify } from "./session.js";
+import { release } from "./version.js";
 import { ausfuehren, timer, type Auftrag } from "./timer.js";
 import { anlegen, type NeuesZiel } from "./ziele.js";
 import {
@@ -146,6 +147,7 @@ export function createApp(
     await pool.query("select 1");
     return { status: "ok" };
   });
+  app.get('/api/v1/version', async () => release);
   app.post<{ Body: { login: string; passwort: string } }>(
     "/api/v1/anmeldung",
     {

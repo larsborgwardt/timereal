@@ -1,0 +1,7 @@
+{
+  "version": "0.2.0",
+  "apiVersion": 1,
+  "schemaVersion": 2,
+  "minimumSchemaVersion": 2,
+  "additiveMigrations": true
+}
