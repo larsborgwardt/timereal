@@ -11,6 +11,8 @@ erDiagram
   KUNDE o|--o{ ZEITABSCHNITT : Zuordnung
   BUCHUNGSZIEL o|--o{ ZEITABSCHNITT : Ziel
   KONTO ||--o{ SITZUNG : authentifiziert
+  SITZUNG ||--o{ ERWEITERUNGSCODE : autorisiert
+  KONTO ||--o{ ERWEITERUNGSCODE : besitzt
   KONTO ||--o{ TIMER_AUFTRAG : verarbeitet
   KONTO {
     bigint id PK
@@ -64,3 +66,7 @@ Migration 003 ergänzt die optionale eindeutige Konto-E-Mail und öffentliche Si
 ## Ergänzung mit Version 0.4
 
 Migration `004-arbeitsablauf.sql` ergänzt eine Fassung an Kunden und Buchungszielen. Änderungen im gemeinsamen Pflegeformular laufen in einer Transaktion; eine veraltete Kunden- oder Zielfassung verwirft den ganzen Speichervorgang. Historie und Woche lesen die bestehenden Zeitabschnitte. Die Woche schneidet Intervalle an den Tagesgrenzen der Kontozone und summiert die verstrichenen Minuten, nicht gerundete Stundenwerte.
+
+## Erweiterungszugang ab 0.5.0
+
+Migration `005-erweiterung.sql` ergänzt `erweiterungscode` mit Code-Hash, Konto, autorisierender Websitzung, PKCE-Challenge, festem Rücksprungziel, Ablauf nach drei Minuten und Verbrauchszeitpunkt. Die Anwendungsrolle kann über RLS eigene Codes anlegen. Die begrenzte Funktion `erweiterung_anmelden` prüft Konto und Ursprungs-Websitzung, verbraucht den Code unter Sperre und legt eine Sitzung des Kanals `erweiterung` an. Doppelte Codeeinlösung, veraltete Websitzung, falscher Verifier und abweichendes Rücksprungziel ergeben keinen Zugang. Die Browsererweiterung schreibt in dieselben Zeitabschnitte wie die Web-App.

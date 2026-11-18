@@ -1,3 +1,8 @@
+import {
+  extensionCors,
+  extensionOrigin,
+  erweiterungRouten,
+} from "./erweiterung.js";
 import { stammdatenRouten } from "./stammdaten-routen.js";
 import { kontenRouten } from "./konten-routen.js";
 import type { MailConfig } from "./mail.js";
@@ -68,7 +73,10 @@ export function createApp(
         "Content-Security-Policy",
         "default-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
       );
+    const cors = extensionCors(req, reply);
+    if (cors) return cors;
     if (
+      req.headers.origin !== extensionOrigin &&
       req.method !== "GET" &&
       req.method !== "HEAD" &&
       !req.headers.authorization &&
@@ -133,6 +141,10 @@ export function createApp(
     ["/zeit.js", "zeit.js", "text/javascript"],
     ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],
+    ["/transport.js", "transport.js", "text/javascript"],
+    ["/erweiterung-vertrag.js", "erweiterung-vertrag.js", "text/javascript"],
+    ["/erweiterung-anmelden.html", "erweiterung-anmelden.html", "text/html"],
+    ["/erweiterung-anmelden.js", "erweiterung-anmelden.js", "text/javascript"],
   ]) {
     app.get(url, async (_, reply) =>
       reply
@@ -329,5 +341,6 @@ export function createApp(
   );
   kontenRouten(app, pool, privat, options);
   stammdatenRouten(app, privat);
+  erweiterungRouten(app, pool, privat, webToken);
   return app;
 }

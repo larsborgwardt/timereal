@@ -1,5 +1,14 @@
 # Änderungen
 
+## 0.5.0 — 19. November 2026
+
+- Chromium-Erweiterung mit gemeinsamem Timer und Notizfeld, vollständiger Ansicht und separat widerrufbarer Sitzung.
+- Anmeldung über PKCE, kurzlebigen Einmalcode und festes Rücksprungziel; Serverberechtigung beim Verbinden.
+- Wiederaufnahme nach fehlender Antwort: aktuellen Stand laden und nächste Timeraktion bestätigen; keine still nachgeholten Offline-Wechsel.
+- Einrichtung öffentlichen HTTPS mit Prüfmodus und Rückwechsel bei gescheiterter Zertifikatsprüfung.
+- Verschlüsselte externe SFTP-Sicherung mit Restic, täglichem Timer, Integritätsprüfung und Rücksicherung in eine getrennte Prüfdatenbank.
+- Direkter Updateweg vom ursprünglichen Pilot sowie automatisierte PostgreSQL-/Browserprüfungen auf GitHub.
+
 ## 0.4.0 — 19. November 2026
 
 - Sofortstart ohne festes Buchungsziel, interne Zeiten und Tagesverlauf.

@@ -10,13 +10,15 @@ Führe in der **Root-Konsole des neuen Containers** aus:
 
 ```bash
 apt-get update && apt-get install -y git ca-certificates &&
-git clone --branch feature/zeiterfassung-lxc --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
+git clone --branch v0.5.0 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
 bash /opt/timereal/betrieb/install.sh
 ```
 
 Das Skript fragt den Anmeldenamen und das Passwort für dein erstes Konto ab und gibt die HTTPS-Adresse aus. Der Pilot verwendet eine eigene Zertifizierungsstelle. Übertrage **nur das öffentliche Zertifikat** `/root/timereal-test-ca.crt` über deinen vertrauten Containerzugang auf die Testgeräte und vertraue ihm dort für Websites. Auf dem iPhone muss für ein installiertes CA-Profil zusätzlich das volle Vertrauen aktiviert werden. Verwende bei einer Namensbindung denselben DNS-Namen auf beiden Geräten. Für diesen Fall starte den Installer mit `TIMEREAL_HOST=zeit.test.example bash /opt/timereal/betrieb/install.sh` und ersetze den Namen durch deinen auflösbaren Testnamen.
 
 Bestehende Installationen aktualisierst du über den [versionierten Updateweg](betrieb/README.md#versioniert-aktualisieren-ab-02), einschließlich Sicherung. Verwende dafür nicht erneut den Installer. Dienststatus und Startfehler zeigt `journalctl -u timereal -u timereal-https -b`.
+
+Version **0.5.0** enthält Verwaltung und Einladungen, Tageskorrekturen, Wochenübersicht, Einstellungen und eine [Browsererweiterung für Chrome/Edge](erweiterung/README.md). Der direkte Updateweg vom ursprünglichen Pilot benötigt keine Installation der Zwischenversionen. Öffentlichen HTTPS-Zugang, SMTP und externe Sicherungen richtest du mit deinen eigenen Zugangsdaten nach der [Betriebsanleitung](betrieb/README.md) ein.
 
 ## Ein Vormittag zum Ausprobieren
 

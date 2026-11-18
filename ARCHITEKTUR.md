@@ -6,7 +6,7 @@ Die Web-App läuft auf einem eigenen Linux-Systemcontainer. Für den Pilot sind 
 flowchart LR
   Laptop[Web-App am Laptop]
   Handy[Web-App am Smartphone]
-  Popup[Geplante Browsererweiterung]
+  Popup[Browsererweiterung]
   subgraph LXC[Eigener unprivilegierter Debian-LXC]
     TLS[HTTPS · Caddy]
     API[TypeScript-API · Loopback]
@@ -21,7 +21,7 @@ flowchart LR
     Ziele & Timer & Beleg --> DB
   end
   Laptop & Handy -->|Sitzungscookie| TLS
-  Popup -. separat widerrufbare Sitzung .-> TLS
+  Popup -->|separat widerrufbare Sitzung| TLS
 ```
 
 ## Zuständigkeiten und Vertrauensgrenzen
@@ -77,4 +77,8 @@ Für Notizen gilt `PATCH /api/v1/abschnitte/{id}/notiz` mit Leistungstext und ge
 
 Der erste Pilottest funktioniert ohne Mailserver. Die Konten werden im Gast angelegt. Ab Version 0.3.0 sind Einmal-Token mit Ablauf und Hash, Versand über SMTP, Passwortzurücksetzung und die Verwaltungsansicht für Kontosperren implementiert. Das Modul `konten` übernimmt die Fachlogik; `konten-routen` bindet sie an HTTP. Administrationsfunktionen in PostgreSQL geben Kontometadaten aus, ohne Zugriff auf fremde Kunden oder Zeiten zu gewähren. Die technische Sperre widerruft bereits Sitzungen und schließt einen laufenden Abschnitt als prüfpflichtig.
 
-Die Erweiterung folgt auf den Arbeitstag im Pilot. Ihr Popup verwendet diese Timer- und Notizbefehle. Zum Anmelden ist ein eigener Autorisierungsablauf mit PKCE, exakt registriertem Rücksprungziel und widerrufbarer Erweiterungssitzung vorgesehen. Die Berechtigung gilt für die Timereal-Adresse. Das Popup benötigt für die manuelle Zielauswahl keinen Zugriff auf Inhalte anderer Tabs. Offline vorgemerkte Wechsel müssen nach dem Wiederverbinden gegen den aktuellen Stand bestätigt werden.
+Ab Version 0.5.0 verwendet das Chromium-Popup dieselben HTML-/JavaScript-Module und Timer-/Notizbefehle wie die Web-App. Ein gemeinsamer Transportadapter ergänzt den Bearer-Zugang; die Fachlogik bleibt im Backend. Die Anmeldung bindet einen kurzlebigen Code an PKCE-S256, das feste Rücksprungziel der Erweiterungskennung und die weiterhin gültige Websitzung. Der Sitzungsschlüssel liegt adressgebunden im Sitzungsspeicher der Erweiterung und wird nach einem Browserneustart neu angefordert. Die Serverberechtigung wird beim Verbinden abgefragt; beim erfolgreichen Serverwechsel werden frühere Serverberechtigungen entfernt. Ein abgebrochener Verbindungsversuch ersetzt die bestehende Verbindung nicht.
+
+Die Erweiterung liest keine Inhalte anderer Tabs. Nach einer ausgebliebenen Antwort sperrt sie weitere Schreibaufrufe, bis der Benutzer den Serverstand neu geladen hat. Die nächste Timeraktion wird bestätigt; eine frühere Anfrage wird nicht automatisch nachgeholt. Dieser Zustand bleibt beim Schließen des Popups erhalten. Der Server verwendet weiterhin Versionsprüfung und Auftragsschlüssel für konkurrierende Geräte und Wiederholungen.
+
+Die Betriebsskripte liegen außerhalb der HTTP-Anwendung und benötigen root. Öffentliches HTTPS verwendet Caddy, eine externe Anwendungssicherung Restic über SFTP. Die Einrichtung gehört dem Betreiber; Zugangsdaten werden verdeckt eingelesen und nicht im Git-Bestand abgelegt. Einzelheiten und Grenzen stehen in der [Betriebsanleitung](betrieb/README.md).

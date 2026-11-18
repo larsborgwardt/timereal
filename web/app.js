@@ -1,3 +1,4 @@
+import * as transport from "./transport.js";
 import { arbeitsablaufOberflaeche } from "./arbeitsablauf.js";
 import { kontenOberflaeche } from "./konten.js";
 const $ = (selector) => document.querySelector(selector);
@@ -35,7 +36,6 @@ let seite = "heute",
   busy = false,
   pending = null,
   refreshNr = 0;
-const api = "/api/v1";
 function melden(msg = "") {
   const box = $("#meldung");
   box.textContent = msg;
@@ -51,14 +51,7 @@ function melden(msg = "") {
   }
 }
 async function request(pfad, methode = "GET", body, key) {
-  const response = await fetch(api + pfad, {
-    method: methode,
-    headers: {
-      ...(body ? { "Content-Type": "application/json" } : {}),
-      ...(key ? { "Idempotency-Key": key } : {}),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const response = await transport.senden(pfad, methode, body, key);
   const data = await response.json();
   if (!response.ok) {
     if (response.status === 401) zeigeLogin();
@@ -333,6 +326,14 @@ async function laden() {
   }
 }
 async function kommando(action, felder = {}) {
+  if (
+    transport.brauchtBestaetigung() &&
+    !confirm(
+      "Der aktuelle Timerstand wurde geladen. Diese Timeraktion jetzt ausführen?",
+    )
+  )
+    return;
+
   if (action === "auto") action = state.aktiv ? "wechsel" : "start";
   const input = { version: state.version, ...felder };
   const signatur = JSON.stringify([action, input]);
@@ -342,6 +343,7 @@ async function kommando(action, felder = {}) {
   try {
     await request("/timer/" + action, "POST", input, key);
     pending = null;
+    await transport.aktionBestaetigt();
   } catch (e) {
     if (e.status) pending = null;
     throw e;
@@ -575,3 +577,35 @@ const konten = kontenOberflaeche({
 laden().catch((e) => {
   if (e.status !== 401) melden(e.message);
 });
+
+function verbindungMelden() {
+  $("#verbindung").hidden = !transport.verbindungUnsicher();
+}
+window.addEventListener("verbindung-fehlt", verbindungMelden);
+verbindungMelden();
+$("#verbindung-laden").onclick = () =>
+  void bediene(async () => {
+    await laden();
+    await transport.verbindungGeprueft();
+    pending = null;
+    verbindungMelden();
+    melden(
+      "Aktueller Stand geladen. Die nächste Timeraktion bitte bestätigen.",
+    );
+  });
+if (transport.istErweiterung) {
+  $("#anmelden").hidden = true;
+  $("#vergessen").hidden = true;
+  const verbinden = document.createElement("button");
+  verbinden.textContent = "Erweiterung verbinden";
+  verbinden.onclick = () => chrome.runtime.openOptionsPage();
+  $("#login").append(verbinden);
+  const oeffnen = document.createElement("button");
+  oeffnen.id = "ganze-app";
+  oeffnen.className = "sek";
+  oeffnen.textContent = "Ganze App öffnen";
+  oeffnen.onclick = () =>
+    chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
+  if (document.body.dataset.popup)
+    document.querySelector("main").prepend(oeffnen);
+}

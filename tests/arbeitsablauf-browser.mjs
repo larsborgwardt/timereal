@@ -50,11 +50,20 @@ const api = async (path, method = "GET", data) => {
   assert.equal(r.status(), 200, await r.text());
   return r.json();
 };
+const monday = new Date(
+  new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin" }).format(
+    new Date(),
+  ) + "T12:00:00Z",
+);
+monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7) - 7);
+const day = monday.toISOString().slice(0, 10);
+const sunday = new Date(monday);
+sunday.setUTCDate(sunday.getUTCDate() + 6);
 const history = async () => {
   await btn("Nachweise").click();
   const f = page.locator("#filter");
-  await f.locator("[name=von]").fill("2026-11-16");
-  await f.locator("[name=bis]").fill("2026-11-16");
+  await f.locator("[name=von]").fill(day);
+  await f.locator("[name=bis]").fill(day);
   await f.getByRole("button").click();
   await btn("Historie").click();
 };
@@ -77,8 +86,8 @@ try {
   await page.reload();
   await btn("Zeit nachtragen").first().click();
   const dlg = page.locator("#zeitfenster");
-  await dlg.locator("[name=beginn]").fill("2026-11-16T09:00");
-  await dlg.locator("[name=ende]").fill("2026-11-16T10:00");
+  await dlg.locator("[name=beginn]").fill(day + "T09:00");
+  await dlg.locator("[name=ende]").fill(day + "T10:00");
   await dlg.locator("[name=auswahl]").selectOption("ziel:" + a.id);
   await dlg.getByLabel("Leistungstext").fill("Customizing geprüft");
   await dlg.getByRole("button", { name: "Übernehmen", exact: true }).click();
@@ -90,8 +99,8 @@ try {
     .click();
   await first.getByText("Übertragen", { exact: true }).waitFor();
   await first.getByRole("button", { name: "Unterbrechung einfügen" }).click();
-  await dlg.locator("[name=beginn]").fill("2026-11-16T09:20");
-  await dlg.locator("[name=ende]").fill("2026-11-16T09:32");
+  await dlg.locator("[name=beginn]").fill(day + "T09:20");
+  await dlg.locator("[name=ende]").fill(day + "T09:32");
   await dlg.locator("[name=auswahl]").selectOption("ziel:" + b.id);
   await dlg.getByLabel("Leistungstext").fill("Telefonische Abstimmung");
   assert.deepEqual(
@@ -119,7 +128,7 @@ try {
   await shot("vergleich");
   await compare.getByRole("button", { name: "Schließen" }).click();
   await first.getByRole("button", { name: "Korrigieren", exact: true }).click();
-  await dlg.locator("[name=ende]").fill("2026-11-16T09:22");
+  await dlg.locator("[name=ende]").fill(day + "T09:22");
   await dlg.getByRole("button", { name: "Übernehmen", exact: true }).click();
   await dlg.waitFor({ state: "hidden" });
   assert.deepEqual(
@@ -132,9 +141,10 @@ try {
     [22, 10, 28],
   );
   await btn("Woche").click();
+  await page.locator("#woche-vorher").click();
   await page
     .locator("#wochentitel")
-    .getByText("2026-11-16 – 2026-11-22", { exact: true })
+    .getByText(day + " – " + sunday.toISOString().slice(0, 10), { exact: true })
     .waitFor();
   assert.equal(await page.locator("#wochensumme").innerText(), "01:00");
   await shot("woche");

@@ -18,4 +18,8 @@ SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=4) AS arbeitsabla
 \if :arbeitsablauf
 \ir migrationen/004-arbeitsablauf.sql
 \endif
+SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=5) AS erweiterung \gset
+\if :erweiterung
+\ir migrationen/005-erweiterung.sql
+\endif
 SELECT pg_advisory_unlock(675039138012);

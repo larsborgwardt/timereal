@@ -33,9 +33,9 @@ runuser -u postgres -- psql -X -d timereal_restore -c 'SELECT count(*) FROM zeit
 
 Setze `BACKUP` vorher auf den Pfad des Dumps. Für eine Sicherung des gesamten Gasts inklusive Zertifikatsvertrauen und Dienstkonfiguration ist zusätzlich eine verschlüsselt verwahrte Containersicherung sinnvoll. Nach einer tatsächlichen Rückkehr zu einem älteren Datenstand sind restaurierte Sitzungen zu widerrufen.
 
-## Stand des Piloten
+## Stand ab 0.5.0
 
-Der Installationsstand dient dem lokalen Testnetz. Eine öffentliche Adresse mit bestehendem Reverse Proxy, vertrauenswürdigem öffentlichem Zertifikat, automatisch zugestellten Einladungen und geplanten externen Sicherungen wird beim anschließenden Pilotbetrieb eingerichtet. Die Browsererweiterung wird entsprechend dem freigegebenen Versionsplan ergänzt.
+Der Installer beginnt weiterhin mit HTTPS im lokalen Testnetz. Öffentliches HTTPS, SMTP und externe Sicherungen sind über die unten beschriebenen Einrichtungsskripte verfügbar. Domain, Mailserver und Sicherungsserver werden vom Betreiber bereitgestellt. Die [Browsererweiterung](../erweiterung/README.md) lässt sich separat installieren.
 
 ## Erprobter Installationsstand
 
@@ -47,13 +47,13 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. `v0.2.0` steht hier für den ersten Update-Schritt; verwende anschließend den im Änderungsprotokoll veröffentlichten Ziel-Tag. Ein neuer Container ist nicht nötig.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.5.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
-git -C /opt/timereal fetch --tags origin
-git -C /opt/timereal show v0.2.0:betrieb/update.sh > /root/timereal-update.sh
-bash /root/timereal-update.sh --check v0.2.0
-bash /root/timereal-update.sh v0.2.0
+git -C /opt/timereal fetch --tags origin &&
+git -C /opt/timereal show v0.5.0:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.5.0 &&
+bash /root/timereal-update.sh v0.5.0
 ```
 
 Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Die App-Version lässt sich über `/api/v1/version` prüfen.
@@ -77,3 +77,58 @@ bash /opt/timereal-current/betrieb/mail-einrichten.sh
 Das Skript fragt Server, Port, TLS, Absender und Zugang ab. Das Passwort wird verdeckt gelesen. Es prüft die SMTP-Verbindung ohne eine Einladung zu versenden, speichert die Konfiguration in `/etc/timereal/mail.json` (root, Gruppe timereal_app, Modus 640) und startet den Anwendungsdienst neu. Bei externen Servern muss TLS direkt oder über STARTTLS funktionieren. Ein nicht authentifizierendes lokales Relay ist für die lokale Prüfung möglich. Einladungen versendest du danach ausdrücklich über **Verwaltung → Berater einladen**.
 
 Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Senden entwertet den alten Einladungslink. Der Berater legt ein eigenes Passwort fest und meldet sich mit seiner E-Mail-Adresse an. In **Einstellungen** kannst du deinem bestehenden Pilotkonto eine E-Mail-Adresse zuordnen, dein Passwort ändern und Sitzungen einzeln abmelden. Nach einem Passwortwechsel oder einer Zurücksetzung werden die vorherigen Sitzungen ungültig.
+
+## Öffentliches HTTPS
+
+Richte den A-Eintrag deiner Domain auf den Anschluss des Containers. Ein vorhandener AAAA-Eintrag muss ebenfalls dorthin führen. Leite TCP 80 und 443 auf den Container weiter. Die Anwendung selbst bleibt auf Loopback-Port 3040. Caddy beschafft und erneuert das öffentliche Zertifikat; die Voraussetzungen beschreibt die [Caddy-Dokumentation](https://caddyserver.com/docs/automatic-https).
+
+Ersetze `zeit.example.org` durch deine Domain und prüfe zuerst:
+
+```bash
+bash /opt/timereal-current/betrieb/https-einrichten.sh --check zeit.example.org
+```
+
+Danach umschalten:
+
+```bash
+bash /opt/timereal-current/betrieb/https-einrichten.sh zeit.example.org
+```
+
+Der Prüfmodus prüft Namensauflösung und Caddy-Konfiguration. Erst die Umschaltung prüft ein vertrauenswürdiges Zertifikat über die neue Adresse am lokalen HTTPS-Dienst. Bei einem Fehler werden die vorherigen Konfigurationsdateien zurückgespielt und der alte HTTPS-Zugang geprüft. Sicherungen liegen unter `/var/lib/timereal-https-wechsel`. Prüfe anschließend die neue Adresse zusätzlich vom Smartphone im Mobilfunknetz; dieser Test misst deine externe Router-/Firewallstrecke. Melde dich unter der neuen Adresse erneut an und verbinde die Erweiterung damit.
+
+## Verschlüsselte externe Sicherung
+
+Verwende ein **eigenes SFTP-Verzeichnis** außerhalb dieses Containers. Installiere `restic` und den SSH-Client:
+
+```bash
+apt-get update && apt-get install -y restic openssh-client
+```
+
+Richte für root einen SSH-Schlüssel zum Sicherungsserver ein. Vergleiche dessen Hostschlüssel-Fingerabdruck über einen vertrauenswürdigen Zugang und hinterlege ihn in `/root/.ssh/known_hosts`. Ein SSH-Alias in `/root/.ssh/config` kann Port und Schlüsseldatei festlegen. Das Skript erzwingt Schlüsselanmeldung und einen bereits vertrauten Hostschlüssel. Es akzeptiert keinen unbekannten Host automatisch.
+
+Prüfe das echte Ziel, beispielsweise `sftp:backup@backup-host:/srv/timereal`:
+
+```bash
+bash /opt/timereal-current/betrieb/backup-einrichten.sh --check sftp:backup@backup-host:/srv/timereal
+```
+
+Für einen **neuen** Sicherungsbestand:
+
+```bash
+bash /opt/timereal-current/betrieb/backup-einrichten.sh neu sftp:backup@backup-host:/srv/timereal
+```
+
+Bei einem vorhandenen Restic-Repository verwende `vorhanden` statt `neu` und dessen Passwort. Die verdeckte Abfrage schreibt das Passwort in die nur für root zugängliche Konfiguration `/etc/timereal/extern`. Bewahre es zusätzlich außerhalb des Containers auf. Restic verschlüsselt den Bestand; ohne dieses Passwort ist eine Wiederherstellung nicht möglich. Grundlage: [Restic: Repository und SFTP](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html).
+
+```bash
+bash /opt/timereal-current/betrieb/extern-sichern.sh sichern
+bash /opt/timereal-current/betrieb/extern-sichern.sh liste
+bash /opt/timereal-current/betrieb/extern-sichern.sh check
+bash /opt/timereal-current/betrieb/extern-sichern.sh pruefen latest
+```
+
+`sichern` überträgt Datenbankdump, PostgreSQL-Rollen, Anwendungskonfiguration, HTTPS-Zustand und Releaseangabe. `check` liest und prüft die verschlüsselten Datenblöcke. `pruefen` entschlüsselt einen Snapshot, prüft die Dateiinhalte und restauriert den Dump in eine eigens angelegte Datenbank. Diese Prüfdatenbank und lokale temporäre Klartextdateien werden anschließend entfernt; die aktive Datenbank wird nicht überschrieben. Statt `latest` lässt sich eine Kennung aus `liste` verwenden.
+
+Der Timer `timereal-extern.timer` läuft täglich ab 03:30 Uhr mit bis zu 15 Minuten Streuung und holt verpasste Läufe nach. Fehler stehen in `journalctl -u timereal-extern.service`; `systemctl list-timers timereal-extern.timer` zeigt den nächsten Lauf. Ein gleichzeitig laufendes Update verhindert die Sicherung mit einer sichtbaren Fehlermeldung; sie kann danach manuell wiederholt werden. Externe Snapshots werden nicht automatisch gelöscht. Lege passend zum verfügbaren Speicher eine Aufbewahrung mit Restic fest; verwende dafür dessen `forget --dry-run`, bevor du etwas entfernst.
+
+Bei Verlust des Containers: installiere denselben veröffentlichten Stand in einem Ersatzcontainer, richte SSH und Restic mit dem extern aufbewahrten Passwort ein und restauriere den gewünschten Snapshot mit `restic restore ... --target /root/wiederherstellung`. Der Snapshotpfad ist `/var/lib/timereal-extern/staging`. Prüfe zuerst mit `pruefen`. Stoppe vor einer bewussten Übernahme den Anwendungs- und HTTPS-Dienst; übernimm Datenbank und Konfiguration erst nach Sicherung des Ersatzbestands. `rollen.sql` enthält auch Rolleneigenschaften und gehört nur nach Prüfung in einen frischen PostgreSQL-Cluster. Restaurierte Sitzungen müssen vor der Wiederfreigabe widerrufen werden. SSH-Schlüssel und das Container-Betriebssystem sind nicht Teil dieser Anwendungssicherung.
