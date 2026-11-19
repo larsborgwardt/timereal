@@ -125,11 +125,11 @@ COMMIT
 > timereal@0.8.0 test:db
 > node --test tests/integration.mjs
 
-✔ Laptop, Handy, Wiederholung und persönliche Kontogrenze (205.190956ms)
-✔ Eine Pause bleibt auf dem anderen Gerät erhalten und endet durch Fortsetzen oder Stopp (82.42345ms)
-✔ Bereits übertragene Stunde in 20 / 12 / 28 Minuten teilen und externes Storno bestätigen (103.77608ms)
-✔ Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Rollback (23.633387ms)
-✔ Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung (74.123112ms)
+✔ Laptop, Handy, Wiederholung und persönliche Kontogrenze (210.697256ms)
+✔ Eine Pause bleibt auf dem anderen Gerät erhalten und endet durch Fortsetzen oder Stopp (88.151425ms)
+✔ Bereits übertragene Stunde in 20 / 12 / 28 Minuten teilen und externes Storno bestätigen (95.455503ms)
+✔ Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Rollback (21.078375ms)
+✔ Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung (65.331522ms)
 ℹ tests 5
 ℹ suites 0
 ℹ pass 5
@@ -137,10 +137,10 @@ COMMIT
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 622.433835
-✔ Kundenpflege, Einstellungen und Woche rechnen echte Minuten über Tages- und Sommerzeitgrenzen (287.447387ms)
-✔ Erweiterung: PKCE, Einmalcode, Rücksprungziel, CORS und eigener Sitzungswiderruf (267.116173ms)
-✔ Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und Sperre (655.716528ms)
+ℹ duration_ms 609.587416
+✔ Kundenpflege, Einstellungen und Woche rechnen echte Minuten über Tages- und Sommerzeitgrenzen (330.337468ms)
+✔ Erweiterung: PKCE, Einmalcode, Rücksprungziel, CORS und eigener Sitzungswiderruf (279.471955ms)
+✔ Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und Sperre (704.025246ms)
 ℹ tests 3
 ℹ suites 0
 ℹ pass 3
@@ -148,8 +148,8 @@ COMMIT
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 782.327477
-✔ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (277.58766ms)
+ℹ duration_ms 845.979967
+✔ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (280.760769ms)
 ℹ tests 1
 ℹ suites 0
 ℹ pass 1
@@ -157,16 +157,16 @@ COMMIT
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 400.958266
+ℹ duration_ms 405.729401
 Datenbankverbindung beendet 57P01
-✔ Der Produktionspool begrenzt SQL, Sperren und Verbindungswartezeit (88.672134ms)
-✔ Eine Kontosperre wartet begrenzt; danach bleibt der Pool benutzbar (227.837856ms)
-✔ Ein belegter Verbindungspool antwortet vorübergehend nicht verfügbar und erholt sich (147.45331ms)
-✔ SQL-Abbruch rollt eine bereits vorgenommene Änderung zurück (135.585503ms)
-✔ Ein fehlgeschlagener Rollback verwirft die Verbindung und erhält den ursprünglichen Fehler (0.685104ms)
-✔ Die optimierten Zeitraumzugriffe erhalten Null-Minuten- und Mitternachtsgrenzen (63.934326ms)
-✔ Ein gemeinsamer Arbeitsstand liefert Timer und Stammdaten ausschließlich aus dem eigenen Konto (62.941812ms)
-✔ Das Anmeldelimit zählt Großschreibungsvarianten desselben Kontos gemeinsam (430.07847ms)
+✔ Der Produktionspool begrenzt SQL, Sperren und Verbindungswartezeit (87.856723ms)
+✔ Eine Kontosperre wartet begrenzt; danach bleibt der Pool benutzbar (231.251167ms)
+✔ Ein belegter Verbindungspool antwortet vorübergehend nicht verfügbar und erholt sich (148.769678ms)
+✔ SQL-Abbruch rollt eine bereits vorgenommene Änderung zurück (142.383819ms)
+✔ Ein fehlgeschlagener Rollback verwirft die Verbindung und erhält den ursprünglichen Fehler (0.740761ms)
+✔ Die optimierten Zeitraumzugriffe erhalten Null-Minuten- und Mitternachtsgrenzen (78.322959ms)
+✔ Ein gemeinsamer Arbeitsstand liefert Timer und Stammdaten ausschließlich aus dem eigenen Konto (63.782211ms)
+✔ Das Anmeldelimit zählt Großschreibungsvarianten desselben Kontos gemeinsam (430.098079ms)
 ℹ tests 8
 ℹ suites 0
 ℹ pass 8
@@ -174,32 +174,32 @@ Datenbankverbindung beendet 57P01
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 1287.734098
+ℹ duration_ms 1314.387895
 {"smtp":{"schnell":{"status":200,"exit":0,"idleAbbruch":false,"unbehandeltesErrorEvent":false},"langsam":{"status":200,"exit":0,"idleAbbruch":false,"unbehandeltesErrorEvent":false},"nachrichten":2,"verzoegerteBestaetigungen":1,"langsamerLinkInDb":1}}
 {"annahmeHinterProxy":[200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]}
-✔ Proxy-Patch: Hilfe und ungültige Domain/IP vor Systemzugriffen (47.477419ms)
-✔ Öffentliches HTTPS: Hilfe und strikte Domain-Eingabe vor Systemzugriffen (41.090429ms)
-✔ Externe Sicherung braucht einen ausdrücklich gewählten Vorgang (38.844748ms)
-✔ Sicherungsziel erlaubt ausschließlich SFTP mit absolutem Pfad (43.526955ms)
-✔ Beim Serverwechsel bleiben keine Berechtigungen für vorherige Server übrig (1.05749ms)
-✔ Die Erweiterung verbindet nur HTTPS-Origins oder lokales Loopback und entfernt keine versteckten URL-Bestandteile (0.285619ms)
-✔ Mailkonfiguration prüft echtes SMTP vor dem Schreiben und gibt keine Zugangsdaten aus (241.606056ms)
-✔ Updatehilfe ist ohne Administratorrechte verfügbar (3.674999ms)
-✔ Installationshilfe erklärt den Browserport vor Systemzugriffen (4.70611ms)
-✔ Ein Update braucht eine feste Version und lehnt Optionen als Versionsnamen ab (14.249753ms)
-✔ Vorbereitung und Aktivierung sind getrennte dokumentierte Aufrufe mit festem Commit (13.324677ms)
-✔ Vergleicht stabile Versionen numerisch und erzeugt nur eigene Release-Links (5.209473ms)
-✔ 100 gleichzeitige Abfragen teilen einen Abruf und dessen Cache (23.005812ms)
-✔ Netzfehler behalten den letzten Erfolg, behaupten aber keinen frischen Stand (2.046875ms)
-✔ Manuelle Prüfung erneuert den gemeinsamen Cache vor Ablauf der sechs Stunden (23.223653ms)
-✔ Manuell lässt sich auch ein Fehlercache erneut prüfen; deaktiviert bleibt deaktiviert (0.562487ms)
-✔ Fehlgeschlagene manuelle Prüfung erneuert weder Versionsstand noch Erfolgszeitpunkt (0.485994ms)
-✔ Fehler, unzulässige Release-Daten und übergroße Antworten sind kein aktueller Stand (1.120512ms)
-✔ Deaktiviert führt die Prüfung keinen Abruf aus; Konfiguration ist eindeutig (0.458592ms)
-✔ Die öffentliche Updateauskunft benötigt keine Datenbankverbindung (149.595643ms)
-✔ Ein echter HTTP-Server bestätigt Timeout auch während des Antwortkörpers (86.863ms)
-✔ Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betriebsgeheimnisse (147.018553ms)
-✔ Lokale Eingaben unterscheiden Sommerzeitlücke und die doppelte Stunde (45.261074ms)
+✔ Proxy-Patch: Hilfe und ungültige Domain/IP vor Systemzugriffen (41.739298ms)
+✔ Öffentliches HTTPS: Hilfe und strikte Domain-Eingabe vor Systemzugriffen (26.492882ms)
+✔ Externe Sicherung braucht einen ausdrücklich gewählten Vorgang (37.738482ms)
+✔ Sicherungsziel erlaubt ausschließlich SFTP mit absolutem Pfad (46.106316ms)
+✔ Beim Serverwechsel bleiben keine Berechtigungen für vorherige Server übrig (1.257132ms)
+✔ Die Erweiterung verbindet nur HTTPS-Origins oder lokales Loopback und entfernt keine versteckten URL-Bestandteile (0.327508ms)
+✔ Mailkonfiguration prüft echtes SMTP vor dem Schreiben und gibt keine Zugangsdaten aus (230.239639ms)
+✔ Updatehilfe ist ohne Administratorrechte verfügbar (4.346183ms)
+✔ Installationshilfe erklärt den Browserport vor Systemzugriffen (5.555837ms)
+✔ Ein Update braucht eine feste Version und lehnt Optionen als Versionsnamen ab (12.715546ms)
+✔ Vorbereitung und Aktivierung sind getrennte dokumentierte Aufrufe mit festem Commit (10.419189ms)
+✔ Vergleicht stabile Versionen numerisch und erzeugt nur eigene Release-Links (4.937279ms)
+✔ 100 gleichzeitige Abfragen teilen einen Abruf und dessen Cache (22.409609ms)
+✔ Netzfehler behalten den letzten Erfolg, behaupten aber keinen frischen Stand (1.760772ms)
+✔ Manuelle Prüfung erneuert den gemeinsamen Cache vor Ablauf der sechs Stunden (22.370569ms)
+✔ Manuell lässt sich auch ein Fehlercache erneut prüfen; deaktiviert bleibt deaktiviert (0.547107ms)
+✔ Fehlgeschlagene manuelle Prüfung erneuert weder Versionsstand noch Erfolgszeitpunkt (0.425187ms)
+✔ Fehler, unzulässige Release-Daten und übergroße Antworten sind kein aktueller Stand (1.007256ms)
+✔ Deaktiviert führt die Prüfung keinen Abruf aus; Konfiguration ist eindeutig (0.439576ms)
+✔ Die öffentliche Updateauskunft benötigt keine Datenbankverbindung (140.910637ms)
+✔ Ein echter HTTP-Server bestätigt Timeout auch während des Antwortkörpers (87.178133ms)
+✔ Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betriebsgeheimnisse (136.383768ms)
+✔ Lokale Eingaben unterscheiden Sommerzeitlücke und die doppelte Stunde (42.286304ms)
 ℹ tests 23
 ℹ suites 0
 ℹ pass 23
@@ -207,40 +207,42 @@ Datenbankverbindung beendet 57P01
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 491.392047
-✔ Systemkonsole liest über den Unix-Socket nur validierte Journalfilter (26.091084ms)
-✔ Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart (13.239333ms)
-✔ Domain wird aus unterstütztem Bestand abgeleitet; eigene Proxyregeln bleiben geschützt (3.122171ms)
-✔ Nur stabile Releases mit strikt höherer Version können vorbereitet werden (0.486655ms)
-✔ Ein Webupdate braucht einen passenden versionsgebundenen Betriebsvertrag (0.78172ms)
-✔ Abbruch zwischen Konfigurationsdateien erlaubt Rückbau, fremde Änderungen nicht (0.670266ms)
-✔ Realer flock bleibt nach dem Lockprozess bestehen und ist an Kindprozesse vererbbar (19.772265ms)
-✔ Prozessfehler, Ausgabebegrenzung und Zeitüberschreitung führen zu Fehlern (118.933495ms)
-✔ Annahme ist dauerhaft, vertraulich und nach verlorener Antwort idempotent (19.667865ms)
-✔ Gleichzeitige Annahme erzeugt einen Auftrag; andere Betriebsaktionen kollidieren (4.520338ms)
-✔ Aktivierung benötigt den richtigen Vorzustand und einen eigenen Auftragsschlüssel (4.487309ms)
-✔ Unzulässige Argumente, fremde Pfade und Geheimnisse werden nicht gespeichert (1.566338ms)
-✔ Domainbestätigung gilt nur am neuen Ursprung, Rücknahme bleibt separat möglich (3.838993ms)
-✔ Beschädigter Bestand wird laut abgewiesen und nicht durch eine leere Datei ersetzt (1.550045ms)
-✔ Ungeklärte Wiederherstellung sperrt weitere Betriebsaufträge bis zur Nachprüfung (1.778476ms)
-✔ Journal: feste Dienste, echte Prioritäten und explizite Abschlussereignisse (3.531151ms)
-✔ Journal: ungültige Filter erreichen keinen Prozess (1.788439ms)
-✔ Journal: fremde Levelnamen und Prioritäts-Eigenschaften bleiben gewöhnliche Meldungen (0.574653ms)
-✔ Journal: Zugangsdaten, Steuerzeichen, Binärfelder und überlange Meldungen (0.878447ms)
-✔ Journal: parallele Aufrufe, Ablauf, Fehler und begrenzter Ergebnisspeicher (13.332215ms)
-ℹ tests 20
+ℹ duration_ms 457.821929
+✔ Systemkonsole liest über den Unix-Socket nur validierte Journalfilter (25.110854ms)
+✔ Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart (20.818617ms)
+✔ Domain wird aus unterstütztem Bestand abgeleitet; eigene Proxyregeln bleiben geschützt (2.352903ms)
+✔ Nur stabile Releases mit strikt höherer Version können vorbereitet werden (0.415973ms)
+✔ Ein Webupdate braucht einen passenden versionsgebundenen Betriebsvertrag (0.654135ms)
+✔ Abbruch zwischen Konfigurationsdateien erlaubt Rückbau, fremde Änderungen nicht (0.477466ms)
+✔ Prozessausgabe bewahrt UTF-8 über getrennte Puffer hinweg (620.20008ms)
+✔ Realer flock bleibt nach dem Lockprozess bestehen und ist an Kindprozesse vererbbar (11.535843ms)
+✔ Prozessfehler, Ausgabebegrenzung und Zeitüberschreitung führen zu Fehlern (115.008731ms)
+✔ Annahme ist dauerhaft, vertraulich und nach verlorener Antwort idempotent (15.537619ms)
+✔ Gleichzeitige Annahme erzeugt einen Auftrag; andere Betriebsaktionen kollidieren (7.237665ms)
+✔ Aktivierung benötigt den richtigen Vorzustand und einen eigenen Auftragsschlüssel (3.508917ms)
+✔ Unzulässige Argumente, fremde Pfade und Geheimnisse werden nicht gespeichert (2.857564ms)
+✔ Domainbestätigung gilt nur am neuen Ursprung, Rücknahme bleibt separat möglich (6.140318ms)
+✔ Beschädigter Bestand wird laut abgewiesen und nicht durch eine leere Datei ersetzt (2.237738ms)
+✔ Ungeklärte Wiederherstellung sperrt weitere Betriebsaufträge bis zur Nachprüfung (2.833815ms)
+✔ Journal: feste Dienste, echte Prioritäten und explizite Abschlussereignisse (2.352399ms)
+✔ Journal: ungültige Filter erreichen keinen Prozess (1.780607ms)
+✔ Journal: fremde Levelnamen und Prioritäts-Eigenschaften bleiben gewöhnliche Meldungen (0.47598ms)
+✔ Journal: Zugangsdaten, Steuerzeichen, Binärfelder und überlange Meldungen (0.898054ms)
+✔ Journal: parallele Aufrufe, Ablauf, Fehler und begrenzter Ergebnisspeicher (13.422976ms)
+ℹ tests 21
 ℹ suites 0
-ℹ pass 20
+ℹ pass 21
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 194.144842
+ℹ duration_ms 803.934841
 Footer: Version, Update-, Fehler- und Deaktiviert-Zustände, Tastatur, 320/390/1120 Pixel, 200 % Text und keine externen Browserabfragen bestanden.
 Browserprobe bestanden: getrennte Sitzungen, Kundenwechsel, Pause, Stopp, Historie, Abmeldung.
 Verwaltungsprobe bestanden: SMTP, Annahme, eigene Sitzungen, Sperre und mobile Darstellung.
 Arbeitsablauf im Browser bestanden: Nachtrag, Übertragung, 20/12/28-Teilung, Vergleich, gemeinsame Grenzen, Woche, Pflege, Sofortstart, interne Zeit, mobile Ansicht und Zeitumstellung.
 Designprüfung bestanden: anmeldung, anmeldung-fehler, passwort-anfordern, heute-leer, neues-ziel, sofortstart, timer-vorlaeufig, timer-pause, timer-intern, timer-zugeordnet, leistungstext, ziel-bearbeiten, ziele-suche-leer, woche, nachweise, historie, nachtrag, verwaltung, einstellungen, web-offline, passwort-zuruecksetzen, ruecksetzlink-ungueltig
+Navigation: schneller Wechsel ohne Flackern, langsamer Abruf mit Hinweis, Fehler und Abbruch des verzögerten Hinweises bestanden.
 {"timereal_log":1,"level":"info","msg":"Updateauftrag wird ausgeführt."}
 {"timereal_log":1,"level":"success","msg":"Update zur Installation bereit."}
 {"timereal_log":1,"level":"info","msg":"Updateauftrag wird ausgeführt."}
@@ -248,7 +250,7 @@ Designprüfung bestanden: anmeldung, anmeldung-fehler, passwort-anfordern, heute
 {"timereal_log":1,"level":"info","msg":"Domainauftrag wird ausgeführt."}
 {"timereal_log":1,"level":"success","msg":"Domainprüfung abgeschlossen."}
 Betriebsoberfläche: verlorene Antwort ohne Doppelauftrag, Neuladen, Passwortprüfung, Domainentwurf und responsive Ansichten bestanden.
-Systemkonsole: Filter, Pause, Leseposition, Download, Fehler, Kontowechsel und Desktop/Mobil/Zoom bestanden.
+Systemkonsole (chromium 159.0.8154.6): Filter, Pause, Leseposition, Download, Fehler, Kontowechsel und Desktop/Mobil/Zoom bestanden.
 Erweiterung gebaut: /home/hermes/workspace/sap-zeiterfassung/dist/erweiterung
 Echte Chromium-Erweiterung geprüft: Anmeldung, geschlossener App-Tab, Wechsel und Notiz, Smartphone, Pause/Stopp, Offline-Bestätigung, Vollansicht und Sitzungswiderruf.
 Designabdeckung: Eingänge aus HTML/Manifest abzüglich erreichter Prüfansichten leer.
