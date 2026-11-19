@@ -8,6 +8,34 @@ const run = (script, ...args) =>
     [new URL(`../betrieb/${script}.sh`, import.meta.url).pathname, ...args],
     { encoding: "utf8" },
   );
+test("Proxy-Patch: Hilfe und ungültige Domain/IP vor Systemzugriffen", () => {
+  const help = run("proxy-einrichten", "--help");
+  assert.equal(help.status, 0, help.stderr);
+  assert.match(help.stdout, /--check DOMAIN CONTAINER_IP/);
+  for (const args of [
+    [],
+    ["--check", "https://example.org", "192.0.2.42"],
+    ["--check", "*.example.org", "192.0.2.42"],
+    ["--check", "example.org/path", "192.0.2.42"],
+    ["--check", "foo;id.example.org", "192.0.2.42"],
+    ["--check", "example.org", "192.0.2.42:443"],
+    ["--check", "example.org", "192.0.2.999"],
+    ["--check", "example.org", "192.0.2.42", "extra"],
+  ]) {
+    const result = run("proxy-einrichten", ...args);
+    assert.equal(result.status, 2, JSON.stringify(result));
+    assert.match(result.stderr, /Domain|IPv4|Aufruf/);
+  }
+  for (const domain of [
+    "zeiterfassung.example.org",
+    "xn--bcher-kva.example",
+    "zeiten.xn--p1ai",
+  ]) {
+    const result = run("proxy-einrichten", "--check", domain, "ungueltige-ip");
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /IPv4/);
+  }
+});
 test("Öffentliches HTTPS: Hilfe und strikte Domain-Eingabe vor Systemzugriffen", () => {
   const help = run("https-einrichten", "--help");
   assert.equal(help.status, 0, help.stderr);

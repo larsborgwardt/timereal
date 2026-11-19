@@ -82,7 +82,26 @@ Das Skript fragt Server, Port, TLS, Absender und Zugang ab. Das Passwort wird ve
 
 Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Senden entwertet den alten Einladungslink. Der Berater legt ein eigenes Passwort fest und meldet sich mit seiner E-Mail-Adresse an. In **Einstellungen** kannst du deinem bestehenden Pilotkonto eine E-Mail-Adresse zuordnen, dein Passwort ändern und Sitzungen einzeln abmelden. Nach einem Passwortwechsel oder einer Zurücksetzung werden die vorherigen Sitzungen ungültig.
 
-## Öffentliches HTTPS
+## Vorhandener Nginx / Nginx Proxy Manager
+
+Wenn ein vorgeschalteter Proxy bereits das öffentliche HTTPS-Zertifikat bereitstellt, verwende **Proxy-Patch 1** (`betrieb/proxy-einrichten.sh`). Das Skript lässt sich einzeln auf einen bestehenden Pilot kopieren; ein Anwendungsupdate und eine Datenbankmigration sind dafür nicht erforderlich. Es erwartet die vom Timereal-Installer erzeugte interne HTTPS-Konfiguration. Eigene Caddy-Anpassungen führen zum Abbruch ohne Umschaltung.
+
+Ersetze Domain und lokale IPv4-Adresse durch deinen Bestand. Im LXC als root zuerst prüfen, danach anwenden:
+
+```bash
+bash /root/timereal-proxy-patch.sh --check zeit.example.org 192.0.2.42
+bash /root/timereal-proxy-patch.sh zeit.example.org 192.0.2.42
+```
+
+Der vorgeschaltete Proxy leitet auf `https://192.0.2.42:443` weiter und übergibt den öffentlichen Hostnamen. Für eine aktivierte Upstream-Zertifikatsprüfung muss er der Timereal-Test-CA vertrauen; der Patch deaktiviert keine Zertifikatsprüfung. Das öffentliche Zertifikat bleibt beim vorgeschalteten Proxy. Port 3040 bleibt an Loopback gebunden.
+
+Der Patch ergänzt die öffentliche Domain im Caddy-Siteblock und setzt `PUBLIC_ORIGIN`. Er sichert die vorherige Konfiguration unter `/var/lib/timereal-proxy-wechsel`, validiert Caddy und prüft nach dem kurzen Dienstneustart HTTPS über Domain sowie lokale IP. Die Startseite muss mit öffentlichem Hostnamen Inhalt liefern; ein leeres HTTP 200 gilt nicht als Erfolg. Bei einem Fehler wird die vorherige Konfiguration zurückgespielt und deren Erreichbarkeit geprüft. `--check` startet die Dienste nicht neu. Ein identischer Folgeaufruf benötigt ebenfalls keinen Neustart.
+
+Für einen Domainwechsel denselben Befehl mit dem neuen DNS-Namen ausführen. Die bisherige öffentliche Domain wird ersetzt, die lokale IP bleibt erhalten. DNS-Namen werden kleingeschrieben und ohne Protokoll, Port oder Pfad übergeben; internationale Namen in Punycode-Schreibweise. Diese Variante verwendet Port 443 und eine lokale IPv4-Adresse. Die Anmeldung und die Erweiterung anschließend über die neue öffentliche Domain verwenden. Der IP-Zugang bleibt für Diagnoseabrufe verfügbar; Schreibanfragen von der alten Adresse werden durch die Herkunftsprüfung abgewiesen.
+
+Die Nachprüfung des Skripts erfolgt innerhalb des Containers. Öffne anschließend die öffentliche Domain auch außerhalb deines lokalen Netzes, um die Nginx-/Routerstrecke zu prüfen. Der [Prüfnachweis](../nachweise/proxy-patch-1.md) beschreibt den getesteten Umfang.
+
+## Öffentliches HTTPS direkt am Container
 
 Richte den A-Eintrag deiner Domain auf den Anschluss des Containers. Ein vorhandener AAAA-Eintrag muss ebenfalls dorthin führen. Leite TCP 80 und 443 auf den Container weiter. Die Anwendung selbst bleibt auf Loopback-Port 3040. Caddy beschafft und erneuert das öffentliche Zertifikat; die Voraussetzungen beschreibt die [Caddy-Dokumentation](https://caddyserver.com/docs/automatic-https).
 
