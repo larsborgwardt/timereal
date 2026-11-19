@@ -9,6 +9,7 @@ import type { UpdateStatus } from "./updates.js";
 export function betriebsAufruf(
   socketPath: string,
   daten: object,
+  maxBytes = 65536,
 ): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     const req = request(
@@ -23,7 +24,7 @@ export function betriebsAufruf(
         let laenge = 0;
         res.on("data", (chunk: Buffer) => {
           laenge += chunk.length;
-          if (laenge > 65536) req.destroy(new Error("Antwort zu groß"));
+          if (laenge > maxBytes) req.destroy(new Error("Antwort zu groß"));
           else teile.push(chunk);
         });
         res.on("end", () => {
@@ -125,6 +126,45 @@ export function betriebsRouten(
     await admin(req);
     return betriebsAufruf(socketPath, { aktion: "status" });
   });
+  app.get<{ Querystring: { quelle?: string; level?: string; suche?: string } }>(
+    prefix + "/logs",
+    {
+      schema: {
+        querystring: objekt(
+          {
+            quelle: {
+              type: "string",
+              enum: ["all", "anwendung", "betrieb", "https"],
+            },
+            level: {
+              type: "string",
+              enum: [
+                "all",
+                "info",
+                "warn",
+                "error",
+                "debug",
+                "success",
+                "fatal",
+                "complete",
+              ],
+            },
+            suche: { type: "string", maxLength: 200 },
+          },
+          [],
+        ),
+      },
+    },
+    async (req, reply) => {
+      await admin(req);
+      reply.header("Cache-Control", "no-store");
+      return betriebsAufruf(
+        socketPath,
+        { aktion: "logs", filter: req.query },
+        1048576,
+      );
+    },
+  );
   app.post(
     prefix + "/updates/pruefen",
     { schema: { body: objekt({}, []) } },

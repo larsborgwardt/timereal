@@ -1,4 +1,4 @@
-# Timereal 0.7.0 — Betrieb im Adminbereich
+# Timereal — Betrieb im Adminbereich
 
 **Implementierungsstand 0.7.0 vom 19. November 2026.** Grundlage: veröffentlichte Version 0.6.2, Commit `2e287287df539c8465567f2b9c95ddfb937100e1`. Der Auftrag umfasst Updates und die Einrichtung einer öffentlichen Domain in der Verwaltung. Lars hat die Bildvorlagen für Updates und Domainzugriff einschließlich Fortschritt und Zugriffsbestätigung mit „Bildentwürfe freigeben (empfohlen)“ zur Umsetzung freigegeben. Die bereits abgenommenen Verwaltungs- und Footerbilder bleiben der Gestaltungsmaßstab. Die Implementierung und ihre tatsächlich ausgeführten Prüfungen sind im [Auslieferungsnachweis](nachweise/0.7.0.md) getrennt von offenen Messungen dokumentiert.
 
@@ -6,7 +6,30 @@
 
 **Ergänzung 0.7.2:** „Status aktualisieren“ unter Updates umgeht den Versionscache und fragt GitHub neu ab. Das Ergebnis steht anschließend auch dem Footer zur Verfügung. Die Prüfung ist auf einen Versuch je Minute pro Serverprozess begrenzt; gesperrte oder widerrufene Sitzungen, Berater und Erweiterungssitzungen können sie nicht auslösen. Eine abgeschaltete Versionsprüfung bleibt abgeschaltet. Vor 0.7.2 liest der Knopf nur den bisherigen Cache; der einmalige Übergang ist in der [Betriebsanleitung](betrieb/README.md#versionsfooter-und-updateprüfung-ab-062) beschrieben.
 
-Unter **Verwaltung** stehen die Bereiche **Berater**, **Updates** und **Domainzugriff**. Persönliche Einstellungen bleiben unter Einstellungen. Betriebsaktionen sind für Administratoren vorgesehen.
+Unter **Verwaltung** stehen die Bereiche **Berater**, **Updates**, **Domainzugriff** und ab 0.8.0 **Systemlogs**. Persönliche Einstellungen bleiben unter Einstellungen. Betriebsaktionen sind für Administratoren vorgesehen.
+
+### Systemkonsole ab 0.8.0
+
+Die freigegebenen Bilder 12 (D-RELEASE-003) sind die Grundlage der Konsolenansicht. Sie liest das echte systemd-Journal ausschließlich für `timereal.service`, `timereal-betrieb.service` und `timereal-https.service`. Eine gültige Administrator-Websitzung ist erforderlich; die Browsererweiterung bietet diesen Bereich nicht an.
+
+Quelle, Level und Freitext werden mit „Filtern“ angewendet. Die Suche ignoriert Groß-/Kleinschreibung und arbeitet auf bereits bereinigten Meldungen. Live fragt im sichtbaren Bereich ungefähr alle zwei Sekunden ab. Pause beendet Folgeabrufe auch bei Fensterwechsel; ein bereits laufender Abruf darf noch enden. „Aktualisieren“ funktioniert weiterhin. Ohne automatisches Scrollen bleibt die Leseposition erhalten. „Herunterladen“ exportiert genau den zuletzt angezeigten gefilterten Stand als UTF-8-Text. Bei Verbindungsfehler bleibt ein zuvor geladener Stand mit ausdrücklichem Fehlerhinweis erhalten. Abmelden löscht den Stand aus der Oberfläche.
+
+Der Journalabruf ist auf die jüngsten 500 Einträge innerhalb von 24 Stunden begrenzt; Filter durchsuchen diesen Ausschnitt. Es wird weder eine vollständige Historie noch eine Aufbewahrungsdauer zugesagt. Journald verwaltet den tatsächlichen Speicher. Binäre oder ungültige Datensätze werden ausgelassen, Texte auf 2.048 UTF-8-Bytes begrenzt, der Antwortinhalt auf unter 1 MiB beschränkt. Anzahl und Auslassungen stehen in der Ansicht. Der Betriebsdienst bündelt gleichzeitige Abrufe und hält einen gemeinsamen Snapshot höchstens zwei Sekunden vor; Prozesslaufzeit und Rohantwort sind begrenzt.
+
+| Level | Herkunft |
+|---|---|
+| `all` | Keine Einschränkung auf einen Level |
+| `fatal` | Journalpriorität 0–2 oder ausdrückliche schwere Betriebsstörung |
+| `error` | Journalpriorität 3 oder strukturierte Fehlermeldung |
+| `warn` | Journalpriorität 4 oder strukturierte Warnung |
+| `info` | Journalpriorität 5–6, Startmeldungen oder unbekannte Priorität |
+| `debug` | Journalpriorität 7 oder strukturierte Diagnosemeldung |
+| `success` | Eigenes Timereal-Ereignis nach erfolgreicher Vorbereitung/Prüfung |
+| `complete` | Eigenes Timereal-Ereignis nach abgeschlossenem Update bzw. bestätigtem Domainwechsel |
+
+Es gibt keine Befehlszeile zur Ausführung eigener Kommandos. Filter ändern keine Prozessargumente. Die Web-App erhält keine Journalgruppe oder sudo-Rechte; ausschließlich der vorhandene Betriebsdienst ruft `journalctl` mit festen Dienstnamen auf. Strukturierte Meldungen liefern nur `msg` und einen geprüften Level; Request-, Header-, Body- und Stackfelder werden verworfen. Bekannte Passwort-/Token-/Cookie-/URL-Muster, Terminalsteuerung und private Schlüssel werden bereinigt. Das ist keine Garantie, beliebige Geheimnisse in frei formulierten Fremdmeldungen erkennen zu können. Eigene Start-/Abschlussmeldungen enthalten keine Nutzereingaben. Anzeige und Download verwenden denselben bereinigten Snapshot, ohne dauerhafte Speicherung im Browser.
+
+Technische Grundlagen: [journalctl, Matching und JSON-Ausgabe](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html), [Journalfelder und vertrauenswürdige Dienstzuordnung](https://www.freedesktop.org/software/systemd/man/latest/systemd.journal-fields.html). Prüfungen: [0.8.0](nachweise/0.8.0.md).
 
 ### Updates
 
@@ -44,7 +67,7 @@ flowchart LR
 
 - Die Web-App bleibt `timereal_app`, mit `NoNewPrivileges=true`, ohne sudo und ohne Schreibrechte an Systemkonfiguration oder Releasecode.
 - Der neue Dienst verwendet einen lokalen Unix-Socket mit ausdrücklich gesetztem Modus `0660`, Besitzer root und Gruppe `timereal_app`. Verzeichnis und Dienstprogramm sind root-eigen und für die Web-App nicht beschreibbar. Kein zusätzlicher TCP-Port und keine direkte öffentliche Weiterleitung zum Dienst.
-- Das Protokoll erlaubt nur vorbereiten, starten, Status lesen, Domain prüfen/übernehmen/bestätigen. Kein frei wählbarer Shellbefehl, Dateipfad, Git-Remote oder Umgebungsblock. Prozesse starten mit festen Argumenten und ohne Shellinterpolation.
+- Das Protokoll erlaubt vorbereiten, starten, Status lesen, Domain prüfen/übernehmen/bestätigen sowie ab 0.8.0 den begrenzten Journalabruf. Kein frei wählbarer Shellbefehl, Dateipfad, Git-Remote oder Umgebungsblock. Prozesse starten mit festen Argumenten und ohne Shellinterpolation.
 - Die API bindet eine gültige Websitzung und prüft `admin_pruefen()`. Erweiterungs-Bearer, Berater, gesperrte Konten und widerrufene Sitzungen erhalten keinen Zugriff. Schreibzugriffe unterliegen der Origin-Prüfung; Passwortprüfungen werden begrenzt. Rollen und Sitzung werden bei jeder Aktion erneut geprüft.
 - Das Socketrecht ist eine bewusste Vertrauensgrenze: Ein vollständig übernommener Webprozess könnte erlaubte Betriebsaufträge anfordern. Deshalb begrenzt der Betriebsdienst selbst Quelle, Ziel, Übergänge und Argumente; er ist keine zweite unabhängige Benutzeranmeldung. Das Restrisiko wird nicht als vollständige Prozessisolation ausgegeben.
 - Releasequelle bleibt `larsborgwardt/timereal`. Nur stabile semantische Versionen, kein Downgrade; Git-Tag und Commit werden bei Vorbereitung festgehalten und vor Aktivierung erneut verglichen. TLS und das Repository sind die Vertrauensbasis; ohne zusätzlichen Signaturvertrag wird keine Signaturprüfung behauptet.
@@ -57,6 +80,7 @@ Implementierte Endpunkte; bis auf die reine Versionsprüfung muss der Unix-Betri
 | Endpunkt unter `/api/v1/verwaltung/betrieb` | Zweck |
 |---|---|
 | `GET /status` | Betriebsdienst erreichbar, aktuelle Konfiguration, jüngster Auftrag |
+| `GET /logs` | Ab 0.8.0: bereinigter Journalausschnitt; optionale Filter `quelle`, `level`, `suche` (höchstens 200 Zeichen), `Cache-Control: no-store` |
 | `POST /updates/pruefen` | Ab 0.7.2: Administrator-Websitzung, Origin-Prüfung, leeres JSON-Objekt; sofortige Versionsprüfung ohne root-Aktion; bei erneutem Versuch innerhalb einer Minute HTTP 429 mit `Retry-After` |
 | `POST /updates/vorbereiten` | Festes stabiles Release prüfen und separat bauen; Auftragsschlüssel |
 | `POST /updates/:id/installieren` | Bestätigtes Ziel aktivieren; aktuelles Passwort und Auftragsschlüssel |
@@ -84,7 +108,7 @@ Aufträge und Wiederholungsschlüssel werden nicht automatisch gelöscht. Bei de
 4. Erstinstallation und Bootstrap aus 0.6.2 sowie Folgesprung im eigenen Debian-13/systemd-Prüfgast ausführen. Der Testgast ist getrennt von Lars' LXC.
 5. Gegen das freigegebene Bild auf Laptop und Smartphone prüfen; Links, Tastatur, Fehler, Verbindungsverlust und 200 % Textgröße einschließen. Release erst nach grüner Prüfung veröffentlichen.
 
-Die tatsächlich ausgeführten API-, Browser-, Zustands- und Debian-Betriebsproben stehen mit Befehlen und Ergebnissen im [Auslieferungsnachweis](nachweise/0.7.0.md). Eine Browserprobe mit ersetztem privilegiertem Betriebsschritt misst die Bedienung; die getrennte native Probe misst echte Dienste, PostgreSQL, TLS, Git und Rückbau. Das wird nicht als gemeinsamer Ende-zu-Ende-Browserlauf auf Proxmox ausgegeben. Zusätzliche Störungsproben für Speicherknappheit, Sicherungsfehler und einen ebenfalls nicht mehr startbaren Vorgänger bleiben offen; Lars' externer Proxy wurde nicht verändert oder als funktionsfähig abgenommen.
+Die tatsächlich ausgeführten API-, Browser-, Zustands- und Debian-Betriebsproben stehen mit Befehlen und Ergebnissen im [Auslieferungsnachweis](nachweise/0.7.0.md). Eine Browserprobe mit ersetztem privilegiertem Betriebsschritt misst die Bedienung; die getrennte native Probe misst echte Dienste, PostgreSQL, TLS, Git und Rückbau. Das wird nicht als gemeinsamer Ende-zu-Ende-Browserlauf auf Proxmox ausgegeben. Zusätzliche Störungsproben für Speicherknappheit, einen echten `pg_dump`-Sicherungsfehler und einen ebenfalls nicht mehr startbaren Vorgänger sind im [Nachweis 0.8.0](nachweise/0.8.0.md) mit Exit 0 dokumentiert; Lars' externer Proxy wurde nicht verändert oder als funktionsfähig abgenommen.
 
 **Einmaliger Umstieg:** Ein Container mit 0.6.2 enthält den Betriebsdienst noch nicht. Lars installiert 0.7.0 zunächst einmal über die Konsole; dabei werden die root-eigenen Dateien und systemd-Einheiten eingerichtet. Anschließend sind reguläre Updates und unterstützte Domainwechsel über die Verwaltung möglich. Bei nicht mehr erreichbarer Anwendung bleibt die Konsole ein Wiederherstellungsweg.
 

@@ -6,6 +6,31 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { betriebssperre, prozess } from "../betrieb/verwaltung/system.mjs";
 
+test("Prozessausgabe bewahrt UTF-8 über getrennte Puffer hinweg", async () => {
+  const ereignisse = [];
+  const result = await prozess(
+    process.execPath,
+    [
+      "--input-type=module",
+      "-e",
+      `import {writeSync} from 'node:fs';
+    for (const byte of Buffer.from('Grüße 🕒')) {
+      process.stdout.write(Buffer.from([byte]));
+      process.stderr.write(Buffer.from([byte]));
+      await new Promise(resolve => setTimeout(resolve, 15));
+    }
+    for (const byte of Buffer.from(JSON.stringify({phase:'Prüfung 🕒'})+'\\n')) {
+      writeSync(3, Buffer.from([byte]));
+      await new Promise(resolve => setTimeout(resolve, 15));
+    }`,
+    ],
+    { ereignis: (e) => ereignisse.push(e) },
+  );
+  assert.equal(result.stdout, "Grüße 🕒");
+  assert.equal(result.stderr, "Grüße 🕒");
+  assert.deepEqual(ereignisse, [{ phase: "Prüfung 🕒" }]);
+});
+
 test("Realer flock bleibt nach dem Lockprozess bestehen und ist an Kindprozesse vererbbar", async (t) => {
   const dir = await mkdtemp(join(tmpdir(), "timereal-lock-"));
   t.after(() => rm(dir, { recursive: true, force: true }));

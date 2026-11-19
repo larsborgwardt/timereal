@@ -127,9 +127,11 @@ export function createApp(
           .code(err.statusCode)
           .send({ fehler: "Anfrage unzulässig." });
       console.error(
-        "Anfrage fehlgeschlagen",
-        req.routeOptions.url,
-        err.code ?? err.name,
+        JSON.stringify({
+          timereal_log: 1,
+          level: "error",
+          msg: `Anfrage fehlgeschlagen: ${req.routeOptions.url} (${err.code ?? err.name})`,
+        }),
       );
       return reply
         .code(500)
@@ -166,6 +168,7 @@ export function createApp(
     ["/version.js", "version.js", "text/javascript"],
     ["/konten.js", "konten.js", "text/javascript"],
     ["/betrieb.js", "betrieb.js", "text/javascript"],
+    ["/systemkonsole.js", "systemkonsole.js", "text/javascript"],
     ["/zeit.js", "zeit.js", "text/javascript"],
     ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],

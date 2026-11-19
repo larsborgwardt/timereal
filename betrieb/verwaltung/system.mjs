@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { open } from "node:fs/promises";
+import { StringDecoder } from "node:string_decoder";
 import { Betriebsfehler } from "./auftraege.mjs";
 
 /** Feste Programme/Argumente kommen aus dem Betriebsadapter, nie aus HTTP-Eingaben. */
@@ -33,6 +34,9 @@ export function prozess(programm, argumente, options = {}) {
       killTimer,
       phasen = Promise.resolve(),
       puffer = "";
+    const ausgabeDecoder = new StringDecoder("utf8"),
+      fehlerDecoder = new StringDecoder("utf8"),
+      ereignisDecoder = new StringDecoder("utf8");
     function abbrechen(fehler) {
       if (abbruch) return;
       abbruch = fehler;
@@ -57,14 +61,14 @@ export function prozess(programm, argumente, options = {}) {
       bytes += chunk.length;
       if (bytes > (options.maxBytes ?? 1048576))
         return abbrechen(new Error("Betriebsprozess liefert zu viel Ausgabe."));
-      if (ziel === "out") stdout += chunk.toString();
-      else stderr += chunk.toString();
+      if (ziel === "out") stdout += ausgabeDecoder.write(chunk);
+      else stderr += fehlerDecoder.write(chunk);
     };
     child.stdout.on("data", lesen("out"));
     child.stderr.on("data", lesen("err"));
     if (options.ereignis)
       child.stdio[3].on("data", (chunk) => {
-        puffer += chunk.toString();
+        puffer += ereignisDecoder.write(chunk);
         if (puffer.length > 16384)
           return abbrechen(new Error("Ungültiges Betriebsereignis."));
         let n;
@@ -86,6 +90,9 @@ export function prozess(programm, argumente, options = {}) {
     child.on("close", async (exitCode, signal) => {
       clearTimeout(timer);
       clearTimeout(killTimer);
+      stdout += ausgabeDecoder.end();
+      stderr += fehlerDecoder.end();
+      puffer += ereignisDecoder.end();
       await phasen;
       if (puffer) abbruch ??= new Error("Unvollständiges Betriebsereignis.");
       if (abbruch) return reject(abbruch);

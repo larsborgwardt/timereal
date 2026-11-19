@@ -104,6 +104,120 @@ dialog {
   color: #086e66;
   box-shadow: inset 0 -3px #08796f;
 }
+.logkarte .filter {
+  gap: 16px;
+}
+.logkarte .filter label:first-child {
+  flex: 1.5;
+}
+.logaktionen {
+  margin: 8px 0 20px;
+  gap: 16px;
+}
+.logschalter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+}
+.logschalter input {
+  width: auto;
+  min-height: auto;
+  margin: 0;
+  flex-shrink: 0;
+}
+#konsole-status {
+  color: #086e66;
+  font-weight: 650;
+}
+#konsole-fehler {
+  color: #92392c;
+}
+.konsole {
+  background: #101c2a;
+  color: #e3edf5;
+  border: 1px solid #33465b;
+  border-radius: 10px;
+  overflow: auto;
+  max-height: 65vh;
+  scrollbar-gutter: stable;
+}
+.konsole:focus-visible {
+  outline: 3px solid #568dd3;
+  outline-offset: 3px;
+}
+.konsolenkopf {
+  position: sticky;
+  top: 0;
+  left: 0;
+  padding: 12px 18px;
+  background: #1c2c3e;
+  color: #cfdae5;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  font:
+    0.85rem/1.5 ui-monospace,
+    monospace;
+}
+.konsole pre {
+  font:
+    0.875rem/1.9 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  padding: 16px 18px;
+  margin: 0;
+  white-space: pre;
+  overflow-wrap: normal;
+  width: max-content;
+  min-width: 100%;
+}
+.logzeit {
+  color: #a9bbcc;
+}
+.log-info {
+  color: #8ecbff;
+}
+.log-success {
+  color: #8ee0b2;
+}
+.log-debug {
+  color: #b3b9c7;
+}
+.log-warn {
+  color: #f4cd7a;
+}
+.log-error,
+.log-fatal {
+  color: #ffaaa0;
+}
+.log-complete {
+  color: #93e0dc;
+}
+@media (max-width: 760px) {
+  .logkarte {
+    padding: 16px;
+  }
+  .logkarte .filter label {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .logaktionen {
+    gap: 12px;
+  }
+  .logaktionen button {
+    flex: 1 1 100%;
+  }
+  .konsole {
+    max-height: 55vh;
+  }
+  .konsolenkopf {
+    font-size: 0.8rem;
+  }
+}
 .betrieb-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);

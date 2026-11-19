@@ -1,3 +1,4 @@
+import { systemkonsole } from "./systemkonsole.js";
 const prefix = "/verwaltung/betrieb";
 const laufend = new Set([
   "vorbereitung",
@@ -43,6 +44,11 @@ export function betriebsOberflaeche({
     generation = 0,
     transportFehler = false,
     letzteNonce = null;
+  const konsole = systemkonsole({
+    $,
+    request,
+    sichtbar: () => bereich === "logs" && !$("#verwaltung").hidden,
+  });
   const text = (id, wert) => {
     const el = $("#betrieb-" + id),
       neu = wert ?? "";
@@ -64,7 +70,8 @@ export function betriebsOberflaeche({
   const job = (typ) => stand?.auftraege.find((j) => j.typ === typ);
   function anzeigen() {
     $("#betrieb-berater").hidden = bereich !== "berater";
-    $("#betrieb-bereich").hidden = bereich === "berater";
+    $("#betrieb-bereich").hidden = ["berater", "logs"].includes(bereich);
+    $("#betrieb-logs").hidden = bereich !== "logs";
     for (const name of ["updates", "domain"])
       $("#betrieb-" + name).hidden = bereich !== name;
     document.querySelectorAll("[data-betrieb]").forEach((b) => {
@@ -172,6 +179,7 @@ export function betriebsOberflaeche({
     $("#betrieb-fehler").hidden = !e;
   }
   async function laden() {
+    if (bereich === "logs") return konsole.liveLaden();
     if (bereich === "berater" || $("#verwaltung").hidden || laedt || prueft)
       return;
     const vorher = generation;
@@ -284,7 +292,8 @@ export function betriebsOberflaeche({
     b.addEventListener("click", () => {
       bereich = b.dataset.betrieb;
       anzeigen();
-      void laden();
+      if (bereich === "logs") void konsole.laden();
+      else void laden();
     }),
   );
   $("#betrieb-aktualisieren").onclick = () => void aktualisieren();
@@ -314,6 +323,7 @@ export function betriebsOberflaeche({
   $("#betrieb-zurueck").onclick = () =>
     void senden(`/domain/${job("domain").id}/zuruecknehmen`);
   setInterval(() => {
+    if (bereich === "logs") return konsole.liveLaden();
     if (!$("#verwaltung").hidden && bereich !== "berater") {
       anzeigen();
       void laden();
@@ -326,6 +336,7 @@ export function betriebsOberflaeche({
       anzeigen();
     },
     zuruecksetzen() {
+      konsole.zuruecksetzen();
       generation++;
       prueft = false;
       stand = update = null;

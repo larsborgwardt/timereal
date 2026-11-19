@@ -18,3 +18,10 @@ const app = createApp(datenbankPool(), {
 for (const signal of ["SIGINT", "SIGTERM"])
   process.once(signal, () => void app.close());
 await app.listen({ host: "127.0.0.1", port: Number(process.env.PORT || 3040) });
+console.log(
+  JSON.stringify({
+    timereal_log: 1,
+    level: "info",
+    msg: "Anwendung gestartet.",
+  }),
+);

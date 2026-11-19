@@ -1,0 +1,7 @@
+From https://github.com/larsborgwardt/timereal
+ * [new tag]         v0.7.4     -> v0.7.4
+Speicherknappheit: Abbruch vor Dienstunterbrechung; dieselbe Anwendung bleibt erreichbar.
+Echter pg_dump-Fehler: keine Migration/Umschaltung; vorherige Anwendung wieder erreichbar.
+Nicht startbarer Vorgänger: Wiederherstellung ausdrücklich erforderlich; nach Entfernen der Prüfstörung wieder erreichbar.
+NOTICE:  table "timereal_sicherungsprobe" does not exist, skipping
+Fehlerprobe-Belege im Wegwerfgast: /root/timereal-fehlerprobe.MKcyqu7c

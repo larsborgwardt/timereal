@@ -43,6 +43,8 @@ export async function pruefeAnsicht(
           .filter(shown)
           .filter((el) => {
             if (el.closest(".tabelle")) return false;
+            // Monospaced Journaltext scrollt innerhalb der geprüften Konsole.
+            if (!el.matches(".konsole") && el.closest(".konsole")) return false;
             const r = el.getBoundingClientRect();
             return r.left < -1 || r.right > innerWidth + 1;
           })

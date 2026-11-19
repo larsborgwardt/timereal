@@ -402,7 +402,7 @@ async function kommando(action, felder = {}) {
     throw e;
   }
 }
-async function bediene(fn) {
+async function bediene(fn, { navigation = false } = {}) {
   if (busy) return;
   const vorherigeSeite = seite;
   const fokusZurueck = fokusMerken();
@@ -414,8 +414,15 @@ async function bediene(fn) {
     status.setAttribute("role", "status");
     dialog.prepend(status);
   }
-  status.hidden = false;
-  status.textContent = "Wird verarbeitet…";
+  const hinweis = () => {
+    status.textContent = navigation
+      ? "Seite wird geladen…"
+      : "Wird verarbeitet…";
+    status.hidden = false;
+  };
+  // Schnelle Seitenwechsel bleiben ruhig; längere Abrufe erhalten Feedback.
+  const hinweisTimer = navigation ? setTimeout(hinweis, 300) : null;
+  if (!navigation) hinweis();
   document.querySelectorAll("button:enabled").forEach((b) => {
     b.disabled = true;
     b.dataset.wartet = "";
@@ -429,6 +436,7 @@ async function bediene(fn) {
     melden(e.message);
     if (e.status === 409) await laden().catch(() => {});
   } finally {
+    clearTimeout(hinweisTimer);
     busy = false;
     document.querySelectorAll("[data-wartet]").forEach((b) => {
       b.disabled = false;
@@ -493,9 +501,12 @@ document.addEventListener("click", (ev) => {
   if (!b) return;
   if (b.hasAttribute("data-close")) b.closest("dialog").close();
   if (b.dataset.page)
-    void bediene(async () => {
-      seite = b.dataset.page;
-    });
+    void bediene(
+      async () => {
+        seite = b.dataset.page;
+      },
+      { navigation: true },
+    );
   if (b.dataset.action) void bediene(() => aktion(b.dataset.action));
 });
 function projekte() {
@@ -681,7 +692,7 @@ $("#verbindung-laden").onclick = () =>
     );
   });
 if (transport.istErweiterung) {
-  for (const bereich of ["updates", "domain"])
+  for (const bereich of ["updates", "domain", "logs"])
     document.querySelector(`[data-betrieb="${bereich}"]`).hidden = true;
   $("#anmelden").hidden = true;
   $("#vergessen").hidden = true;

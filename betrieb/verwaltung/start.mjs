@@ -1,5 +1,6 @@
 import { mkdir } from "node:fs/promises";
 import { dienstStarten } from "./dienst.mjs";
+import { journalLeser } from "./journal.mjs";
 import {
   betriebsAktion,
   betriebsStatus,
@@ -18,9 +19,17 @@ const dienst = await dienstStarten({
   socketPath: "/run/timereal-betrieb/dienst.sock",
   lockPath: "/run/lock/timereal-install.lock",
   status: betriebsStatus,
+  journal: journalLeser(),
   ausfuehren: betriebsAktion,
   wiederherstellen: betriebWiederherstellen,
 });
+console.log(
+  JSON.stringify({
+    timereal_log: 1,
+    level: "info",
+    msg: "Betriebsdienst gestartet.",
+  }),
+);
 for (const signal of ["SIGINT", "SIGTERM"])
   process.once(signal, async () => {
     await dienst.schliessen();

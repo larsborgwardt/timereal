@@ -1,0 +1,18 @@
+✔ Systemkonsole liest über den Unix-Socket nur validierte Journalfilter (20.581856ms)
+✔ Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart (13.635728ms)
+✔ Prozessausgabe bewahrt UTF-8 über getrennte Puffer hinweg (606.253155ms)
+✔ Realer flock bleibt nach dem Lockprozess bestehen und ist an Kindprozesse vererbbar (16.027224ms)
+✔ Prozessfehler, Ausgabebegrenzung und Zeitüberschreitung führen zu Fehlern (120.182682ms)
+✔ Journal: feste Dienste, echte Prioritäten und explizite Abschlussereignisse (2.949105ms)
+✔ Journal: ungültige Filter erreichen keinen Prozess (0.581942ms)
+✔ Journal: fremde Levelnamen und Prioritäts-Eigenschaften bleiben gewöhnliche Meldungen (0.276198ms)
+✔ Journal: Zugangsdaten, Steuerzeichen, Binärfelder und überlange Meldungen (0.785054ms)
+✔ Journal: parallele Aufrufe, Ablauf, Fehler und begrenzter Ergebnisspeicher (8.423712ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 796.030234
