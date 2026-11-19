@@ -47,6 +47,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Python für unabhängige Excel-Dateiprüfung
+        run: python3 --version
       - run: npx playwright-core install --with-deps chromium
       - name: Edge-Upload-Paket bauen und prüfen
         run: |

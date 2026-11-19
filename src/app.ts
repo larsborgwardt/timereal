@@ -29,6 +29,7 @@ import {
   type Eintrag,
 } from "./korrektur.js";
 import { historie, bestaetigen } from "./nachweise.js";
+import { nachweisExportRouten } from "./nachweis-export.js";
 
 const zielSchema = objekt(
   {
@@ -172,6 +173,7 @@ export function createApp(
     checkUpdates,
   );
   auditRouten(app, privat);
+  nachweisExportRouten(app, privat);
   mfaRouten(app, pool, privat, options, cookie);
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
@@ -185,6 +187,7 @@ export function createApp(
     ["/audit.js", "audit.js", "text/javascript"],
     ["/zeit.js", "zeit.js", "text/javascript"],
     ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
+    ["/nachweis-export.js", "nachweis-export.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],
     ["/transport.js", "transport.js", "text/javascript"],
     ["/erweiterung-vertrag.js", "erweiterung-vertrag.js", "text/javascript"],

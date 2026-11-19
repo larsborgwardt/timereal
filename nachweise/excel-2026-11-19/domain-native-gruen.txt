@@ -1,0 +1,4 @@
+Domainwechsel zurückgenommen. Die lokale HTTPS-Prüfung mit Domain und Container-IP ist fehlgeschlagen (Exit 1). Vorherige Konfiguration wiederhergestellt.
+Realer Startfehler, Rückbau, Ursachenanzeige und erneute Anmeldung bestanden.
+{"timereal_log":1,"level":"warn","msg":"Domainwechsel zurückgenommen. Die lokale HTTPS-Prüfung mit Domain und Container-IP ist fehlgeschlagen (Exit 1). Vorherige Konfiguration wiederhergestellt."}
+Belege: /tmp/timereal-domain-diagnose.p4jDe7WY

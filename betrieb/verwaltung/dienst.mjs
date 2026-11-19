@@ -44,7 +44,13 @@ export async function dienstStarten(options) {
         "info",
         "Domain übernommen; Zugriffsbestätigung ausstehend.",
       ],
-      zurueckgesetzt: ["warn", "Domainwechsel zurückgenommen."],
+      zurueckgesetzt: [
+        "warn",
+        job.meldung?.startsWith("Domainwechsel zurückgenommen.")
+          ? job.meldung
+          : "Domainwechsel zurückgenommen." +
+            (job.meldung ? " " + job.meldung : ""),
+      ],
     };
     const eintrag = ergebnisse[job.zustand];
     if (eintrag) protokoll(...eintrag);

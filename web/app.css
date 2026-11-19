@@ -727,3 +727,16 @@ h2:focus-visible {
   color: #006d69;
   font-weight: 700;
 }
+/* Excel-Aktion gemäß freigegebenem Nachweisentwurf. */
+.exportaktionen {
+  margin-bottom: 16px;
+}
+.exporthilfe {
+  margin: 12px 0 24px;
+  color: #4b6475;
+}
+@media (max-width: 760px) {
+  .exportaktionen button {
+    width: 100%;
+  }
+}

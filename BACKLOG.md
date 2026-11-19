@@ -2,6 +2,14 @@
 
 Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen Punkte einschließlich Release beauftragt. Die Lieferpakete und Bildentscheidungen stehen im [Releaseplan](RELEASEPLAN.md).
 
+## Excel-Nachweise in 0.9.3
+
+Entwurf 17 ist nach D-RELEASE-012 freigegeben. Persönliche Nachweise werden mit Zeitraum, Suche und gewählter Ansicht als XLSX exportiert; der Übernahmestatus bleibt unverändert. [Vertrag](NACHWEIS-EXPORT.md), [Prüfbelege](nachweise/0.9.3.md).
+
+## Sofortige Domainrücknahme — Instanzdiagnose offen
+
+Lars meldet unter 0.9.2 einen Rückbau direkt nach „Übernehmen“. Sein Journal zeigt Dienststarts, danach nur die allgemeine Warnung. Der Standardwechsel mit seiner Domain funktioniert im isolierten Debian-Prüfgast. 0.9.3 zeigt deshalb den fehlgeschlagenen Schritt und feste Diagnosehinweise im Auftrag und im Journal; die konkrete Ursache auf Lars’ LXC ist noch nicht belegt. Nächster Schritt dort: aktualisieren, Domainwechsel erneut versuchen und die neue vollständige Meldung prüfen. Die automatische Rücknahme bleibt bestehen.
+
 ## Kontosicherheit und Chromium-Erweiterung in 0.9.0
 
 Die freigegebenen Bilder 13/14 sind umgesetzt: Anzeigename, bestätigte E-Mail-Änderung, Authenticator, Wiederherstellungscodes und Faktorverwaltung. Die Chromium-Erweiterung verwendet die neue vollständige Anmeldung und besitzt weiterhin eine separat widerrufbare Sitzung. [Vertrag](KONTOSICHERHEIT.md) · [Prüfbelege](nachweise/0.9.0.md).

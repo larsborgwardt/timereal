@@ -6,6 +6,51 @@ import {
 } from "../betrieb/verwaltung/aktionen.mjs";
 import * as aktionen from "../betrieb/verwaltung/aktionen.mjs";
 
+test("Domainrücknahme nennt Prüfschritt und sichere Ursache statt fremder Prozessausgaben", () => {
+  assert.equal(typeof aktionen.domainFehlerhinweis, "function");
+  const hinweis = aktionen.domainFehlerhinweis;
+  assert.match(
+    hinweis("https", { exitCode: 60 }),
+    /Zertifikat.*nicht.*vertraut/,
+  );
+  assert.match(hinweis("https", { exitCode: 7 }), /nicht erreichbar/);
+  assert.match(hinweis("https", { exitCode: 28 }), /Zeitlimit/);
+  assert.match(
+    hinweis("konfiguration", {
+      stdout: "[3/4] Domain übernehmen und Dienste kurz neu starten",
+      exitCode: 1,
+    }),
+    /Neustart.*Exit 1/,
+  );
+  assert.match(
+    hinweis("konfiguration", {
+      stdout:
+        "[4/4] HTTPS mit öffentlichem Hostnamen und lokalem IP-Zugang prüfen",
+      exitCode: 1,
+    }),
+    /lokale HTTPS-Prüfung.*Exit 1/,
+  );
+  assert.match(
+    hinweis("konfiguration", {
+      stderr: "Bisheriger HTTPS-Zugang ist nicht gesund. Keine Änderung.",
+    }),
+    /bisherige HTTPS-Zugang/,
+  );
+  assert.match(
+    hinweis("https", new Error("HTTPS-Startseite ist leer oder ungültig.")),
+    /Startseite.*leer/,
+  );
+  const fremd = "smtp://nutzer:geheim@host.internal/private";
+  assert.ok(
+    !hinweis("https", {
+      exitCode: fremd,
+      message: fremd,
+      stderr: fremd,
+      stdout: fremd,
+    }).includes(fremd),
+  );
+});
+
 const caddy = (host = "") => `{
  admin off
  auto_https disable_redirects
