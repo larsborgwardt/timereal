@@ -19,10 +19,11 @@ node --test tests/icons.test.mjs
 node --test tests/rollen.mjs
 node --test tests/audit.mjs
 npm run test:db
+node --test tests/nachweise-excel.mjs
 node --test tests/konten.mjs tests/ausbau.mjs tests/erweiterung.mjs tests/mfa.mjs
 node --test tests/betrieb-api.mjs
 node --test tests/kapazitaet.mjs
 node tests/kapazitaet-stoerungen.mjs
 node --test tests/mfa-crypto.test.mjs tests/mfa-schluessel.test.mjs tests/version.test.mjs tests/updates.test.mjs tests/update.test.mjs tests/mail-cli.test.mjs tests/zeit.test.mjs tests/erweiterung-client.test.mjs tests/betrieb.test.mjs
 node --test tests/betriebsauftraege.test.mjs tests/betrieb-dienst.test.mjs tests/betrieb-system.test.mjs tests/betrieb-konfiguration.test.mjs tests/systemkonsole.test.mjs
-if [[ ${BROWSER_TEST:-0} == 1 ]]; then node tests/mfa-browser.mjs; node tests/audit-browser.mjs; node tests/footer-browser.mjs; node tests/browser.mjs; node tests/konten-browser.mjs; node tests/rollen-browser.mjs; node tests/arbeitsablauf-browser.mjs; node tests/design-browser.mjs; node tests/navigation-browser.mjs; node tests/betrieb-browser.mjs; node tests/systemkonsole-browser.mjs; node scripts/erweiterung-bauen.mjs; node tests/erweiterung-browser.mjs; node scripts/erweiterung-bauen.mjs --target edge-store --zip; node tests/erweiterung-browser.mjs --edge-store; node tests/design-abdeckung.mjs; fi
+if [[ ${BROWSER_TEST:-0} == 1 ]]; then node tests/excel-browser.mjs; node tests/mfa-browser.mjs; node tests/audit-browser.mjs; node tests/footer-browser.mjs; node tests/browser.mjs; node tests/konten-browser.mjs; node tests/rollen-browser.mjs; node tests/arbeitsablauf-browser.mjs; node tests/design-browser.mjs; node tests/navigation-browser.mjs; node tests/betrieb-browser.mjs; node tests/systemkonsole-browser.mjs; node scripts/erweiterung-bauen.mjs; node tests/erweiterung-browser.mjs; node scripts/erweiterung-bauen.mjs --target edge-store --zip; node tests/erweiterung-browser.mjs --edge-store; node tests/design-abdeckung.mjs; fi

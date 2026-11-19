@@ -12,6 +12,7 @@ import { passwordHash, issueSession } from "../dist/session.js";
 import { totp } from "../dist/mfa-crypto.js";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
 import { pruefeSeitenicons } from "./hilfe/icons.mjs";
+import { leseXlsx } from "./hilfe/xlsx.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
 });
@@ -455,6 +456,19 @@ try {
     0,
     "Verwaltung benötigt eine Websitzung und wird in der Erweiterung auch für Administratoren nicht angeboten.",
   );
+  await full.getByRole("button", { name: "Nachweise", exact: true }).click();
+  await full.getByRole("button", { name: "Historie", exact: true }).click();
+  const [excel] = await Promise.all([
+    full.waitForEvent("download"),
+    full
+      .getByRole("button", { name: "Als Excel exportieren", exact: true })
+      .click(),
+  ]);
+  assert.equal(await excel.failure(), null);
+  assert.ok(excel.suggestedFilename().endsWith(".xlsx"));
+  const workbook = leseXlsx(await readFile(await excel.path()));
+  assert.equal(workbook.sheets[0].name, "Nachweise");
+  assert.ok(workbook.sheets[0].rows.length > 1);
   await mobile
     .getByRole("button", { name: "Einstellungen", exact: true })
     .click();

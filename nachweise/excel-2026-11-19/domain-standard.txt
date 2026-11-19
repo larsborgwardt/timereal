@@ -1,0 +1,4 @@
+Domain mit realem Caddy/TLS übernommen; neue Anmeldung und Bestätigung erfolgreich; alter Ursprung abgewiesen.
+Unbestätigter Wechsel: automatische Rücknahme nach echter Dreiminutenfrist wird geprüft.
+Automatischer Rückbau und erneute Anmeldung an der vorherigen Adresse bestanden.
+Belege: /tmp/timereal-domain-repro.gpulWgMG

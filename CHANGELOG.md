@@ -1,5 +1,12 @@
 # Änderungen
 
+## 0.9.3 — 19. November 2026
+
+- Nachweise als echte Excel-Datei (`.xlsx`) herunterladen: gewählter Zeitraum, Suche und Ansicht, persönliche Daten, numerische Stunden/Dauer und erhaltene führende Nullen. Der Export verändert den Übernahmestatus nicht.
+- Fehler statt stiller Kürzung bei mehr als 5.000 passenden Abschnitten; erklärende Exportangaben in einem zweiten Tabellenblatt.
+- Domainrückbau nennt den fehlgeschlagenen Prüfschritt und sichere Diagnosehinweise direkt im Auftrag und im Systemlog. Der konkrete sofortige Rückbau auf Lars’ Instanz ist damit noch nicht als behoben nachgewiesen.
+- Schema 10 und API 1 bleiben erhalten. Zuerst Server, danach Erweiterung aktualisieren. [Prüfbelege](nachweise/0.9.3.md).
+
 ## 0.9.2 — 19. November 2026
 
 - Gemeinsames freigegebenes Timereal-Symbol als Favicon der Web-App, im Anmeldefenster und in der Browsererweiterung.

@@ -4,6 +4,7 @@ import { kontenOberflaeche } from "./konten.js";
 import { betriebsOberflaeche } from "./betrieb.js";
 import { faktorAnmeldung } from "./mfa-anmeldung.js";
 import { kontoSicherheit } from "./mfa.js";
+import { nachweisExport } from "./nachweis-export.js";
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) =>
   String(value ?? "").replace(
@@ -86,8 +87,21 @@ function melden(msg = "") {
     (dialog.querySelector("form") ?? dialog).prepend(hinweis);
   }
 }
-async function request(pfad, methode = "GET", body, key) {
+async function request(pfad, methode = "GET", body, key, alsDatei = false) {
   const response = await transport.senden(pfad, methode, body, key);
+  if (response.ok && alsDatei) {
+    if (
+      !response.headers
+        .get("content-type")
+        ?.startsWith(
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+    )
+      throw new Error(
+        "Der Server hat keine Excel-Datei geliefert. Bitte erneut versuchen.",
+      );
+    return response.blob();
+  }
   const data = await response.json();
   if (!response.ok) {
     if (
@@ -624,6 +638,13 @@ $("#filter").onsubmit = (ev) => {
   ev.preventDefault();
   void bediene(async () => {});
 };
+nachweisExport({
+  button: $("#nachweise-excel"),
+  filter: $("#filter"),
+  ansicht: () => modus,
+  request,
+  melden,
+});
 for (const [id, m] of [
   ["liste", "uebernahme"],
   ["historie", "historie"],

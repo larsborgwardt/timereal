@@ -249,7 +249,47 @@ async function betriebsdienstNeustarten(job, buch) {
     });
   }
 }
-async function domainZurueck(job, buch) {
+export function domainFehlerhinweis(phase, error) {
+  // Keine Prozessausgaben oder unbekannten Fehlermeldungen in Oberfläche/Journal
+  // spiegeln: sie können Pfade und Zugangsdaten enthalten. Nur feste Diagnosen.
+  const exit =
+    Number.isInteger(error.exitCode) &&
+    error.exitCode >= 0 &&
+    error.exitCode <= 255
+      ? ` (Exit ${error.exitCode})`
+      : "";
+  if (phase === "https") {
+    const ursachen = {
+      7: "Der lokale HTTPS-Dienst ist nicht erreichbar.",
+      22: "Der lokale HTTPS-Dienst antwortet mit einem HTTP-Fehler.",
+      28: "Die lokale HTTPS-Prüfung hat ihr Zeitlimit überschritten.",
+      60: "Dem Zertifikat des lokalen HTTPS-Dienstes wird nicht vertraut oder es passt nicht zum Hostnamen.",
+      77: "Die lokale CA-Datei kann nicht gelesen werden.",
+    };
+    if (ursachen[error.exitCode]) return ursachen[error.exitCode];
+    if (error.message === "HTTPS-Startseite ist leer oder ungültig.")
+      return "Die lokale HTTPS-Startseite ist leer oder ungültig.";
+    return `Die lokale HTTPS-Prüfung ist fehlgeschlagen${exit}.`;
+  }
+  const stderr = typeof error.stderr === "string" ? error.stderr : "";
+  if (stderr.includes("Bisheriger HTTPS-Zugang ist nicht gesund."))
+    return "Der bisherige HTTPS-Zugang hat die Vorprüfung nicht bestanden.";
+  if (
+    stderr.includes("Gemeinsame Betriebssperre fehlt.") ||
+    stderr.includes("Eine Einrichtung oder Aktualisierung läuft.")
+  )
+    return "Die gemeinsame Betriebssperre konnte nicht übernommen werden.";
+  const stdout = typeof error.stdout === "string" ? error.stdout : "";
+  const schritt = [...stdout.matchAll(/^\[([1-4])\/4\] /gm)].at(-1)?.[1];
+  const namen = {
+    1: "Die Prüfung der HTTPS-Konfiguration",
+    2: "Die Sicherung der HTTPS-Konfiguration",
+    3: "Der Neustart von Anwendung und HTTPS-Dienst",
+    4: "Die lokale HTTPS-Prüfung mit Domain und Container-IP",
+  };
+  return `${namen[schritt] ?? "Die Übernahme der Domainkonfiguration"} ist fehlgeschlagen${exit}.`;
+}
+async function domainZurueck(job, buch, ursache) {
   if (job.sicherung !== join(daten, "sicherungen", job.id))
     throw new Error("Sicherungsreferenz fehlt.");
   const caddy = await readFile(join(configDir, "Caddyfile"), "utf8"),
@@ -283,7 +323,9 @@ async function domainZurueck(job, buch) {
   await buch.fortschreiben(job.id, {
     zustand: "zurueckgesetzt",
     phase: "zurueckgesetzt",
-    meldung: "Vorherige Konfiguration wiederhergestellt.",
+    meldung: ursache
+      ? `Domainwechsel zurückgenommen. ${ursache} Vorherige Konfiguration wiederhergestellt.`
+      : "Vorherige Konfiguration wiederhergestellt.",
   });
 }
 async function updateZurueck(job, buch) {
@@ -543,8 +585,10 @@ export async function betriebsAktion(aktion, job, buch, lock) {
         job.domain,
       ),
     });
+    let phase = "konfiguration";
     try {
       await shell("proxy-einrichten.sh", [job.domain, job.ip]);
+      phase = "https";
       await httpsGesund(job.domain);
       await buch.fortschreiben(job.id, {
         zustand: "bestaetigung_ausstehend",
@@ -552,7 +596,7 @@ export async function betriebsAktion(aktion, job, buch, lock) {
         frist: Date.now() + 180000,
       });
     } catch (error) {
-      await domainZurueck(job, buch);
+      await domainZurueck(job, buch, domainFehlerhinweis(phase, error));
       throw error;
     }
   } else if (aktion === "domain-zuruecknehmen") await domainZurueck(job, buch);

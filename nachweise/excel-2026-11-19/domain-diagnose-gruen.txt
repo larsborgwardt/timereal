@@ -1,0 +1,17 @@
+Betriebsauftrag fehlgeschlagen 0b79be74-0c35-4fd5-83ab-5d349adc53b3 Error
+✔ Domainrücknahme bewahrt die Ursache im Auftrag und im Systemlog (23.128915ms)
+✔ Systemkonsole liest über den Unix-Socket nur validierte Journalfilter (6.426421ms)
+✔ Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart (8.308636ms)
+✔ Domainrücknahme nennt Prüfschritt und sichere Ursache statt fremder Prozessausgaben (0.928915ms)
+✔ Domain wird aus unterstütztem Bestand abgeleitet; eigene Proxyregeln bleiben geschützt (1.283367ms)
+✔ Nur stabile Releases mit strikt höherer Version können vorbereitet werden (0.342938ms)
+✔ Ein Webupdate braucht einen passenden versionsgebundenen Betriebsvertrag (0.519541ms)
+✔ Abbruch zwischen Konfigurationsdateien erlaubt Rückbau, fremde Änderungen nicht (0.362471ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 101.419541

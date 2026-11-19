@@ -158,12 +158,24 @@
             >Kunde oder Buchungsziel<input name="suche" type="search" /></label
           ><button>Filtern</button>
         </form>
-        <div class="aktionen">
+        <div class="aktionen exportaktionen">
           <button type="button" class="sek" id="filter-reset">
             Filter zurücksetzen
           </button>
           <button type="button" data-arbeit="nachtrag">Zeit nachtragen</button>
+          <button
+            type="button"
+            class="sek"
+            id="nachweise-excel"
+            aria-describedby="exporthilfe"
+          >
+            Als Excel exportieren
+          </button>
         </div>
+        <p id="exporthilfe" class="exporthilfe">
+          Exportiert die aktuelle Ansicht mit den gewählten Filtern. Der
+          Übernahmestatus bleibt unverändert.
+        </p>
         <div id="eintraege" class="karte"></div>
       </section>
       <section id="verwaltung" hidden>

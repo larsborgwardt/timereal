@@ -13,6 +13,7 @@ Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte u
 | 0.9.0 | Kontoprofil und Zwei-Faktor-Anmeldung einschließlich Wiederherstellung; Erweiterung mit neuem Anmeldevertrag und weiteren Browserprüfungen | Bilder 13 freigegeben (D-RELEASE-006); Einrichtung, Replay-Schutz, Recovery und Widerruf; real geladene Erweiterung |
 | 0.9.1 | Microsoft-Edge-Store-Anmeldung mit konkreter CRX-ID und getrenntem Upload-ZIP | PostgreSQL-/PKCE-Grenzfälle und Browserlauf mit öffentlichem Microsoft-Schlüssel; signierte Store-Installation folgt nach Veröffentlichung |
 | 0.9.2 | Gemeinsames Favicon und Symbol für Erweiterung und Store | Entwurf 16 freigegeben (D-RELEASE-011); HTTP-, Paket- und Browserprüfung |
+| 0.9.3 | Persönlicher Excel-Export und Ursachenanzeige beim Domainrückbau | Entwurf 17 freigegeben (D-RELEASE-012); PostgreSQL, Browserdownload und Betriebsproben |
 
 0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. Die Systemkonsole wird als eigenes Paket 0.8.0 geliefert; Veröffentlichung und Prüfbelege stehen in `nachweise/0.8.0.md`. Benutzer und Rollen sind in 0.8.1 umgesetzt; Prüfbelege stehen in `nachweise/0.8.1.md`. Audit ist in 0.8.2 umgesetzt; Prüfbelege stehen in `nachweise/0.8.2.md`. Kontosicherheit 0.9.0 ist implementiert; der Releasebeleg `nachweise/0.9.0.md` hält die abschließenden Prüfungen fest. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
 
@@ -73,3 +74,11 @@ Lars meldet **„Extension_identify.txt steht im ftp drop“**. Die Datei liegt 
 ### D-RELEASE-011 — Favicon und Erweiterungssymbol freigegeben, 19. November 2026
 
 Lars bestätigt den Entwurf `mockups/16-icons-vorschau.png` für Favicon, Browsererweiterung und Store mit **„Icon wie gezeigt übernehmen (empfohlen)“**. Das freigegebene Symbol wird in Version 0.9.2 eingebunden. Ein separates PNG ist für das Logo-Feld im Partner Center vorgesehen. Das Serverupdate installiert keine Erweiterung auf dem Endgerät; das neue Erweiterungspaket wird separat geladen beziehungsweise im Store eingereicht. Der SMTP-Ausbau aus D-RELEASE-009 bleibt beauftragt.
+
+### D-RELEASE-012 — Excel-Nachweise freigegeben, 19. November 2026
+
+Lars beauftragt „die nachweise sollte als excel-datei exportiert werden“ und bestätigt die Bilder `mockups/17-excel-desktop.png` und `mockups/17-excel-mobil.png` mit **„Bildentwurf freigeben (empfohlen)“**. Der Knopf exportiert Zeitraum, Suche und Ansicht. Der Übernahmestatus wird nicht verändert. Umsetzung für 0.9.3; Vertrag in [NACHWEIS-EXPORT.md](NACHWEIS-EXPORT.md).
+
+### D-RELEASE-013 — Sofortige Domainrücknahme untersuchen, 19. November 2026
+
+Lars meldet „der domainwechsel wird immer zurückgenommen“, konkret „Sofort nach Übernehmen“. Sein Protokoll zeigt Dienststarts und danach nur „WARN Domainwechsel zurückgenommen“. Öffentlich lesbare Versionsdaten des Containers nennen 0.9.2. Die fehlende Ursachenanzeige wird korrigiert; daraus folgt keine Behauptung, der konkrete Instanzfehler sei behoben. Es erfolgt keine Installation oder Konfigurationsänderung auf seinem LXC.

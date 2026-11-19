@@ -13,7 +13,7 @@ test("Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betr
     });
     assert.equal(response.statusCode, 200, response.body);
     assert.deepEqual(response.json(), {
-      version: "0.9.2",
+      version: "0.9.3",
       apiVersion: 1,
       schemaVersion: 10,
     });

@@ -20,6 +20,47 @@ function ipc(socketPath, daten) {
     req.end(JSON.stringify(daten));
   });
 }
+test("Domainrücknahme bewahrt die Ursache im Auftrag und im Systemlog", async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), "timereal-domain-meldung-"));
+  const socketPath = join(dir, "dienst.sock");
+  const ereignisse = [];
+  const meldung =
+    "Domainwechsel zurückgenommen. Die lokale HTTPS-Prüfung ist fehlgeschlagen (Exit 1). Vorherige Konfiguration wiederhergestellt.";
+  const server = await dienstStarten({
+    verzeichnis: join(dir, "zustand"),
+    socketPath,
+    lockPath: join(dir, "lock"),
+    protokoll: (level, msg) => ereignisse.push({ level, msg }),
+    ausfuehren: async (_aktion, job, buch) => {
+      await buch.fortschreiben(job.id, {
+        zustand: "zurueckgesetzt",
+        phase: "zurueckgesetzt",
+        meldung,
+      });
+      throw new Error("Fremder Prozessfehler");
+    },
+  });
+  t.after(async () => {
+    await server.schliessen();
+    await rm(dir, { recursive: true, force: true });
+  });
+  const job = await ipc(socketPath, {
+    aktion: "annehmen",
+    anfrage: {
+      aktion: "domain-pruefen",
+      konto: "1",
+      schluessel: crypto.randomUUID(),
+      daten: { domain: "zeit.example.org" },
+    },
+  });
+  assert.equal(job.status, 200);
+  await server.ausstehend();
+  assert.equal(
+    (await ipc(socketPath, { aktion: "auftrag", id: job.id })).meldung,
+    meldung,
+  );
+  assert.ok(ereignisse.some((e) => e.level === "warn" && e.msg === meldung));
+});
 test("Systemkonsole liest über den Unix-Socket nur validierte Journalfilter", async (t) => {
   const dir = await mkdtemp(join(tmpdir(), "timereal-journal-ipc-"));
   const socketPath = join(dir, "dienst.sock");

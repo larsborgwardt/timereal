@@ -1,0 +1,58 @@
+Betriebsauftrag fehlgeschlagen d5e307f1-17fd-4a2e-b56e-d53c7f0f4279 Error
+✖ Domainrücknahme bewahrt die Ursache im Auftrag und im Systemlog (42.392908ms)
+✔ Systemkonsole liest über den Unix-Socket nur validierte Journalfilter (11.590545ms)
+✔ Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart (10.619504ms)
+✖ Domainrücknahme nennt Prüfschritt und sichere Ursache statt fremder Prozessausgaben (1.309816ms)
+✔ Domain wird aus unterstütztem Bestand abgeleitet; eigene Proxyregeln bleiben geschützt (4.281645ms)
+✔ Nur stabile Releases mit strikt höherer Version können vorbereitet werden (0.34492ms)
+✔ Ein Webupdate braucht einen passenden versionsgebundenen Betriebsvertrag (0.59575ms)
+✔ Abbruch zwischen Konfigurationsdateien erlaubt Rückbau, fremde Änderungen nicht (0.32676ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 131.542677
+
+✖ failing tests:
+
+test at tests/betrieb-dienst.test.mjs:23:1
+✖ Domainrücknahme bewahrt die Ursache im Auftrag und im Systemlog (42.392908ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(ereignisse.some(e => e.level === "warn" && e.msg === meldung))
+
+      at TestContext.<anonymous> (file:///home/hermes/workspace/timereal-excel/tests/betrieb-dienst.test.mjs:41:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/betrieb-konfiguration.test.mjs:9:1
+✖ Domainrücknahme nennt Prüfschritt und sichere Ursache statt fremder Prozessausgaben (1.309816ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at TestContext.<anonymous> (file:///home/hermes/workspace/timereal-excel/tests/betrieb-konfiguration.test.mjs:10:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
