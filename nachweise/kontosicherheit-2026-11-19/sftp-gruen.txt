@@ -24,12 +24,12 @@ datenbank.dump: OK
 rollen.sql: OK
 release.json: OK
 konfiguration/mfa.key: OK
- konten 
+ konten
 --------
       2
 (1 row)
 
- zeitabschnitte 
+ zeitabschnitte
 ----------------
               0
 (1 row)

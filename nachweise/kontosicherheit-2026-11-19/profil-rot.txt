@@ -1,6 +1,6 @@
- pg_advisory_lock 
+ pg_advisory_lock
 ------------------
- 
+
 (1 row)
 
 CREATE TABLE
@@ -176,7 +176,7 @@ REVOKE
 GRANT
 INSERT 0 1
 COMMIT
- pg_advisory_unlock 
+ pg_advisory_unlock
 --------------------
  t
 (1 row)
@@ -209,9 +209,9 @@ COMMIT
 test at tests/konten.mjs:8:1
 ✖ Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und Sperre (191.597533ms)
   AssertionError [ERR_ASSERTION]: {"fehler":"Bitte die Eingaben prüfen."}
-  
+
   400 !== 200
-  
+
       at ok (file:///home/hermes/workspace/sap-zeiterfassung/tests/konten.mjs:42:12)
       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
       at async TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/konten.mjs:58:19)

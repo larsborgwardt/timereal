@@ -1,6 +1,6 @@
- pg_advisory_lock 
+ pg_advisory_lock
 ------------------
- 
+
 (1 row)
 
 CREATE TABLE
@@ -172,7 +172,7 @@ REVOKE
 GRANT
 INSERT 0 1
 COMMIT
- pg_advisory_unlock 
+ pg_advisory_unlock
 --------------------
  t
 (1 row)
@@ -205,9 +205,9 @@ COMMIT
 test at tests/mfa.mjs:19:1
 ✖ 2FA: Kontogrenze, Einrichtung, Teilanmeldung, Replay, Recovery und Widerruf (295.274681ms)
   AssertionError [ERR_ASSERTION]: {"message":"Route DELETE:/api/v1/mfa/einrichtung not found","error":"Not Found","statusCode":404}
-  
+
   404 !== 200
-  
+
       at ok (file:///home/hermes/workspace/sap-zeiterfassung/tests/mfa.mjs:33:74)
       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
       at async TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/mfa.mjs:43:5)

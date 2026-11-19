@@ -13,9 +13,9 @@
 test at tests/mfa-schluessel.test.mjs:8:1
 ✖ 2FA-Schlüssel: atomare Anlage, unveränderter Bestand, sichere Dateirechte (3.056769ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   384 !== 416
-  
+
       at TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/mfa-schluessel.test.mjs:33:12)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1402:25)

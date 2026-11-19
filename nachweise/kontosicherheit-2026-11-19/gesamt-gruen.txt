@@ -2,9 +2,9 @@
 > timereal@0.9.0 test
 > bash tests/postgres.sh
 
- pg_advisory_lock 
+ pg_advisory_lock
 ------------------
- 
+
 (1 row)
 
 CREATE TABLE
@@ -195,7 +195,7 @@ REVOKE
 GRANT
 INSERT 0 1
 COMMIT
- pg_advisory_unlock 
+ pg_advisory_unlock
 --------------------
  t
 (1 row)
