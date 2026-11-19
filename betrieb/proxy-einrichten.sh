@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Proxy-Patch 1: vorhandenes HTTPS im Testnetz hinter externem Nginx verwenden.
+# Proxy-Patch 2: vorhandenes HTTPS im Testnetz hinter externem Nginx verwenden.
 set -Eeuo pipefail
 umask 077
 usage() {
-  echo 'Timereal Proxy-Patch 1'
+  echo 'Timereal Proxy-Patch 2'
   echo 'Prüfung: proxy-einrichten.sh --check DOMAIN CONTAINER_IP'
   echo 'Anwenden: proxy-einrichten.sh DOMAIN CONTAINER_IP'
   echo 'DOMAIN ist die öffentliche HTTPS-Domain; CONTAINER_IP die bisherige lokale IPv4-Adresse.'
@@ -107,11 +107,17 @@ cp -p "$work/dienst.conf.vorher" "$backup/dienst.conf"
 if ! cmp -s /etc/timereal/Caddyfile "$backup/Caddyfile" || ! cmp -s /etc/timereal/dienst.conf "$backup/dienst.conf"; then
   echo 'Konfiguration wurde während der Prüfung geändert. Abbruch ohne Umschaltung.' >&2; exit 1;
 fi
+dienste_neu_starten() {
+  # Geplante Konfigurationswechsel dürfen nicht an vorherigen Starts hängen bleiben.
+  # Ein weiterhin defekter Dienst scheitert danach an Neustart oder HTTPS-Prüfung.
+  systemctl reset-failed timereal.service timereal-https.service &&
+    systemctl restart timereal.service timereal-https.service
+}
 rollback() {
   local code=$1 ok=false
   trap - ERR INT TERM
   set +e
-  if cp -p "$backup/Caddyfile" /etc/timereal/Caddyfile && cp -p "$backup/dienst.conf" /etc/timereal/dienst.conf && systemctl restart timereal.service timereal-https.service; then
+  if cp -p "$backup/Caddyfile" /etc/timereal/Caddyfile && cp -p "$backup/dienst.conf" /etc/timereal/dienst.conf && dienste_neu_starten; then
     for _ in {1..20}; do
       if cmp -s "$backup/Caddyfile" /etc/timereal/Caddyfile && cmp -s "$backup/dienst.conf" /etc/timereal/dienst.conf && health "$old_host" >/dev/null 2>&1; then ok=true; break; fi
       sleep 1
@@ -130,7 +136,7 @@ cp -p "$work/Caddyfile" /etc/timereal/Caddyfile.proxy-next
 cp -p "$work/dienst.conf" /etc/timereal/dienst.conf.proxy-next
 mv /etc/timereal/Caddyfile.proxy-next /etc/timereal/Caddyfile
 mv /etc/timereal/dienst.conf.proxy-next /etc/timereal/dienst.conf
-systemctl restart timereal.service timereal-https.service
+dienste_neu_starten
 echo '[4/4] HTTPS mit öffentlichem Hostnamen und lokalem IP-Zugang prüfen'
 ok=false
 for _ in {1..20}; do

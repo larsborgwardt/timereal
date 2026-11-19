@@ -6,12 +6,17 @@ script=${1:?Pfad des Proxy-Patches fehlt}
 [[ -f /root/TIMEREAL_WEGWERFTEST ]]
 # /tmp kann noexec sein; der Fehleradapter muss tatsächlich ausführbar sein.
 work=$(mktemp -d /root/timereal-proxytest.XXXXXXXX)
+override=/run/systemd/system/timereal.service.d/timereal-proxy-test.conf
+[[ ! -e $override ]]
 mkdir "$work/original"
 cp -p /etc/timereal/{Caddyfile,dienst.conf} "$work/"
 cp -p /etc/timereal/{Caddyfile,dienst.conf} "$work/original/"
 cleanup() {
+  rm -f "$override"
+  systemctl daemon-reload
   cp -p "$work/original/Caddyfile" /etc/timereal/Caddyfile
   cp -p "$work/original/dienst.conf" /etc/timereal/dienst.conf
+  systemctl reset-failed timereal.service timereal-https.service
   systemctl restart timereal.service timereal-https.service
   rm -rf "$work"
 }
@@ -20,6 +25,12 @@ ip=$(sed -n 's/^PUBLIC_ORIGIN=https:\/\///p' "$work/dienst.conf")
 ca=/var/lib/timereal-https/caddy/pki/authorities/local/root.crt
 domain=erste.proxyprobe.test
 systemctl start postgresql timereal timereal-https
+# Schon der zweite geplante Neustart trifft ohne Rücksetzung die reale Startsperre.
+mkdir -p "$(dirname "$override")"
+printf '[Unit]\nStartLimitIntervalSec=120\nStartLimitBurst=1\n' > "$override"
+systemctl daemon-reload
+systemctl reset-failed timereal.service timereal-https.service
+systemctl restart timereal.service timereal-https.service
 for _ in {1..20}; do
   if curl -fsS --cacert "$ca" --resolve "$ip:443:127.0.0.1" "https://$ip/health" >/dev/null 2>&1; then break; fi
   sleep 1
