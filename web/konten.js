@@ -5,10 +5,21 @@ export function kontenOberflaeche({
   bediene,
   melden,
   abmelden,
+  istErweiterung,
 }) {
   let profil = null,
     links = [],
-    namen = new Map();
+    namen = new Map(),
+    rollenentwuerfe = new Map();
+  const rollen = {
+    berater: "Berater",
+    betrieb: "Betrieb",
+    administrator: "Administrator",
+  };
+  $("#kontoliste").addEventListener("change", (ev) => {
+    if (ev.target.matches("[data-rolle]"))
+      rollenentwuerfe.set(ev.target.dataset.rolle, ev.target.value);
+  });
   for (const id of ["profilform", "grundeinstellungen"])
     $("#" + id).addEventListener("input", () => {
       $("#" + id).dataset.geaendert = "true";
@@ -30,12 +41,14 @@ export function kontenOberflaeche({
     text +
     "</button>";
   function aktualisieren(neu) {
+    if (profil?.id !== neu.id) rollenentwuerfe.clear();
     profil = neu;
-    $("#admin-nav").hidden = !profil.admin;
+    $("#admin-nav").hidden =
+      istErweiterung || !(profil.admin || profil.rolle === "betrieb");
     return profil;
   }
   async function laden(seite) {
-    if (seite === "verwaltung") {
+    if (seite === "verwaltung" && profil.admin) {
       const [konten, einladungen, mail] = await Promise.all([
         request("/verwaltung/konten"),
         request("/verwaltung/einladungen"),
@@ -50,20 +63,54 @@ export function kontenOberflaeche({
       // Die fachliche Sperre darf am Ende einer Bedienaktion nicht aufgehoben werden.
       if (!mail.konfiguriert) delete $("#einladen button").dataset.wartet;
       $("#kontoliste").innerHTML = konten
-        .map((k) =>
-          zeile(
-            k.login,
-            (k.admin ? "Administrator · " : "Berater · ") +
-              (k.aktiv ? "Aktiv" : "Gesperrt"),
-            k.admin
+        .map((k) => {
+          const eigenes = String(k.id) === String(profil.id);
+          const value = rollenentwuerfe.get(String(k.id)) ?? k.rolle;
+          return (
+            '<article class="ziel konto"><div class="zeile"><div><strong>' +
+            esc(k.login) +
+            '</strong><span class="neben">' +
+            (eigenes ? "Dieses Konto · " : "") +
+            esc(rollen[k.rolle]) +
+            " · " +
+            (k.aktiv ? "Aktiv" : "Gesperrt") +
+            "</span></div>" +
+            (eigenes
               ? ""
-              : knopf(
+              : '<label>Rolle<select id="rolle-' +
+                esc(k.id) +
+                '" data-rolle="' +
+                esc(k.id) +
+                '">' +
+                Object.entries(rollen)
+                  .map(
+                    ([id, name]) =>
+                      '<option value="' +
+                      id +
+                      '"' +
+                      (id === value ? " selected" : "") +
+                      ">" +
+                      name +
+                      "</option>",
+                  )
+                  .join("") +
+                "</select></label>") +
+            "</div>" +
+            (eigenes
+              ? ""
+              : '<div class="aktionen">' +
+                '<button type="button" data-konto="rolle" data-id="' +
+                esc(k.id) +
+                '">Rolle speichern</button>' +
+                knopf(
                   k.aktiv ? "Sperren" : "Entsperren",
                   k.aktiv ? "sperren" : "entsperren",
                   k.id,
-                ),
-          ),
-        )
+                ) +
+                "</div>") +
+            "</article>"
+          );
+        })
         .join("");
       $("#einladungsliste").innerHTML =
         links
@@ -116,6 +163,14 @@ export function kontenOberflaeche({
     if (!b) return;
     void bediene(async () => {
       const { konto: aktion, id } = b.dataset;
+      if (aktion === "rolle") {
+        const rolle = $("#rolle-" + CSS.escape(id)).value;
+        await request("/verwaltung/konten/" + id + "/rolle", "PATCH", {
+          rolle,
+        });
+        if (rollenentwuerfe.get(id) === rolle) rollenentwuerfe.delete(id);
+        melden("Rolle für " + namen.get(id) + " gespeichert.");
+      }
       if (["sperren", "entsperren"].includes(aktion)) {
         if (
           aktion === "sperren" &&

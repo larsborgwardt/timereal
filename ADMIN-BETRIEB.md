@@ -6,11 +6,11 @@
 
 **Ergänzung 0.7.2:** „Status aktualisieren“ unter Updates umgeht den Versionscache und fragt GitHub neu ab. Das Ergebnis steht anschließend auch dem Footer zur Verfügung. Die Prüfung ist auf einen Versuch je Minute pro Serverprozess begrenzt; gesperrte oder widerrufene Sitzungen, Berater und Erweiterungssitzungen können sie nicht auslösen. Eine abgeschaltete Versionsprüfung bleibt abgeschaltet. Vor 0.7.2 liest der Knopf nur den bisherigen Cache; der einmalige Übergang ist in der [Betriebsanleitung](betrieb/README.md#versionsfooter-und-updateprüfung-ab-062) beschrieben.
 
-Unter **Verwaltung** stehen die Bereiche **Berater**, **Updates**, **Domainzugriff** und ab 0.8.0 **Systemlogs**. Persönliche Einstellungen bleiben unter Einstellungen. Betriebsaktionen sind für Administratoren vorgesehen.
+Unter **Verwaltung** stehen die Bereiche **Konten**, **Updates**, **Domainzugriff** und ab 0.8.0 **Systemlogs**. Persönliche Einstellungen bleiben unter Einstellungen. Ab 0.8.1 sind Betriebsaktionen für Betrieb und Administratoren vorgesehen. Konten und Einladungen bleiben Administratoren vorbehalten. [Rollenvertrag](ROLLEN.md).
 
 ### Systemkonsole ab 0.8.0
 
-Die freigegebenen Bilder 12 (D-RELEASE-003) sind die Grundlage der Konsolenansicht. Sie liest das echte systemd-Journal ausschließlich für `timereal.service`, `timereal-betrieb.service` und `timereal-https.service`. Eine gültige Administrator-Websitzung ist erforderlich; die Browsererweiterung bietet diesen Bereich nicht an.
+Die freigegebenen Bilder 12 (D-RELEASE-003) sind die Grundlage der Konsolenansicht. Sie liest das echte systemd-Journal ausschließlich für `timereal.service`, `timereal-betrieb.service` und `timereal-https.service`. Eine gültige Websitzung von Betrieb oder Administrator ist erforderlich; die Browsererweiterung bietet diesen Bereich nicht an.
 
 Quelle, Level und Freitext werden mit „Filtern“ angewendet. Die Suche ignoriert Groß-/Kleinschreibung und arbeitet auf bereits bereinigten Meldungen. Live fragt im sichtbaren Bereich ungefähr alle zwei Sekunden ab. Pause beendet Folgeabrufe auch bei Fensterwechsel; ein bereits laufender Abruf darf noch enden. „Aktualisieren“ funktioniert weiterhin. Ohne automatisches Scrollen bleibt die Leseposition erhalten. „Herunterladen“ exportiert genau den zuletzt angezeigten gefilterten Stand als UTF-8-Text. Bei Verbindungsfehler bleibt ein zuvor geladener Stand mit ausdrücklichem Fehlerhinweis erhalten. Abmelden löscht den Stand aus der Oberfläche.
 
@@ -35,7 +35,7 @@ Technische Grundlagen: [journalctl, Matching und JSON-Ausgabe](https://www.freed
 
 1. Installierte und neu verfügbare stabile Version anzeigen; Änderungsnotizen öffnen. Ein Abruffehler heißt „Prüfung derzeit nicht möglich“, nicht „Aktuell“.
 2. **Update vorbereiten** lädt das konkrete Release und baut es in einem eigenen Verzeichnis. Die Anwendung bleibt in dieser Phase nutzbar. Rechte, Speicherplatz und Versions-/Schemakompatibilität werden geprüft. Ein Konflikt mit einer anderen Betriebsaktion wird angezeigt.
-3. Nach erfolgreicher Vorbereitung zeigt die Oberfläche das festgehaltene Versionsziel. **Sichern und installieren** erfordert das aktuelle Administratorpasswort. Der Hinweis erklärt die kurze Unterbrechung für angemeldete Nutzer; laufende Timer behalten ihre zeitlichen Grenzen in PostgreSQL.
+3. Nach erfolgreicher Vorbereitung zeigt die Oberfläche das festgehaltene Versionsziel. **Sichern und installieren** erfordert das aktuelle Passwort des ausführenden Kontos. Der Hinweis erklärt die kurze Unterbrechung für angemeldete Nutzer; laufende Timer behalten ihre zeitlichen Grenzen in PostgreSQL.
 4. Der getrennte Betriebsdienst hält die Anwendung an, erstellt und prüft die Sicherung, migriert, schaltet das Release um und startet die Anwendung. Der Fortschritt zeigt echte Phasen ohne erfundene Prozentwerte.
 5. Während des Neustarts meldet die Oberfläche den vorübergehenden Verbindungsverlust und verbindet sich erneut. Browser schließen oder Seite neu laden startet keinen zweiten Auftrag. Ein erfolgreich gestarteter Auftrag läuft unabhängig vom Browser weiter.
 6. Ergebnis mit Ausgangs-/Zielversion, Zeitpunkt und veranlassendem Konto anzeigen. Bei fehlgeschlagener Aktivierung wird zwischen „vorige Anwendung wieder erreichbar“ und „manuelle Wiederherstellung erforderlich“ unterschieden. Kein automatisches Zurückspielen eines alten Datenbankdumps.
@@ -45,8 +45,8 @@ Technische Grundlagen: [journalctl, Matching und JSON-Ausgabe](https://www.freed
 1. **Verwaltung → Domainzugriff** zeigt die tatsächlich konfigurierte öffentliche Adresse und das erkannte Proxy-Ziel. Die Domain wird ohne Protokoll oder Pfad eingetragen. Keine Festverdrahtung auf Lars' Domain.
 2. **Domain prüfen** validiert Namen und vorhandene Caddy-Konfiguration. Vorhandene Konfiguration muss einer unterstützten Vorlage entsprechen; eigene Änderungen werden nicht überschrieben. Containeradresse und Port werden aus dem Bestand abgeleitet, nicht als beliebige Netzwerkziele vom Browser übernommen.
 3. Angezeigt wird, was der Betreiber am externen Proxy benötigt: HTTPS-Ziel samt Port, öffentlicher Host-Header und gültiges öffentliches Zertifikat. Timereal richtet keine fremden DNS-/Router-/Nginx-Konten ein. Eine lokale Probe wird nicht als externer Erreichbarkeitsnachweis ausgegeben.
-4. **Domain übernehmen** erfordert das aktuelle Administratorpasswort. Der Betriebsdienst sichert Caddy-Konfiguration und `PUBLIC_ORIGIN`, übernimmt beide gemeinsam und prüft echte HTTPS-Antworten einschließlich nichtleerer Startseite und korrekter Health-Antwort.
-5. Die Oberfläche öffnet die neue Adresse. Dort meldet sich der Administrator erneut an und wählt **Zugriff bestätigen**. Die Sitzung wird nicht zwischen Domains übertragen. Bestätigen ist nur über die neue konfigurierte Origin zulässig.
+4. **Domain übernehmen** erfordert das aktuelle Passwort des ausführenden Kontos. Der Betriebsdienst sichert Caddy-Konfiguration und `PUBLIC_ORIGIN`, übernimmt beide gemeinsam und prüft echte HTTPS-Antworten einschließlich nichtleerer Startseite und korrekter Health-Antwort.
+5. Die Oberfläche öffnet die neue Adresse. Dort meldet sich das ausführende Konto erneut an und wählt **Zugriff bestätigen**. Die Sitzung wird nicht zwischen Domains übertragen. Bestätigen ist nur über die neue konfigurierte Origin zulässig.
 6. Wird der Zugriff innerhalb von drei Minuten nach erfolgreichem lokalen Neustart nicht bestätigt, stellt der Betriebsdienst die vorherige Konfiguration wieder her. Das gilt auch bei geschlossenem Browser. Ein Neustart des Betriebsdienstes erkennt abgelaufene Fristen aus dem dauerhaft gespeicherten Auftrag. Die alte Adresse und die verbleibende Bestätigungsfrist bleiben im Wechselbild sichtbar.
 
 Der erste Umfang unterstützt den vorhandenen Timereal-LXC mit externem HTTPS-Proxy und lokaler IPv4-Adresse auf Port 443. Abweichende eigene Caddy-Konfigurationen werden als nicht unterstützt angezeigt. Ein neuer öffentlicher Direktbetrieb ohne vorgeschalteten Proxy bleibt über das bestehende HTTPS-Einrichtungsskript möglich und wird nicht still in einen anderen Betriebsmodus umgeschaltet.
@@ -55,7 +55,7 @@ Der erste Umfang unterstützt den vorhandenen Timereal-LXC mit externem HTTPS-Pr
 
 ```mermaid
 flowchart LR
-  Browser[Administrator im Browser] -->|HTTPS und Websitzung| Proxy[Vorhandener HTTPS-Zugang]
+  Browser[Betrieb oder Administrator im Browser] -->|HTTPS und Websitzung| Proxy[Vorhandener HTTPS-Zugang]
   Proxy --> API[Timereal API als timereal_app]
   API -->|Sitzung, Rolle, Passwort| PG[(PostgreSQL)]
   API -->|Festes Auftragsprotokoll über Unix-Socket| Betrieb[Getrennter systemd-Betriebsdienst]
@@ -68,7 +68,7 @@ flowchart LR
 - Die Web-App bleibt `timereal_app`, mit `NoNewPrivileges=true`, ohne sudo und ohne Schreibrechte an Systemkonfiguration oder Releasecode.
 - Der neue Dienst verwendet einen lokalen Unix-Socket mit ausdrücklich gesetztem Modus `0660`, Besitzer root und Gruppe `timereal_app`. Verzeichnis und Dienstprogramm sind root-eigen und für die Web-App nicht beschreibbar. Kein zusätzlicher TCP-Port und keine direkte öffentliche Weiterleitung zum Dienst.
 - Das Protokoll erlaubt vorbereiten, starten, Status lesen, Domain prüfen/übernehmen/bestätigen sowie ab 0.8.0 den begrenzten Journalabruf. Kein frei wählbarer Shellbefehl, Dateipfad, Git-Remote oder Umgebungsblock. Prozesse starten mit festen Argumenten und ohne Shellinterpolation.
-- Die API bindet eine gültige Websitzung und prüft `admin_pruefen()`. Erweiterungs-Bearer, Berater, gesperrte Konten und widerrufene Sitzungen erhalten keinen Zugriff. Schreibzugriffe unterliegen der Origin-Prüfung; Passwortprüfungen werden begrenzt. Rollen und Sitzung werden bei jeder Aktion erneut geprüft.
+- Die API bindet eine gültige Websitzung und prüft `betrieb_pruefen()`. Erweiterungs-Bearer, Berater, gesperrte Konten und widerrufene Sitzungen erhalten keinen Zugriff. Schreibzugriffe unterliegen der Origin-Prüfung; Passwortprüfungen werden begrenzt. Rollen und Sitzung werden bei jeder Aktion erneut geprüft.
 - Das Socketrecht ist eine bewusste Vertrauensgrenze: Ein vollständig übernommener Webprozess könnte erlaubte Betriebsaufträge anfordern. Deshalb begrenzt der Betriebsdienst selbst Quelle, Ziel, Übergänge und Argumente; er ist keine zweite unabhängige Benutzeranmeldung. Das Restrisiko wird nicht als vollständige Prozessisolation ausgegeben.
 - Releasequelle bleibt `larsborgwardt/timereal`. Nur stabile semantische Versionen, kein Downgrade; Git-Tag und Commit werden bei Vorbereitung festgehalten und vor Aktivierung erneut verglichen. TLS und das Repository sind die Vertrauensbasis; ohne zusätzlichen Signaturvertrag wird keine Signaturprüfung behauptet.
 - Ein gemeinsamer Betriebslock verhindert gleichzeitige Webupdates, Domainwechsel und Konsoleneingriffe. Wiederholungen mit demselben Auftragsschlüssel liefern denselben Auftrag; abweichende Nutzdaten zum selben Schlüssel werden abgewiesen.
@@ -81,12 +81,12 @@ Implementierte Endpunkte; bis auf die reine Versionsprüfung muss der Unix-Betri
 |---|---|
 | `GET /status` | Betriebsdienst erreichbar, aktuelle Konfiguration, jüngster Auftrag |
 | `GET /logs` | Ab 0.8.0: bereinigter Journalausschnitt; optionale Filter `quelle`, `level`, `suche` (höchstens 200 Zeichen), `Cache-Control: no-store` |
-| `POST /updates/pruefen` | Ab 0.7.2: Administrator-Websitzung, Origin-Prüfung, leeres JSON-Objekt; sofortige Versionsprüfung ohne root-Aktion; bei erneutem Versuch innerhalb einer Minute HTTP 429 mit `Retry-After` |
+| `POST /updates/pruefen` | Ab 0.7.2: berechtigte Websitzung, Origin-Prüfung, leeres JSON-Objekt; sofortige Versionsprüfung ohne root-Aktion; bei erneutem Versuch innerhalb einer Minute HTTP 429 mit `Retry-After` |
 | `POST /updates/vorbereiten` | Festes stabiles Release prüfen und separat bauen; Auftragsschlüssel |
 | `POST /updates/:id/installieren` | Bestätigtes Ziel aktivieren; aktuelles Passwort und Auftragsschlüssel |
 | `POST /domain/pruefen` | Domain gegen Konfiguration prüfen; unveränderlichen Prüfvorgang erzeugen |
 | `POST /domain/:id/uebernehmen` | Geprüfte Konfiguration nach Passwortprüfung anwenden |
-| `POST /domain/:id/bestaetigen` | Neuen Zugriff als Administrator über die neue Origin bestätigen |
+| `POST /domain/:id/bestaetigen` | Neuen Zugriff mit Betriebsberechtigung über die neue Origin bestätigen |
 | `POST /domain/:id/zuruecknehmen` | Noch unbestätigten Wechsel auf die gesicherte Konfiguration zurücknehmen |
 | `GET /auftraege/:id` | Persistierten Fortschritt und begrenzten Ergebnisbericht lesen |
 

@@ -6,7 +6,6 @@ Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen P
 
 | Version / Thema | Ziel | Stand und nächster Schritt |
 |---|---|---|
-| 0.8.1 — Benutzer und Rollen | Berater, Betrieb und Administrator mit abgegrenzten Rechten | Bestehende Einladungen und Sperren weiterverwenden. Kontenbilder 11 sind durch D-RELEASE-004 freigegeben. Rollenwechsel und Schutz des letzten Administrators vor dem Bau verbindlich beschreiben. |
 | 0.8.2 — Audit-Protokoll | Sicherheits- und Verwaltungsereignisse lesbar machen | Buchungshistorie besteht. Auditbilder 11 sind durch D-RELEASE-005 freigegeben. Vereinbart: Administratoransicht, 180-Tage-Lesefenster, Export ohne Buchungstexte und Zugangsdaten. Aufbewahrung gesondert festlegen. |
 | 0.9.0 — Eigenes Konto und 2FA | Profil bearbeiten und Zwei-Faktor-Anmeldung mit Wiederherstellung | Passwortwechsel, E-Mail und Sitzungsverwaltung bestehen. Überarbeitete [Kontoübersicht](mockups/13-profil-1280.png), [Einrichtung mobil](mockups/13-authenticator-390.png) und [Wiederherstellungscodes](mockups/13-codes-1280.png) durch D-RELEASE-006 freigegeben. |
 | 0.9.0 — Browsererweiterung | Neuen Anmeldevertrag übernehmen; weitere Browser- und Alltagstests | Chromium-Timer, Notizen und eigene widerrufbare Sitzung bestehen seit 0.5.0. Firefox, Safari/WebKit, Vertriebsweg und Store-Veröffentlichung bleiben gesondert zu qualifizieren. |
@@ -14,6 +13,10 @@ Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen P
 ## Umfang von 0.7.0
 
 Designkorrekturen der vorhandenen Web-App und Chromium-Erweiterung sowie **Verwaltung → Updates / Domainzugriff** sind implementiert. Prüfungen und deren Grenzen: [Designprüfung](DESIGNPRUEFUNG.md), [Betriebsvertrag](ADMIN-BETRIEB.md), [Releasebelege](nachweise/0.7.0.md). Ein bestehender Container braucht für den Betriebsdienst zunächst das Konsolenupdate auf 0.7.0. Die Veröffentlichung eines Releases aktualisiert Lars' LXC nicht automatisch.
+
+## Benutzer und Rollen in 0.8.1
+
+Berater, Betrieb und Administrator sowie Rollenwechsel sind implementiert. Der [Rollenvertrag](ROLLEN.md) beschreibt Kontotrennung, Sitzungswiderruf und den Schutz des letzten Administrators; [Prüfbelege](nachweise/0.8.1.md). Audit und Kontosicherheit bleiben die nächsten Lieferpakete.
 
 ## Systemkonsole in 0.8.0
 

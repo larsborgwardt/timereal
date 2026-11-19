@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.8.1 — 19. November 2026
+
+- Kontenansicht mit den Rollen Berater, Betrieb und Administrator sowie erklärten Berechtigungen. Persönliche Kunden und Zeiten bleiben getrennt.
+- Betrieb erhält Zugriff auf Updates, Domainzugriff und Systemkonsole. Konten und Einladungen bleiben Administratoren vorbehalten; Verwaltungsaktionen verlangen eine Websitzung.
+- Rollenwechsel widerrufen Sitzungen, lassen laufende Timer bestehen. Unveränderte Rollen widerrufen keine Sitzung. Eigene Administratorkonten und der letzte aktive Administrator sind geschützt; konkurrierende Änderungen werden vor der Sitzungsbindung serialisiert.
+- Ungespeicherte Rollenauswahl bleibt bei Hintergrundaktualisierung erhalten.
+- Additive Migration auf Datenbankschema 7; API 1 und Betriebsprotokoll 1 bleiben erhalten.
+
 ## 0.8.0 — 19. November 2026
 
 - Schnelle Seitenwechsel blenden keinen Verarbeitungshinweis mehr ein; längeres Laden meldet sich nach 300 Millisekunden mit „Seite wird geladen…“.

@@ -103,11 +103,14 @@ export function betriebsRouten(
     stand.anzahl++;
     versuche.set(konto, stand);
   }
-  async function admin(req: FastifyRequest, passwort?: string) {
+  async function berechtigt(req: FastifyRequest, passwort?: string) {
     if (req.headers.authorization)
-      throw new Fehler(403, "Eine Administrator-Websitzung ist erforderlich.");
+      throw new Fehler(
+        403,
+        "Eine Websitzung mit Betriebsrechten ist erforderlich.",
+      );
     return privat(req, async (db) => {
-      await db.query("select admin_pruefen()");
+      await db.query("select betrieb_pruefen()");
       const {
         rows: [r],
       } = await db.query("select aktuelles_konto()::text as id");
@@ -117,13 +120,13 @@ export function betriebsRouten(
           rows: [p],
         } = await db.query("select eigenes_passwort() as hash");
         if (!(await verify(passwort, p.hash)))
-          throw new Fehler(403, "Das Administratorpasswort stimmt nicht.");
+          throw new Fehler(403, "Das Passwort stimmt nicht.");
       }
       return r.id as string;
     });
   }
   app.get(prefix + "/status", async (req) => {
-    await admin(req);
+    await berechtigt(req);
     return betriebsAufruf(socketPath, { aktion: "status" });
   });
   app.get<{ Querystring: { quelle?: string; level?: string; suche?: string } }>(
@@ -156,7 +159,7 @@ export function betriebsRouten(
       },
     },
     async (req, reply) => {
-      await admin(req);
+      await berechtigt(req);
       reply.header("Cache-Control", "no-store");
       return betriebsAufruf(
         socketPath,
@@ -169,7 +172,7 @@ export function betriebsRouten(
     prefix + "/updates/pruefen",
     { schema: { body: objekt({}, []) } },
     async (req, reply) => {
-      await admin(req);
+      await berechtigt(req);
       const jetzt = Date.now();
       if (jetzt < naechsteVersionspruefung) {
         const rest = Math.ceil((naechsteVersionspruefung - jetzt) / 1000);
@@ -189,7 +192,7 @@ export function betriebsRouten(
     prefix + "/auftraege/:id",
     { schema: { params: objekt({ id: uuid }, ["id"]) } },
     async (req) => {
-      await admin(req);
+      await berechtigt(req);
       return betriebsAufruf(socketPath, {
         aktion: "auftrag",
         id: req.params.id,
@@ -233,7 +236,7 @@ export function betriebsRouten(
         },
       },
       async (req, reply) => {
-        const konto = await admin(
+        const konto = await berechtigt(
           req,
           feld === "passwort" ? req.body.passwort : undefined,
         );

@@ -141,11 +141,16 @@ export function createApp(
   const privat = <T>(
     req: FastifyRequest,
     run: (db: PoolClient) => Promise<T>,
+    kontenAendern = false,
   ) =>
     transaktion(pool, async (db) => {
       const auth = req.headers.authorization;
       if (auth && !/^Bearer [a-f0-9]{64}$/.test(auth))
         throw new Fehler(401, "Bitte erneut anmelden.");
+      // Vor bindSession serialisieren: es sperrt bereits das Konto des
+      // Handelnden. So können zwei Administratoren nicht aufeinander warten.
+      if (kontenAendern)
+        await db.query("select pg_advisory_xact_lock(734995512)");
       await bindSession(
         db,
         auth ? auth.replace(/^Bearer /, "") : webToken(req),

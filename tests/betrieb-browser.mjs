@@ -192,16 +192,14 @@ try {
     .getByRole("heading", { name: "Bereit zur Installation", exact: true })
     .waitFor();
   await page
-    .getByLabel("Administratorpasswort für das Update")
+    .getByLabel("Dein Passwort für das Update")
     .fill("falsches-passwort");
   await page
     .getByRole("button", { name: "Sichern und installieren", exact: true })
     .click();
-  await page
-    .getByText("Das Administratorpasswort stimmt nicht.", { exact: true })
-    .waitFor();
+  await page.getByText("Das Passwort stimmt nicht.", { exact: true }).waitFor();
   assert.equal(ausfuehrungen, 1);
-  await page.getByLabel("Administratorpasswort für das Update").fill(passwort);
+  await page.getByLabel("Dein Passwort für das Update").fill(passwort);
   await page
     .getByRole("button", { name: "Sichern und installieren", exact: true })
     .click();
@@ -211,7 +209,7 @@ try {
   assert.equal(ausfuehrungen, 2);
   assert.deepEqual(await pruefeAnsicht(page, "betrieb-update-erfolgreich"), []);
   assert.equal(
-    await page.getByLabel("Administratorpasswort für das Update").inputValue(),
+    await page.getByLabel("Dein Passwort für das Update").inputValue(),
     "",
   );
   await nav.getByRole("button", { name: "Domainzugriff", exact: true }).click();

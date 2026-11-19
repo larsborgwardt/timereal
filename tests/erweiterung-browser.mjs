@@ -15,7 +15,7 @@ await owner.connect();
 const pass = randomBytes(20).toString("hex");
 const login = "extension-browser-" + randomBytes(8).toString("hex");
 await owner.query(
-  "insert into konto(login_referenz,passwort_hash) values($1,$2)",
+  "insert into konto(login_referenz,passwort_hash,ist_admin) values($1,$2,true)",
   [login, await passwordHash(pass)],
 );
 const url = new URL(process.env.TEST_DATABASE_URL);
@@ -353,20 +353,10 @@ try {
       path: process.env.SCREENSHOT_DIR + "/erweiterung-vollansicht.png",
       fullPage: true,
     });
-  await owner.query("update konto set ist_admin=true where login_referenz=$1", [
-    login,
-  ]);
-  await full.reload();
-  await full.getByRole("button", { name: "Verwaltung", exact: true }).click();
-  await full.locator("#betrieb-berater").waitFor();
   assert.equal(
-    await full.locator('[data-betrieb="updates"]').isVisible(),
-    false,
-    "Betriebsaktionen benötigen die Websitzung und werden in der Erweiterung nicht angeboten.",
-  );
-  assert.equal(
-    await full.locator('[data-betrieb="domain"]').isVisible(),
-    false,
+    await full.getByRole("button", { name: "Verwaltung", exact: true }).count(),
+    0,
+    "Verwaltung benötigt eine Websitzung und wird in der Erweiterung auch für Administratoren nicht angeboten.",
   );
   await mobile
     .getByRole("button", { name: "Einstellungen", exact: true })

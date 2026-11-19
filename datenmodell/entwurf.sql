@@ -26,4 +26,8 @@ SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=6) AS kapazitaet 
 \if :kapazitaet
 \ir migrationen/006-kapazitaet.sql
 \endif
+SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=7) AS rollen \gset
+\if :rollen
+\ir migrationen/007-rollen.sql
+\endif
 SELECT pg_advisory_unlock(675039138012);
