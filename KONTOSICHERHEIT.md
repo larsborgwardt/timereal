@@ -1,6 +1,6 @@
 # Kontoprofil und Zwei-Faktor-Anmeldung — Umsetzungsvorbereitung 0.9.0
 
-Stand 19. November 2026. Technischer Entwurf für den beauftragten nächsten Ausbau, noch keine implementierte Sicherheitsfunktion. Ausgangspunkt ist Audit-Kandidat `a57cc75875c031b9112ab29f77460d0c67a639e7`. Profil- und Einrichtungsbilder 13 sind durch D-RELEASE-006 freigegeben. Für Anmeldung mit zweitem Faktor, Wiederherstellungsanmeldung und Verwaltung eines eingerichteten Faktors liegen die ergänzenden Bilder 14 zur Freigabe vor.
+Stand 19. November 2026. Technischer Entwurf für den beauftragten nächsten Ausbau, noch keine implementierte Sicherheitsfunktion. Ausgangspunkt ist Audit-Kandidat `a57cc75875c031b9112ab29f77460d0c67a639e7`. Profil- und Einrichtungsbilder 13 sind durch D-RELEASE-006 freigegeben. Anmeldung mit zweitem Faktor, Wiederherstellungsanmeldung und Verwaltung eines eingerichteten Faktors sind mit den ergänzenden Bildern 14 durch D-RELEASE-007 freigegeben.
 
 ## Gemessene Integrationspunkte
 
@@ -40,4 +40,4 @@ Audit erfasst Einrichtung, Aktivierung, Ausschalten, Codeerneuerung und Wiederhe
 4. Tatsächlich geladene Erweiterung durch die vollständige Anmeldung führen; Teilanmeldung und widerrufene Sitzung ablehnen. API-Version und Kompatibilitätsgrenzen anhand dieses Laufs festlegen, nicht nur am Typmodell.
 5. Audit, Geheimnisprüfung, Gesamt- und Lastlauf, Rückfall auf alten Anwendungsstand mit aktiver 2FA. Release erst nach diesen Nachweisen; ein alter Stand darf bei aktivierter 2FA den Zugriff verweigern, aber nicht den Faktor überspringen.
 
-Noch zu qualifizieren sind die konkrete TOTP-/QR-Bibliothek, die Tabellen-/API-Signaturen und der genaue Wiederherstellungsbefehl. Diese Punkte werden vor Implementierung an vorhandenen Abhängigkeiten und realen Testaufbauten entschieden. Bildfreigabe für die Ergänzungen 14 steht aus; dieser Entwurf behauptet weder eine Freigabe noch einen abgeschlossenen Bau.
+Noch zu qualifizieren sind die konkrete TOTP-/QR-Bibliothek, die Tabellen-/API-Signaturen und der genaue Wiederherstellungsbefehl. Diese Punkte werden vor Implementierung an vorhandenen Abhängigkeiten und realen Testaufbauten entschieden. Die Bildfreigabe ist erteilt; dieser Entwurf behauptet keinen abgeschlossenen Bau.

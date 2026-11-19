@@ -40,9 +40,9 @@ Lars bestätigt die Auditbilder 11 mit **„Audit-Ansicht freigeben (empfohlen)�
 
 Lars bestätigt die überarbeiteten Bilder 13 (Kontoübersicht, mobile Authenticator-Einrichtung, Wiederherstellungscodes) mit **„Bildentwürfe freigeben (empfohlen)“**. Diese Vorlage ersetzt den bisherigen Kontosicherheitsentwurf. Damit ist die Bildwarteposition aus D-RELEASE-001 für diesen Bereich aufgehoben. Geplantes Folgepaket: 0.9.0 mit angepasster Erweiterungsanmeldung.
 
-### Ergänzende Bildvorlage 14 — Entscheidung ausstehend
+### D-RELEASE-007 — Ergänzende Zwei-Faktor-Bilder freigegeben, 19. November 2026
 
-Die Freigabe von Bildern 13 bleibt gültig. Für den späteren Alltag mit eingeschalteter 2FA sind zusätzlich [Anmeldung](mockups/14-anmeldung-390.png), [Wiederherstellungsanmeldung](mockups/14-wiederherstellung-390.png), [Verwaltung](mockups/14-verwaltung-1280.png) und [Ausschaltbestätigung](mockups/14-bestaetigung-390.png) vorgelegt. Die getrennte Bildfrage ist noch unbeantwortet; daraus wird keine Zustimmung abgeleitet. Die [technische Vorbereitung](KONTOSICHERHEIT.md) beschreibt den Anmeldevertrag, die Sicherung der Schlüssel und die vorgesehenen Prüfungen. Sie ist kein Implementierungsnachweis.
+Lars bestätigt mit **„Ergänzende Bilder freigeben (empfohlen)“** die [Anmeldung](mockups/14-anmeldung-390.png), [Wiederherstellungsanmeldung](mockups/14-wiederherstellung-390.png), [Verwaltung](mockups/14-verwaltung-1280.png) und [Ausschaltbestätigung](mockups/14-bestaetigung-390.png). Die Freigabe von Bildern 13 bleibt gültig. Damit ist die ergänzende Bildwarteposition aufgehoben. Die [technische Vorbereitung](KONTOSICHERHEIT.md) beschreibt den Anmeldevertrag, die Sicherung der Schlüssel und die vorgesehenen Prüfungen. Sie ist kein Implementierungsnachweis.
 
 ## Umsetzungsfolge
 

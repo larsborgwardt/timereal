@@ -6,7 +6,7 @@ Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen P
 
 | Version / Thema | Ziel | Stand und nächster Schritt |
 |---|---|---|
-| 0.9.0 — Eigenes Konto und 2FA | Profil bearbeiten und Zwei-Faktor-Anmeldung mit Wiederherstellung | Passwortwechsel, E-Mail und Sitzungsverwaltung bestehen. Überarbeitete [Kontoübersicht](mockups/13-profil-1280.png), [Einrichtung mobil](mockups/13-authenticator-390.png) und [Wiederherstellungscodes](mockups/13-codes-1280.png) durch D-RELEASE-006 freigegeben. [Technische Vorbereitung](KONTOSICHERHEIT.md) liegt vor; Bildfreigabe für die ergänzenden Anmelde- und Verwaltungsabläufe 14 steht aus. |
+| 0.9.0 — Eigenes Konto und 2FA | Profil bearbeiten und Zwei-Faktor-Anmeldung mit Wiederherstellung | Passwortwechsel, E-Mail und Sitzungsverwaltung bestehen. Überarbeitete [Kontoübersicht](mockups/13-profil-1280.png), [Einrichtung mobil](mockups/13-authenticator-390.png) und [Wiederherstellungscodes](mockups/13-codes-1280.png) durch D-RELEASE-006 freigegeben. Die ergänzenden Anmelde- und Verwaltungsabläufe 14 sind durch D-RELEASE-007 freigegeben. Baugrundlage: [technische Vorbereitung](KONTOSICHERHEIT.md). |
 | 0.9.0 — Browsererweiterung | Neuen Anmeldevertrag übernehmen; weitere Browser- und Alltagstests | Chromium-Timer, Notizen und eigene widerrufbare Sitzung bestehen seit 0.5.0. Firefox, Safari/WebKit, Vertriebsweg und Store-Veröffentlichung bleiben gesondert zu qualifizieren. |
 
 ## Umfang von 0.7.0
