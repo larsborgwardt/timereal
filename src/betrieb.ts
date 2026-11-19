@@ -2,7 +2,6 @@ import { request } from "node:http";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { Fehler } from "./db.js";
 import { objekt, uuid, wort, type Privat } from "./http.js";
-import { verify } from "./session.js";
 import type { UpdateStatus } from "./updates.js";
 
 /** Privilegierte Operationen bleiben hinter dem lokalen, root-eigenen Socket. */
@@ -90,20 +89,7 @@ export function betriebsRouten(
 ) {
   const prefix = "/api/v1/verwaltung/betrieb";
   let naechsteVersionspruefung = 0;
-  const versuche = new Map<string, { bis: number; anzahl: number }>();
-  function passwortLimit(konto: string) {
-    const jetzt = Date.now();
-    for (const [key, v] of versuche) if (v.bis <= jetzt) versuche.delete(key);
-    const stand = versuche.get(konto) ?? { bis: jetzt + 600000, anzahl: 0 };
-    if (stand.anzahl >= 8 || (!versuche.has(konto) && versuche.size >= 2048))
-      throw new Fehler(
-        429,
-        "Zu viele Passwortprüfungen. Bitte später erneut versuchen.",
-      );
-    stand.anzahl++;
-    versuche.set(konto, stand);
-  }
-  async function berechtigt(req: FastifyRequest, passwort?: string) {
+  async function berechtigt(req: FastifyRequest) {
     if (req.headers.authorization)
       throw new Fehler(
         403,
@@ -114,14 +100,6 @@ export function betriebsRouten(
       const {
         rows: [r],
       } = await db.query("select aktuelles_konto()::text as id");
-      if (passwort !== undefined) {
-        passwortLimit(r.id);
-        const {
-          rows: [p],
-        } = await db.query("select eigenes_passwort() as hash");
-        if (!(await verify(passwort, p.hash)))
-          throw new Fehler(403, "Das Passwort stimmt nicht.");
-      }
       return r.id as string;
     });
   }
@@ -200,6 +178,8 @@ export function betriebsRouten(
     },
   );
   const routen = [
+    ["/updates/starten", "update-starten", "tag"],
+    ["/domain/speichern", "domain-speichern", "domain"],
     ["/updates/vorbereiten", "update-vorbereiten", "tag"],
     ["/updates/:id/installieren", "update-installieren", "passwort"],
     ["/domain/pruefen", "domain-pruefen", "domain"],
@@ -226,7 +206,7 @@ export function betriebsRouten(
             : {}),
           body: objekt(
             feld ? { [feld]: felder[feld] } : {},
-            feld ? [feld] : [],
+            feld && feld !== "passwort" ? [feld] : [],
           ),
           headers: {
             type: "object",
@@ -236,10 +216,9 @@ export function betriebsRouten(
         },
       },
       async (req, reply) => {
-        const konto = await berechtigt(
-          req,
-          feld === "passwort" ? req.body.passwort : undefined,
-        );
+        // Alte Clients dürfen das frühere Passwortfeld noch senden; die aktive
+        // Websitzung und Betriebsrolle autorisieren den Auftrag. Nie weiterreichen.
+        const konto = await berechtigt(req);
         const daten =
           feld === "tag" || feld === "domain"
             ? { [feld]: req.body[feld] }

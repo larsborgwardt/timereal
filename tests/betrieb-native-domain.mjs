@@ -58,9 +58,15 @@ try {
   await q("/anmeldung", { login, passwort });
   const domain =
     origin === "https://example.org" ? "example.net" : "example.org";
-  const j = await q("/verwaltung/betrieb/domain/pruefen", { domain });
-  await warten(j.id, "geprueft");
-  await q(`/verwaltung/betrieb/domain/${j.id}/uebernehmen`, { passwort });
+  const automatisch = process.env.TIMEREAL_TEST_EINKLICK === "1";
+  const j = await q(
+    "/verwaltung/betrieb/domain/" + (automatisch ? "speichern" : "pruefen"),
+    { domain },
+  );
+  if (!automatisch) {
+    await warten(j.id, "geprueft");
+    await q(`/verwaltung/betrieb/domain/${j.id}/uebernehmen`, { passwort });
+  }
   await warten(j.id, "bestaetigung_ausstehend");
   await assert.rejects(
     q(`/verwaltung/betrieb/domain/${j.id}/bestaetigen`, {}),
@@ -74,23 +80,27 @@ try {
   console.log(
     "Domain mit realem Caddy/TLS übernommen; neue Anmeldung und Bestätigung erfolgreich; alter Ursprung abgewiesen.",
   );
-  const vorher = await readFile("/etc/timereal/dienst.conf", "utf8");
-  const zweite = await q("/verwaltung/betrieb/domain/pruefen", {
-    domain: domain === "example.org" ? "example.net" : "example.org",
-  });
-  await warten(zweite.id, "geprueft");
-  await q(`/verwaltung/betrieb/domain/${zweite.id}/uebernehmen`, { passwort });
-  await warten(zweite.id, "bestaetigung_ausstehend");
-  console.log(
-    "Unbestätigter Wechsel: automatische Rücknahme nach echter Dreiminutenfrist wird geprüft.",
-  );
-  await warten(zweite.id, "zurueckgesetzt");
-  assert.equal(await readFile("/etc/timereal/dienst.conf", "utf8"), vorher);
-  cookie = "";
-  await q("/anmeldung", { login, passwort });
-  console.log(
-    "Automatischer Rückbau und erneute Anmeldung an der vorherigen Adresse bestanden.",
-  );
+  if (!automatisch) {
+    const vorher = await readFile("/etc/timereal/dienst.conf", "utf8");
+    const zweite = await q("/verwaltung/betrieb/domain/pruefen", {
+      domain: domain === "example.org" ? "example.net" : "example.org",
+    });
+    await warten(zweite.id, "geprueft");
+    await q(`/verwaltung/betrieb/domain/${zweite.id}/uebernehmen`, {
+      passwort,
+    });
+    await warten(zweite.id, "bestaetigung_ausstehend");
+    console.log(
+      "Unbestätigter Wechsel: automatische Rücknahme nach echter Dreiminutenfrist wird geprüft.",
+    );
+    await warten(zweite.id, "zurueckgesetzt");
+    assert.equal(await readFile("/etc/timereal/dienst.conf", "utf8"), vorher);
+    cookie = "";
+    await q("/anmeldung", { login, passwort });
+    console.log(
+      "Automatischer Rückbau und erneute Anmeldung an der vorherigen Adresse bestanden.",
+    );
+  }
 } finally {
   await db.end();
 }

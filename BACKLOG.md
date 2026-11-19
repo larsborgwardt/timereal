@@ -8,7 +8,7 @@ Entwurf 17 ist nach D-RELEASE-012 freigegeben. Persönliche Nachweise werden mit
 
 ## Sofortige Domainrücknahme — Instanzdiagnose offen
 
-Lars meldet unter 0.9.2 einen Rückbau direkt nach „Übernehmen“. Sein Journal zeigt Dienststarts, danach nur die allgemeine Warnung. Der Standardwechsel mit seiner Domain funktioniert im isolierten Debian-Prüfgast. 0.9.3 zeigt deshalb den fehlgeschlagenen Schritt und feste Diagnosehinweise im Auftrag und im Journal; die konkrete Ursache auf Lars’ LXC ist noch nicht belegt. Nächster Schritt dort: aktualisieren, Domainwechsel erneut versuchen und die neue vollständige Meldung prüfen. Die automatische Rücknahme bleibt bestehen.
+Lars meldet unter 0.9.2 einen Rückbau direkt nach „Übernehmen“. Sein Journal zeigt Dienststarts, danach nur die allgemeine Warnung. Der Standardwechsel mit seiner Domain funktioniert im isolierten Debian-Prüfgast. 0.9.3 zeigt deshalb den fehlgeschlagenen Schritt und feste Diagnosehinweise im Auftrag und im Journal; die konkrete Ursache auf Lars’ LXC ist noch nicht belegt. Die spätere Meldung zur Updatesperre wird in 0.9.4 durch automatische Zugangserkennung und eine Erklärung der Sperre bearbeitet. Eine abweichende Geräteuhr ist als Fehlerklasse reproduziert; die Uhrabweichung auf Lars’ Gerät ist nicht gemessen. Für den früheren unmittelbaren Domainrückbau bleibt der konkrete Diagnosehinweis der Instanz erforderlich. Die automatische Rücknahme bleibt bestehen.
 
 ## Kontosicherheit und Chromium-Erweiterung in 0.9.0
 

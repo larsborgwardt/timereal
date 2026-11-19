@@ -183,6 +183,7 @@ export function createApp(
     ["/mfa.js", "mfa.js", "text/javascript"],
     ["/mfa-anmeldung.js", "mfa-anmeldung.js", "text/javascript"],
     ["/betrieb.js", "betrieb.js", "text/javascript"],
+    ["/betrieb-fortschritt.js", "betrieb-fortschritt.js", "text/javascript"],
     ["/systemkonsole.js", "systemkonsole.js", "text/javascript"],
     ["/audit.js", "audit.js", "text/javascript"],
     ["/zeit.js", "zeit.js", "text/javascript"],

@@ -105,9 +105,11 @@ echo 'Webupdate 0.8.2 → 0.9.0 und eigenständiger Dienstneustart bestanden.'
 docker exec "$guest" /opt/timereal-node/bin/node /opt/timereal-current/tests/mfa-native.mjs >"$out/mfa-restore.log" 2>&1
 echo 'MFA-Schlüssel und echte Rücksicherung bestanden.'
 if [[ ${TIMEREAL_NUR_MFA:-0} == 1 ]]; then exit 0; fi
-docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_TAG=v0.9.1 TIMEREAL_TEST_ERGEBNIS=vorherige_version_aktiv /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-update.mjs >"$out/rueckbau.log" 2>&1
+docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_EINKLICK=1 /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-domain.mjs >"$out/domain-einklick.log" 2>&1
+echo "Domain in einem Auftrag gespeichert; neuer Zugriff und anschließendes Update werden geprüft."
+docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_EINKLICK=1 TIMEREAL_TEST_TAG=v0.9.1 TIMEREAL_TEST_ERGEBNIS=vorherige_version_aktiv /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-update.mjs >"$out/rueckbau.log" 2>&1
 echo 'Startfehler 0.9.1 → wieder erreichbare Version 0.9.0 bestanden.'
-docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_TAG=v0.9.2 /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-update.mjs >"$out/wiederanlauf.log" 2>&1
+docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_EINKLICK=1 TIMEREAL_TEST_TAG=v0.9.2 /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-update.mjs >"$out/wiederanlauf.log" 2>&1
 for _ in {1..30}; do
   current=$(docker exec "$guest" readlink -f /opt/timereal-betrieb-current)
   if [[ $current == /opt/timereal-betrieb/0.9.2-* ]]; then break; fi

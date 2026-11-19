@@ -14,6 +14,7 @@ Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte u
 | 0.9.1 | Microsoft-Edge-Store-Anmeldung mit konkreter CRX-ID und getrenntem Upload-ZIP | PostgreSQL-/PKCE-Grenzfälle und Browserlauf mit öffentlichem Microsoft-Schlüssel; signierte Store-Installation folgt nach Veröffentlichung |
 | 0.9.2 | Gemeinsames Favicon und Symbol für Erweiterung und Store | Entwurf 16 freigegeben (D-RELEASE-011); HTTP-, Paket- und Browserprüfung |
 | 0.9.3 | Persönlicher Excel-Export und Ursachenanzeige beim Domainrückbau | Entwurf 17 freigegeben (D-RELEASE-012); PostgreSQL, Browserdownload und Betriebsproben |
+| 0.9.4 | Ein-Klick-Updates mit horizontalem Fortschrittsbalken; Domain speichern ohne erneutes Passwort und automatische Zugangserkennung | Entwurf 18 freigegeben (D-RELEASE-014); [Prüfbelege](nachweise/0.9.4.md) |
 
 0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. Die Systemkonsole wird als eigenes Paket 0.8.0 geliefert; Veröffentlichung und Prüfbelege stehen in `nachweise/0.8.0.md`. Benutzer und Rollen sind in 0.8.1 umgesetzt; Prüfbelege stehen in `nachweise/0.8.1.md`. Audit ist in 0.8.2 umgesetzt; Prüfbelege stehen in `nachweise/0.8.2.md`. Kontosicherheit 0.9.0 ist implementiert; der Releasebeleg `nachweise/0.9.0.md` hält die abschließenden Prüfungen fest. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
 
@@ -82,3 +83,9 @@ Lars beauftragt „die nachweise sollte als excel-datei exportiert werden“ und
 ### D-RELEASE-013 — Sofortige Domainrücknahme untersuchen, 19. November 2026
 
 Lars meldet „der domainwechsel wird immer zurückgenommen“, konkret „Sofort nach Übernehmen“. Sein Protokoll zeigt Dienststarts und danach nur „WARN Domainwechsel zurückgenommen“. Öffentlich lesbare Versionsdaten des Containers nennen 0.9.2. Die fehlende Ursachenanzeige wird korrigiert; daraus folgt keine Behauptung, der konkrete Instanzfehler sei behoben. Es erfolgt keine Installation oder Konfigurationsänderung auf seinem LXC.
+
+## D-RELEASE-014 — Einfachere Betriebsaktionen und Fortschrittsbalken
+
+20.11.2026: Lars beanstandet wiederholte Passwortabfragen und Bestätigungen bei Domainzugriff und Updates. Er ergänzt „Beim Update hätte ich auch gerne ein Fortschritts Diagramm als Balken horizontal“ und gibt `mockups/18-betrieb-390.png` sowie `mockups/18-betrieb-1280.png` mit **„Entwurf umsetzen (empfohlen)“** frei. Version 0.9.4 bündelt Vorbereitung/Installation und Domainprüfung/Übernahme jeweils in einem Auftrag; der neue Domainzugriff wird automatisch erkannt. Die aktive Betriebs-Websitzung bleibt erforderlich. Die bestehenden Sicherungen und Rücknahmen bleiben technische Bestandteile.
+
+Ergänzung vom 20.11.2026: Lars entscheidet „Das Lastprofil finde ich unnötig, wichtiger ist gitleaks“. Der automatische Kapazitätsjob entfällt zugunsten einer Gitleaks-Prüfung der Git-Historie mit redigierter Ausgabe. `tests/last.sh` bleibt für gezielte manuelle Messungen verfügbar; PostgreSQL-/Browser-Funktionstests bleiben Teil der Releaseprüfung.

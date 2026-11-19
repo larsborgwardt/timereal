@@ -446,6 +446,23 @@ export async function betriebsStatus() {
 }
 
 export async function betriebsAktion(aktion, job, buch, lock) {
+  if (aktion === "update-starten" || aktion === "domain-speichern") {
+    const update = aktion === "update-starten";
+    await betriebsAktion(
+      update ? "update-vorbereiten" : "domain-pruefen",
+      job,
+      buch,
+      lock,
+    );
+    const zustand = update ? "sicherung" : "uebernahme";
+    job = await buch.fortschreiben(job.id, { zustand, phase: zustand });
+    return betriebsAktion(
+      update ? "update-installieren" : "domain-uebernehmen",
+      job,
+      buch,
+      lock,
+    );
+  }
   const ausgabe = async ({ phase }) => {
     if (
       ![
@@ -464,7 +481,7 @@ export async function betriebsAktion(aktion, job, buch, lock) {
       throw new Error("Ungültige Betriebsphase.");
     // Terminaler Erfolg kommt erst nach der unabhängigen Health-/Versionsprüfung.
     await buch.fortschreiben(job.id, {
-      phase: phase === "erfolgreich" ? "neustart" : phase,
+      phase: phase === "erfolgreich" ? "abschlusspruefung" : phase,
       ...(!["pruefung", "vorbereitung", "bereit", "erfolgreich"].includes(phase)
         ? { zustand: phase }
         : {}),
@@ -492,7 +509,10 @@ export async function betriebsAktion(aktion, job, buch, lock) {
       },
       ereignis: ausgabe,
     });
-    await buch.fortschreiben(job.id, { zustand: "bereit", phase: "bereit" });
+    await buch.fortschreiben(job.id, {
+      zustand: job.automatisch ? "vorbereitung" : "bereit",
+      phase: "bereit",
+    });
   } else if (aktion === "update-installieren") {
     const aktuell = await installiert();
     const commit = await releasePruefen(job.tag, aktuell.version);
@@ -550,7 +570,7 @@ export async function betriebsAktion(aktion, job, buch, lock) {
     ]);
     await shell("proxy-einrichten.sh", ["--check", job.domain, cfg.ip]);
     await buch.fortschreiben(job.id, {
-      zustand: "geprueft",
+      zustand: job.automatisch ? "pruefung" : "geprueft",
       phase: "geprueft",
       fingerprint: cfg.fingerprint,
       vorherigeOrigin: cfg.origin,

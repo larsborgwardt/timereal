@@ -1,5 +1,7 @@
 # Timereal mit 100 gleichzeitig aktiven Nutzern
 
+Seit Lars’ Entscheidung vom 20. November 2026 läuft dieses Lastprofil nur bei gezieltem manuellen Aufruf. Der bisherige automatische Kapazitätsjob ist ab 0.9.4 durch Gitleaks ersetzt. Die folgenden Messergebnisse bleiben historische Kapazitätsnachweise.
+
 Auftrag von Lars, 19. November 2026. Ausgangspunkt: Release 0.5.0 (`ab7d980`). Umsetzung als 0.6.0; der bestehende Pilot wird anschließend über den versionierten Updater aktualisiert.
 
 ## Nutzer und Datenmodell
