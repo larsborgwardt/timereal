@@ -1,5 +1,12 @@
 # Änderungen
 
+## 0.9.1 — 19. November 2026
+
+- Anmeldung der offiziellen Microsoft-Edge-Erweiterung anhand ihrer konkreten CRX-ID freigeschaltet; Entwicklungskennung bleibt unterstützt.
+- Herkunft und Rücksprungziel werden beim Codeaustausch als Paar geprüft; Einmalcodes bleiben an PKCE und das ursprünglich freigegebene Ziel gebunden.
+- Edge-Upload-ZIP ohne `key` und `update_url`; Browserprobe mit Microsofts öffentlichem Schlüssel und echter CRX-ID.
+- Schema 10 und API 1 bleiben unverändert. Server zuerst aktualisieren; ein bereits hochgeladenes Edge-Store-Paket 0.9.0 bleibt verwendbar. [Prüfbelege und Grenzen](nachweise/0.9.1.md).
+
 ## 0.9.0 — 19. November 2026
 
 - Anzeigename und E-Mail-Bestätigung im eigenen Konto; Name auch ohne eingerichteten Mailversand bearbeitbar.

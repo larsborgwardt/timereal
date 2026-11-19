@@ -53,7 +53,7 @@ try {
     .waitFor();
   assert.deepEqual(errors, []);
   console.log(
-    "Edge-Upload-ZIP: Dienst, Optionen und Popup in Chromium geladen; Store-Anmeldung benötigt die freigegebene Microsoft-ID.",
+    "Edge-Upload-ZIP: Dienst, Optionen und Popup in Chromium geladen; PKCE mit Microsoft-ID wird separat im Datenbank-/Browserlauf geprüft.",
   );
 } finally {
   await context?.close();

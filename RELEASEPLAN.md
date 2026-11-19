@@ -11,6 +11,7 @@ Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte u
 | 0.8.1 | Benutzer- und Rollenverwaltung | Bilder 11 freigegeben (D-RELEASE-004); Rollenmatrix, Kontotrennung und Schutz des letzten Administrators |
 | 0.8.2 | Lesbares Audit-Protokoll | Bilder 11 freigegeben (D-RELEASE-005); Administratoransicht, 180-Tage-Lesefenster und begrenzter Export |
 | 0.9.0 | Kontoprofil und Zwei-Faktor-Anmeldung einschließlich Wiederherstellung; Erweiterung mit neuem Anmeldevertrag und weiteren Browserprüfungen | Bilder 13 freigegeben (D-RELEASE-006); Einrichtung, Replay-Schutz, Recovery und Widerruf; real geladene Erweiterung |
+| 0.9.1 | Microsoft-Edge-Store-Anmeldung mit konkreter CRX-ID und getrenntem Upload-ZIP | PostgreSQL-/PKCE-Grenzfälle und Browserlauf mit öffentlichem Microsoft-Schlüssel; signierte Store-Installation folgt nach Veröffentlichung |
 
 0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. Die Systemkonsole wird als eigenes Paket 0.8.0 geliefert; Veröffentlichung und Prüfbelege stehen in `nachweise/0.8.0.md`. Benutzer und Rollen sind in 0.8.1 umgesetzt; Prüfbelege stehen in `nachweise/0.8.1.md`. Audit ist in 0.8.2 umgesetzt; Prüfbelege stehen in `nachweise/0.8.2.md`. Kontosicherheit 0.9.0 ist implementiert; der Releasebeleg `nachweise/0.9.0.md` hält die abschließenden Prüfungen fest. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
 
@@ -59,3 +60,11 @@ Verhalten wird durch einen zuerst fehlgeschlagenen Test eingeführt. Ein Release
 ### D-RELEASE-008 — v0.9.0 fortsetzen, 19. November 2026
 
 Lars beauftragt mit **„weiter mit v0.9.0“** die Fortsetzung des freigegebenen Pakets. Profil, Faktorverwaltung, vollständige Anmeldung und Chromium-Anmeldung werden zusammen ausgeliefert. Die bestehenden Bildfreigaben D-RELEASE-006/007 bleiben gültig. Sein LXC wird durch diese Veröffentlichung nicht automatisch aktualisiert.
+
+### D-RELEASE-009 — Mailversand im Adminbereich freigegeben, 19. November 2026
+
+Auf „Wo kann ich die SMTP-Daten eintragen? Das sollte direkt im Adminbereich möglich sein.“ bestätigt Lars die Bilder `mockups/15-mailversand-desktop.png`, `mockups/15-mailversand-mobil.png` und `mockups/15-mailversand-gespeichert.png` mit **„Bildentwurf freigeben (empfohlen)“**. Die Umsetzung umfasst SMTP-Einstellungen, Prüfung vor Übernahme, geschützte Passwortspeicherung und Testmail. Sie ist in Arbeit, noch nicht veröffentlicht. Die anschließende Korrektur des Microsoft-Upload-Pakets wird getrennt bearbeitet und hebt diesen Auftrag nicht auf.
+
+### D-RELEASE-010 — Microsoft-Kennung geliefert, 19. November 2026
+
+Lars meldet **„Extension_identify.txt steht im ftp drop“**. Die Datei liegt als `Extension_identity.txt` vor und enthält die öffentliche CRX-ID sowie den öffentlichen Schlüssel. Die Kennung wird für die bereits beauftragte Store-Anmeldung verwendet. Store-ID und Produkt-ID werden nicht als Browserkennung übernommen. Paket 0.9.1 ergänzt die Serverfreigabe; die Bildfreigaben bleiben unverändert. Der SMTP-Ausbau aus D-RELEASE-009 im laufenden Arbeitsbaum bleibt beauftragt.
