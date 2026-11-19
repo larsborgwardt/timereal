@@ -1,0 +1,48 @@
+{
+  "zeit": "2026-11-19T07:26:27.154Z",
+  "release": {
+    "version": "0.5.0",
+    "apiVersion": 1,
+    "schemaVersion": 5,
+    "minimumSchemaVersion": 2,
+    "additiveMigrations": true
+  },
+  "nutzer": 100,
+  "abschnitteVorher": 500000,
+  "zyklen": 12,
+  "messSekunden": 120,
+  "gesamtSekunden": 131,
+  "requests": 7900,
+  "latency": {
+    "anmeldung": {
+      "anzahl": 100,
+      "p50": 3412,
+      "p95": 6017,
+      "p99": 6214,
+      "max": 6228
+    },
+    "lesen": {
+      "anzahl": 6000,
+      "p50": 729,
+      "p95": 2550,
+      "p99": 3350,
+      "max": 3591
+    },
+    "schreiben": {
+      "anzahl": 1800,
+      "p50": 765,
+      "p95": 1068,
+      "p99": 1181,
+      "max": 1282
+    }
+  },
+  "errors": [],
+  "peakDb": 12,
+  "ressourcen": {
+    "api": "1 CPU / 512 MiB, Node 24 Alpine",
+    "datenbank": "2 CPU / 1536 MiB, PostgreSQL",
+    "netz": "HTTP über Loopback, ohne Reverseproxy/TLS"
+  },
+  "postgres": "PostgreSQL 18.7 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "pass": false
+}

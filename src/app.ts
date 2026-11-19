@@ -1,10 +1,23 @@
+import {
+  extensionCors,
+  extensionOrigin,
+  erweiterungRouten,
+} from "./erweiterung.js";
+import { stammdatenRouten } from "./stammdaten-routen.js";
+import { kontenRouten } from "./konten-routen.js";
+import { betriebsRouten } from "./betrieb.js";
+import { profil } from "./konten.js";
+import type { MailConfig } from "./mail.js";
+import { id, version, wort, tag, objekt } from "./http.js";
 import Fastify, { type FastifyRequest } from "fastify";
 import type { Pool, PoolClient } from "pg";
 import { readFile } from "node:fs/promises";
-import { Fehler, transaktion } from "./db.js";
+import { Fehler, transaktion, voruebergehendNichtVerfuegbar } from "./db.js";
 import { bindSession, digest, issueSession, verify } from "./session.js";
+import { release } from "./version.js";
+import { updateChecker, type UpdateStatus } from "./updates.js";
 import { ausfuehren, timer, type Auftrag } from "./timer.js";
-import { anlegen, type NeuesZiel } from "./ziele.js";
+import { anlegen, kundenLesen, zieleLesen, type NeuesZiel } from "./ziele.js";
 import {
   nachtragen,
   teilen,
@@ -14,19 +27,6 @@ import {
 } from "./korrektur.js";
 import { historie, bestaetigen } from "./nachweise.js";
 
-const id = { type: "string", pattern: "^[1-9][0-9]{0,17}$" };
-const version = { type: "string", pattern: "^(0|[1-9][0-9]{0,17})$" };
-const wort = (maxLength: number) => ({
-  type: "string",
-  minLength: 1,
-  maxLength,
-  pattern: "\\S",
-});
-const tag = { type: "string", format: "date" };
-const objekt = (
-  properties: Record<string, unknown>,
-  required: string[] = [],
-) => ({ type: "object", properties, required, additionalProperties: false });
 const zielSchema = objekt(
   {
     kunde: wort(150),
@@ -51,10 +51,19 @@ function webToken(req: FastifyRequest) {
 }
 export function createApp(
   pool: Pool,
-  options: { secure: boolean; origin?: string },
+  options: {
+    secure: boolean;
+    origin?: string;
+    smtp?: MailConfig;
+    updateCheck?: () => Promise<UpdateStatus>;
+    betriebSocket?: string;
+  },
 ) {
   const app = Fastify({
     bodyLimit: 32768,
+    // Der mitgelieferte Caddy ist der einzige vertrauenswürdige Proxy.
+    trustProxy: (address, hop) =>
+      hop === 0 && ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(address),
     ajv: { customOptions: { coerceTypes: false, removeAdditional: false } },
   });
   const loginversuche = new Map<string, { ab: number; n: number }>();
@@ -76,7 +85,10 @@ export function createApp(
         "Content-Security-Policy",
         "default-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
       );
+    const cors = extensionCors(req, reply);
+    if (cors) return cors;
     if (
+      req.headers.origin !== extensionOrigin &&
       req.method !== "GET" &&
       req.method !== "HEAD" &&
       !req.headers.authorization &&
@@ -90,12 +102,19 @@ export function createApp(
     (err: Error & { statusCode?: number; code?: string }, req, reply) => {
       if (err instanceof Fehler)
         return reply.code(err.status).send({ fehler: err.message });
-      if (err.code === "23P01" || err.code === "23505")
+      if (voruebergehendNichtVerfuegbar(err))
+        return reply.code(503).header("Retry-After", "1").send({
+          fehler:
+            "Der Dienst ist vorübergehend ausgelastet. Bitte den aktuellen Stand laden und erneut versuchen.",
+        });
+      if (err.code === "42501")
         return reply
-          .code(409)
-          .send({
-            fehler: "Die Buchung kollidiert mit einem vorhandenen Eintrag.",
-          });
+          .code(403)
+          .send({ fehler: "Keine Berechtigung für die Verwaltung." });
+      if (err.code === "23P01" || err.code === "23505")
+        return reply.code(409).send({
+          fehler: "Die Buchung kollidiert mit einem vorhandenen Eintrag.",
+        });
       if (
         err.code === "23503" ||
         err.code === "23514" ||
@@ -123,7 +142,8 @@ export function createApp(
   ) =>
     transaktion(pool, async (db) => {
       const auth = req.headers.authorization;
-      if (auth && !/^Bearer [a-f0-9]{64}$/.test(auth)) throw new Fehler(401, "Bitte erneut anmelden.");
+      if (auth && !/^Bearer [a-f0-9]{64}$/.test(auth))
+        throw new Fehler(401, "Bitte erneut anmelden.");
       await bindSession(
         db,
         auth ? auth.replace(/^Bearer /, "") : webToken(req),
@@ -131,10 +151,24 @@ export function createApp(
       );
       return run(db);
     });
+  betriebsRouten(
+    app,
+    privat,
+    options.betriebSocket ?? "/run/timereal-betrieb/dienst.sock",
+  );
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
     ["/app.js", "app.js", "text/javascript"],
+    ["/version.js", "version.js", "text/javascript"],
+    ["/konten.js", "konten.js", "text/javascript"],
+    ["/betrieb.js", "betrieb.js", "text/javascript"],
+    ["/zeit.js", "zeit.js", "text/javascript"],
+    ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],
+    ["/transport.js", "transport.js", "text/javascript"],
+    ["/erweiterung-vertrag.js", "erweiterung-vertrag.js", "text/javascript"],
+    ["/erweiterung-anmelden.html", "erweiterung-anmelden.html", "text/html"],
+    ["/erweiterung-anmelden.js", "erweiterung-anmelden.js", "text/javascript"],
   ]) {
     app.get(url, async (_, reply) =>
       reply
@@ -146,6 +180,11 @@ export function createApp(
     await pool.query("select 1");
     return { status: "ok" };
   });
+  app.get("/api/v1/version", async () => release);
+  const checkUpdates =
+    options.updateCheck ??
+    updateChecker({ version: release.version, enabled: false });
+  app.get("/api/v1/updates", async () => checkUpdates());
   app.post<{ Body: { login: string; passwort: string } }>(
     "/api/v1/anmeldung",
     {
@@ -165,7 +204,7 @@ export function createApp(
       const now = Date.now();
       for (const [k, v] of loginversuche)
         if (v.ab <= now) loginversuche.delete(k);
-      const key = req.ip + "|" + req.body.login;
+      const key = req.ip + "|" + req.body.login.toLowerCase();
       const versuch = loginversuche.get(key) ?? { ab: now + 600000, n: 0 };
       if (versuch.n >= 12 || loginversuche.size >= 2048)
         throw new Fehler(
@@ -197,6 +236,14 @@ export function createApp(
     return reply.header("Set-Cookie", cookie("", 0)).send({ abgemeldet: true });
   });
   app.get("/api/v1/timer", (req) => privat(req, timer));
+  app.get("/api/v1/arbeitsstand", (req) =>
+    privat(req, async (db) => ({
+      timer: await timer(db),
+      ziele: await zieleLesen(db),
+      profil: await profil(db),
+      kunden: await kundenLesen(db),
+    })),
+  );
   for (const action of ["start", "wechsel", "stopp", "pause", "fortsetzen"]) {
     app.post<{ Body: Auftrag }>(
       "/api/v1/timer/" + action,
@@ -220,16 +267,7 @@ export function createApp(
         }),
     );
   }
-  app.get("/api/v1/ziele", (req) =>
-    privat(
-      req,
-      async (db) =>
-        (
-          await db.query(`select z.id,z.kunde_id,z.art,z.bezeichnung,z.projekt_id,k.name as kunde
-      from buchungsziel z join kunde k on (k.konto_id,k.id)=(z.konto_id,z.kunde_id) order by k.name,z.bezeichnung,z.id`)
-        ).rows,
-    ),
-  );
+  app.get("/api/v1/ziele", (req) => privat(req, zieleLesen));
   app.post<{ Body: NeuesZiel }>(
     "/api/v1/ziele",
     { schema: { body: zielSchema } },
@@ -328,5 +366,8 @@ export function createApp(
     (req) =>
       privat(req, (db) => stornieren(db, req.params.id, req.body.fassung)),
   );
+  kontenRouten(app, pool, privat, options);
+  stammdatenRouten(app, privat);
+  erweiterungRouten(app, pool, privat, webToken);
   return app;
 }

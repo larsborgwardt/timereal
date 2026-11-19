@@ -1,0 +1,5 @@
+Bootstrap 0.6.2 → 0.7.0 bestanden.
+Webupdate 0.7.0 → 0.7.1 und eigenständiger Dienstneustart bestanden.
+Startfehler 0.7.2 → wieder erreichbare Version 0.7.1 bestanden.
+FEHLER: Anwendung meldet Erfolg, der abgebrochene Betriebsdienstwechsel wurde aber nicht nachgeholt.
+Prüfbelege: /tmp/timereal-betrieb-release.Jse1aiKV

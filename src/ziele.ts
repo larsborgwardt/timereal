@@ -1,4 +1,14 @@
 import type { PoolClient } from "pg";
+export async function kundenLesen(db: PoolClient) {
+  return (await db.query("select id,name,fassung from kunde order by name,id"))
+    .rows;
+}
+export async function zieleLesen(db: PoolClient) {
+  return (
+    await db.query(`select z.id,z.kunde_id,z.art,z.bezeichnung,z.projekt_id,z.abrechenbar,z.fassung,k.name as kunde
+    from buchungsziel z join kunde k on (k.konto_id,k.id)=(z.konto_id,z.kunde_id) order by k.name,z.bezeichnung,z.id`)
+  ).rows;
+}
 export interface NeuesZiel {
   kunde: string;
   art: string;

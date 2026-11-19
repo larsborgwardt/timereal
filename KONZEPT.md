@@ -48,8 +48,8 @@ Unter **Nachweise → Historie** findest du deine abgeschlossenen Abschnitte, au
 
 ![Freigegebene Timerzustände für Pause und Stopp](mockups/07-pause-und-stopp.png)
 
-## Weitere Bedienabläufe im Entwurf
+## Freigegebene weitere Bedienabläufe
 
 ![Sofortstart, rückwirkende Unterbrechung und Vergleich eines Nachweises](mockups/06-korrektur-und-sofortstart.png)
 
-Die Bedienung dieser drei Entwürfe wird nach dem ersten Arbeitstag beurteilt. Die erste Testrunde konzentriert sich auf den laufenden Timer, den Gerätewechsel und den persönlichen Verlauf. PostgreSQL ist als Grundlage bestätigt. Der [technische Entwurf](ARCHITEKTUR.md) beschreibt den gemeinsamen Vertrag für Browser und Erweiterung.
+Lars hat diese ergänzenden Bedienabläufe am 18. November 2026 zusammen mit Verwaltung, Wochenübersicht, Einstellungen und Erweiterung zur Umsetzung freigegeben. Die Lieferung folgt dem [Versionsplan](VERSIONEN.md). PostgreSQL ist als Grundlage bestätigt. Der [technische Entwurf](ARCHITEKTUR.md) beschreibt den gemeinsamen Vertrag für Browser und Erweiterung.

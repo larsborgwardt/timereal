@@ -1,3 +1,7 @@
+import * as transport from "./transport.js";
+import { arbeitsablaufOberflaeche } from "./arbeitsablauf.js";
+import { kontenOberflaeche } from "./konten.js";
+import { betriebsOberflaeche } from "./betrieb.js";
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) =>
   String(value ?? "").replace(
@@ -27,26 +31,61 @@ let seite = "heute",
   modus = "uebernahme",
   state,
   ziele = [],
+  kunden = [],
   eintraege = [],
   notiz,
   busy = false,
   pending = null,
   refreshNr = 0;
-const api = "/api/v1";
+function fokusMerken() {
+  const vorher = document.activeElement;
+  const bereich = vorher?.closest("section[id], dialog[id]");
+  const attribute = ["data-action", "data-arbeit", "data-konto", "data-id"];
+  const selector = vorher?.id
+    ? "#" + CSS.escape(vorher.id)
+    : attribute
+        .filter((a) => vorher?.hasAttribute(a))
+        .map((a) => `[${a}="${CSS.escape(vorher.getAttribute(a))}"]`)
+        .join("");
+  return () => {
+    // Einen zwischenzeitlich vom Menschen gesetzten Fokus nicht zurückholen.
+    if (
+      document.activeElement !== document.body &&
+      document.activeElement !== vorher
+    )
+      return;
+    let ziel = vorher?.isConnected ? vorher : selector ? $(selector) : null;
+    if (!ziel && bereich?.getClientRects().length) {
+      ziel = bereich.querySelector("h1, h2");
+      if (ziel) ziel.tabIndex = -1;
+    }
+    if (ziel?.getClientRects().length && !ziel.disabled)
+      ziel.focus({ preventScroll: true });
+  };
+}
+function seitenFokus() {
+  const heading = $("#" + seite + " h1");
+  if (heading) {
+    heading.tabIndex = -1;
+    heading.focus();
+  }
+}
 function melden(msg = "") {
   const box = $("#meldung");
   box.textContent = msg;
   box.hidden = !msg;
+  document.querySelectorAll(".dialogmeldung").forEach((e) => e.remove());
+  const dialog = document.querySelector("dialog[open]");
+  if (msg && dialog) {
+    const hinweis = document.createElement("p");
+    hinweis.className = "dialogmeldung meldung";
+    hinweis.setAttribute("role", "alert");
+    hinweis.textContent = msg;
+    (dialog.querySelector("form") ?? dialog).prepend(hinweis);
+  }
 }
 async function request(pfad, methode = "GET", body, key) {
-  const response = await fetch(api + pfad, {
-    method: methode,
-    headers: {
-      ...(body ? { "Content-Type": "application/json" } : {}),
-      ...(key ? { "Idempotency-Key": key } : {}),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const response = await transport.senden(pfad, methode, body, key);
   const data = await response.json();
   if (!response.ok) {
     if (response.status === 401) zeigeLogin();
@@ -57,29 +96,60 @@ async function request(pfad, methode = "GET", body, key) {
   return data;
 }
 function zeigeLogin() {
+  betrieb.zuruecksetzen();
   ++refreshNr;
   seite = "login";
   state = null;
   pending = null;
   ziele = [];
+  kunden = [];
   eintraege = [];
   notiz = null;
-  document.querySelectorAll("dialog[open]").forEach((d) => d.close());
+  document.querySelectorAll("dialog[open]").forEach((d) => {
+    if (d.id !== "linkfenster" && d.id !== "resetfenster") d.close();
+  });
   $("#notiz").value = "";
   $("#timer").replaceChildren();
   $("#ziele").replaceChildren();
-  $("#eintraege").replaceChildren();
+  for (const id of [
+    "eintraege",
+    "tageseintraege",
+    "wochenzeilen",
+    "kontoliste",
+    "einladungsliste",
+    "sitzungsliste",
+    "vergleichinhalt",
+  ])
+    $("#" + id).replaceChildren();
+  document.querySelectorAll("dialog form").forEach((f) => {
+    if (!["linkform", "resetform"].includes(f.id)) f.reset();
+  });
+  for (const id of [
+    "profilform",
+    "grundeinstellungen",
+    "passwortform",
+    "einladen",
+  ]) {
+    $("#" + id).reset();
+    delete $("#" + id).dataset.geaendert;
+  }
   panels();
 }
 function panels() {
-  for (const id of ["login", "heute", "nachweise"])
+  for (const id of [
+    "login",
+    "heute",
+    "nachweise",
+    "verwaltung",
+    "einstellungen",
+    "woche",
+  ])
     $("#" + id).hidden = seite !== id;
   $("nav").hidden = $("#logout").hidden = seite === "login";
-  document
-    .querySelectorAll("nav button")
-    .forEach((b) =>
-      b.toggleAttribute("aria-current", b.dataset.page === seite),
-    );
+  document.querySelectorAll("nav button[data-page]").forEach((b) => {
+    if (b.dataset.page === seite) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
+  });
 }
 function btn(label, action, klasse = "sek") {
   return (
@@ -143,6 +213,9 @@ function dauer() {
     ":" +
     String(min % 60).padStart(2, "0");
 }
+function arbeitButton(text, aktion, id) {
+  return `<button type="button" class="sek" data-arbeit="${aktion}" data-id="${esc(id)}">${text}</button>`;
+}
 function zeigeZiele() {
   const suche = $("#suche").value.trim().toLocaleLowerCase("de");
   const liste = ziele.filter((z) =>
@@ -166,18 +239,22 @@ function zeigeZiele() {
                 "ziel-" + z.id,
                 "",
               )) +
+          arbeitButton("Bearbeiten", "zielpflege", z.id) +
           "</div>",
       )
       .join("") || "<p>Kein passendes Buchungsziel.</p>";
 }
-function zeigeEintraege() {
+function zeigeEintraege(ziel = "#eintraege", alle = false) {
   $("#liste").setAttribute("aria-pressed", modus === "uebernahme");
   $("#historie").setAttribute("aria-pressed", modus === "historie");
-  const suche = $("#filter").elements.suche.value.trim().toLowerCase();
+  const suche = alle
+    ? ""
+    : $("#filter").elements.suche.value.trim().toLowerCase();
   const rows = eintraege.filter(
     (e) =>
       e.ende &&
-      (modus === "historie" ||
+      (alle ||
+        modus === "historie" ||
         !["Storniert", "Nicht abrechenbar", "Übertragen"].includes(e.status)) &&
       [e.kunde, e.ziel, e.projekt].join(" ").toLowerCase().includes(suche),
   );
@@ -188,7 +265,7 @@ function zeigeEintraege() {
       Number(a.id) - Number(b.id),
   );
   let day = "";
-  $("#eintraege").innerHTML =
+  $(ziel).innerHTML =
     rows
       .map((e) => {
         const titel =
@@ -229,7 +306,17 @@ function zeigeEintraege() {
               "</p>"
             : "") +
           '<div class="aktionen">' +
-          (e.storniert ? "" : btn("Leistungstext", "notiz-" + e.id)) +
+          (e.storniert
+            ? ""
+            : btn("Leistungstext", "notiz-" + e.id) +
+              arbeitButton("Korrigieren", "korrektur", e.id) +
+              (Number(e.minuten) >= 3
+                ? arbeitButton("Unterbrechung einfügen", "unterbrechung", e.id)
+                : "") +
+              arbeitButton("Stornieren", "storno", e.id)) +
+          (e.uebertragener_stand
+            ? arbeitButton("Buchung vergleichen", "vergleich", e.id)
+            : "") +
           (bereit
             ? btn("Kopieren", "kopie-" + e.id) +
               btn("Übernahme bestätigen", "uebernahme-" + e.id, "")
@@ -241,17 +328,43 @@ function zeigeEintraege() {
 }
 async function laden() {
   const nr = ++refreshNr;
-  const [stand, liste] = await Promise.all([
-    request("/timer"),
-    request("/ziele"),
-  ]);
+  const snapshot = await request("/arbeitsstand");
   if (nr !== refreshNr) return;
-  state = stand;
-  ziele = liste;
-  if (seite === "login") seite = "heute";
+  const fokusZurueck = fokusMerken();
+  konten.aktualisieren(snapshot.profil);
+  state = snapshot.timer;
+  ziele = snapshot.ziele;
+  kunden = snapshot.kunden;
+  if (seite === "login") {
+    seite = "heute";
+    if (snapshot.profil.admin && location.hash === "#betrieb-domain") {
+      seite = "verwaltung";
+      betrieb.domainOeffnen();
+      history.replaceState(null, "", location.pathname);
+    }
+  }
   panels();
   if (seite === "heute") {
     zeigeTimer();
+    fokusZurueck();
+    const heute = tag(new Date());
+    const rows = await request("/historie?von=" + heute + "&bis=" + heute);
+    if (nr === refreshNr) {
+      const eintragFokus = fokusMerken();
+      eintraege = rows;
+      zeigeEintraege("#tageseintraege", true);
+      eintragFokus();
+    }
+    return;
+  }
+  if (seite === "woche") {
+    await arbeitsablauf.ladeWoche();
+    return;
+  }
+  if (["verwaltung", "einstellungen"].includes(seite)) {
+    await konten.laden(seite);
+    if (seite === "verwaltung") await betrieb.laden();
+    fokusZurueck();
     return;
   }
   const f = $("#filter").elements;
@@ -259,11 +372,22 @@ async function laden() {
     "/historie?von=" + f.von.value + "&bis=" + f.bis.value,
   );
   if (nr === refreshNr) {
+    const eintragFokus = fokusMerken();
     eintraege = rows;
     zeigeEintraege();
+    eintragFokus();
   }
 }
 async function kommando(action, felder = {}) {
+  if (
+    transport.brauchtBestaetigung() &&
+    !confirm(
+      "Der aktuelle Timerstand wurde geladen. Diese Timeraktion jetzt ausführen?",
+    )
+  )
+    return;
+
+  if (action === "auto") action = state.aktiv ? "wechsel" : "start";
   const input = { version: state.version, ...felder };
   const signatur = JSON.stringify([action, input]);
   const key =
@@ -272,6 +396,7 @@ async function kommando(action, felder = {}) {
   try {
     await request("/timer/" + action, "POST", input, key);
     pending = null;
+    await transport.aktionBestaetigt();
   } catch (e) {
     if (e.status) pending = null;
     throw e;
@@ -279,7 +404,18 @@ async function kommando(action, felder = {}) {
 }
 async function bediene(fn) {
   if (busy) return;
+  const vorherigeSeite = seite;
+  const fokusZurueck = fokusMerken();
   busy = true;
+  const dialog = document.querySelector("dialog[open]");
+  const status = dialog ? document.createElement("p") : $("#arbeitsstatus");
+  if (dialog) {
+    status.className = "arbeitsstatus";
+    status.setAttribute("role", "status");
+    dialog.prepend(status);
+  }
+  status.hidden = false;
+  status.textContent = "Wird verarbeitet…";
   document.querySelectorAll("button:enabled").forEach((b) => {
     b.disabled = true;
     b.dataset.wartet = "";
@@ -288,7 +424,7 @@ async function bediene(fn) {
   melden();
   try {
     await fn();
-    await laden();
+    if (seite !== "login" || state) await laden();
   } catch (e) {
     melden(e.message);
     if (e.status === 409) await laden().catch(() => {});
@@ -298,6 +434,13 @@ async function bediene(fn) {
       b.disabled = false;
       delete b.dataset.wartet;
     });
+    if (dialog) status.remove();
+    else {
+      status.textContent = "";
+      status.hidden = true;
+    }
+    if (seite !== vorherigeSeite) seitenFokus();
+    else fokusZurueck();
   }
 }
 function oeffneNotiz(e) {
@@ -434,6 +577,16 @@ $("#logout").onclick = async () => {
   }
 };
 $("#suche").oninput = zeigeZiele;
+$("#filter-reset").onclick = () =>
+  void bediene(async () => {
+    const h = new Date(),
+      v = new Date(h);
+    v.setDate(v.getDate() - 6);
+    const f = $("#filter").elements;
+    f.von.value = tag(v);
+    f.bis.value = tag(h);
+    f.suche.value = "";
+  });
 $("#filter").onsubmit = (ev) => {
   ev.preventDefault();
   void bediene(async () => {});
@@ -463,6 +616,85 @@ function aktualisieren() {
 window.addEventListener("focus", aktualisieren);
 setInterval(aktualisieren, 10000);
 setInterval(dauer, 1000);
-laden().catch((e) => {
-  if (e.status !== 401) melden(e.message);
+const arbeitsablauf = arbeitsablaufOberflaeche({
+  $,
+  esc,
+  request,
+  bediene,
+  melden,
+  getZiele: () => ziele,
+  getKunden: () => kunden,
+  getEintraege: () => eintraege,
+  getZone: () => zone,
+  kommando,
+  heute: () => tag(new Date()),
+  zuNachweisen: (von, bis) => {
+    seite = "nachweise";
+    modus = "uebernahme";
+    const f = $("#filter").elements;
+    f.von.value = von;
+    f.bis.value = bis;
+    f.suche.value = "";
+  },
 });
+const konten = kontenOberflaeche({
+  $,
+  esc,
+  request,
+  bediene,
+  melden,
+  abmelden: zeigeLogin,
+});
+const betrieb = betriebsOberflaeche({
+  $,
+  request,
+  kontoname: (id) => konten.name(id),
+  verbindungGeprueft: async () => {
+    if (transport.verbindungUnsicher()) {
+      await transport.verbindungGeprueft();
+      verbindungMelden();
+    }
+  },
+});
+laden()
+  .catch((e) => {
+    if (e.status !== 401) melden(e.message);
+  })
+  .finally(() => {
+    $("#arbeitsstatus").textContent = "";
+    $("#arbeitsstatus").hidden = true;
+  });
+
+function verbindungMelden() {
+  $("#verbindung").hidden = !transport.verbindungUnsicher();
+}
+window.addEventListener("verbindung-fehlt", verbindungMelden);
+verbindungMelden();
+$("#verbindung-laden").onclick = () =>
+  void bediene(async () => {
+    await laden();
+    await transport.verbindungGeprueft();
+    pending = null;
+    verbindungMelden();
+    melden(
+      "Aktueller Stand geladen. Die nächste Timeraktion bitte bestätigen.",
+    );
+  });
+if (transport.istErweiterung) {
+  for (const bereich of ["updates", "domain"])
+    document.querySelector(`[data-betrieb="${bereich}"]`).hidden = true;
+  $("#anmelden").hidden = true;
+  $("#vergessen").hidden = true;
+  const verbinden = document.createElement("button");
+  verbinden.textContent = "Erweiterung verbinden";
+  verbinden.onclick = () => chrome.runtime.openOptionsPage();
+  $("#login").append(verbinden);
+  const oeffnen = document.createElement("button");
+  oeffnen.id = "ganze-app";
+  oeffnen.className = "sek";
+  oeffnen.textContent = "Ganze App öffnen";
+  oeffnen.onclick = () =>
+    chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
+  if (document.body.dataset.popup)
+    document.querySelector("main").prepend(oeffnen);
+}

@@ -1,0 +1,35 @@
+Verbindungsfenster: Fenster nicht mehr erreichbar
+Offene Fenster: [
+  'about:blank',
+  'http://127.0.0.1:39083/',
+  'chrome-extension://foobkcceoconhlclbnechjlimhkfbcno/popup.html',
+  'chrome-extension://foobkcceoconhlclbnechjlimhkfbcno/index.html'
+]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Die Anmeldung der Erweiterung braucht eine verständliche Verbindungsmeldung',
++   'Die Anmeldung der Erweiterung braucht einen sichtbaren Ladezustand',
++   'Die überholte Fehlermeldung muss beim erneuten Anmelden verschwinden'
++ ]
+- []
+
+    at file:///home/hermes/workspace/sap-zeiterfassung/tests/erweiterung-browser.mjs:372:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [
+    'Die Anmeldung der Erweiterung braucht eine verständliche Verbindungsmeldung',
+    'Die Anmeldung der Erweiterung braucht einen sichtbaren Ladezustand',
+    'Die überholte Fehlermeldung muss beim erneuten Anmelden verschwinden'
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.2

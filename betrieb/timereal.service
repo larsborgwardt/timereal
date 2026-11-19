@@ -6,8 +6,8 @@ Requires=postgresql.service
 [Service]
 User=timereal_app
 Group=timereal_app
-WorkingDirectory=/opt/timereal
-ExecStart=/opt/timereal-node/bin/node /opt/timereal/dist/server.js
+WorkingDirectory=/opt/timereal-current
+ExecStart=/opt/timereal-node/bin/node /opt/timereal-current/dist/server.js
 Environment=NODE_ENV=production
 Environment=PGHOST=/var/run/postgresql
 Environment=PGUSER=timereal_app

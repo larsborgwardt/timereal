@@ -1,0 +1,48 @@
+body {
+  width: 380px;
+  min-height: 420px;
+}
+.kopf {
+  padding: 12px 16px;
+}
+main {
+  padding: 16px;
+}
+h1 {
+  font-size: 1.4rem;
+  margin: 0 0 12px;
+}
+h2 {
+  font-size: 1.1rem;
+}
+.kopf nav,
+#logout,
+#heute > .karte:last-child,
+#heute #neu,
+[data-arbeit="zielpflege"] {
+  display: none !important;
+}
+.karte {
+  padding: 16px;
+}
+#timer .daten {
+  display: block;
+}
+#timer .timerzeit {
+  display: block;
+  margin: 12px 0;
+  font-size: 2.6rem;
+}
+.ziel button {
+  padding: 8px 12px;
+}
+#heute > .zeile > .aktionen {
+  margin: 0 0 16px;
+}
+dialog {
+  max-height: 95vh;
+}
+#ganze-app {
+  width: 100%;
+  margin: 0 0 16px;
+}

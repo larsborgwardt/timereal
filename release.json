@@ -1,0 +1,8 @@
+{
+  "version": "0.7.0",
+  "apiVersion": 1,
+  "betriebProtokoll": 1,
+  "schemaVersion": 6,
+  "minimumSchemaVersion": 2,
+  "additiveMigrations": true
+}

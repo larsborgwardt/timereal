@@ -1,0 +1,5 @@
+
+> timereal@0.6.2 build
+> tsc
+
+Echte Chromium-Erweiterung geprüft: Anmeldung, geschlossener App-Tab, Wechsel und Notiz, Smartphone, Pause/Stopp, Offline-Bestätigung, Vollansicht und Sitzungswiderruf.

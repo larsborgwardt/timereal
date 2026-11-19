@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Timereal verbinden</title>
+    <link rel="stylesheet" href="app.css" />
+    <script type="module" src="einstellungen.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Timereal verbinden</h1>
+      <p>
+        Trage die Adresse deines Timereal-Servers ein. Die Anmeldung öffnet sich
+        in einem eigenen Fenster.
+      </p>
+      <form class="karte login">
+        <label
+          >Timereal-Adresse<input
+            type="url"
+            name="server"
+            disabled
+            placeholder="https://zeit.example.de"
+            required /></label
+        ><button disabled>Verbinden</button>
+      </form>
+      <p id="meldung" role="status"></p>
+      <button id="oeffnen" hidden>Zeiterfassung öffnen</button>
+    </main>
+  </body>
+</html>

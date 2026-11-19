@@ -1,0 +1,648 @@
+{
+  "source": [
+    "web/index.html",
+    "erweiterung/manifest.json"
+  ],
+  "ids": [
+    "verbindung",
+    "login",
+    "heute",
+    "woche",
+    "nachweise",
+    "verwaltung",
+    "einstellungen",
+    "zielfenster",
+    "notizfenster",
+    "resetfenster",
+    "linkfenster",
+    "sofortfenster",
+    "zeitfenster",
+    "vergleichfenster",
+    "zielpflegefenster"
+  ],
+  "paths": [
+    "/",
+    "/erweiterung-anmelden.html",
+    "/index.html",
+    "/popup.html",
+    "/einstellungen.html"
+  ],
+  "records": [
+    {
+      "name": "einladung-annehmen",
+      "path": "/",
+      "ids": [
+        "login",
+        "linkfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "einladung-passwortfehler",
+      "path": "/",
+      "ids": [
+        "login",
+        "linkfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "unterbrechung",
+      "path": "/",
+      "ids": [
+        "nachweise",
+        "zeitfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "buchungsvergleich",
+      "path": "/",
+      "ids": [
+        "nachweise",
+        "vergleichfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "korrektur",
+      "path": "/",
+      "ids": [
+        "nachweise",
+        "zeitfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "woche-gefuellt",
+      "path": "/",
+      "ids": [
+        "woche"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "anmeldung",
+      "path": "/",
+      "ids": [
+        "login"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "anmeldung-fehler",
+      "path": "/",
+      "ids": [
+        "login"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "passwort-anfordern",
+      "path": "/",
+      "ids": [
+        "login",
+        "resetfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "heute-leer",
+      "path": "/",
+      "ids": [
+        "heute"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "neues-ziel",
+      "path": "/",
+      "ids": [
+        "heute",
+        "zielfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "sofortstart",
+      "path": "/",
+      "ids": [
+        "heute",
+        "sofortfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "timer-vorlaeufig",
+      "path": "/",
+      "ids": [
+        "heute"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "timer-pause",
+      "path": "/",
+      "ids": [
+        "heute"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "timer-intern",
+      "path": "/",
+      "ids": [
+        "heute"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "timer-zugeordnet",
+      "path": "/",
+      "ids": [
+        "heute"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "leistungstext",
+      "path": "/",
+      "ids": [
+        "heute",
+        "notizfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "ziel-bearbeiten",
+      "path": "/",
+      "ids": [
+        "heute",
+        "zielpflegefenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "ziele-suche-leer",
+      "path": "/",
+      "ids": [
+        "heute"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "woche",
+      "path": "/",
+      "ids": [
+        "woche"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "nachweise",
+      "path": "/",
+      "ids": [
+        "nachweise"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "historie",
+      "path": "/",
+      "ids": [
+        "nachweise"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "nachtrag",
+      "path": "/",
+      "ids": [
+        "nachweise",
+        "zeitfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "verwaltung",
+      "path": "/",
+      "ids": [
+        "verwaltung"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "einstellungen",
+      "path": "/",
+      "ids": [
+        "einstellungen"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "web-offline",
+      "path": "/",
+      "ids": [
+        "verbindung",
+        "heute"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "passwort-zuruecksetzen",
+      "path": "/",
+      "ids": [
+        "login",
+        "linkfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "ruecksetzlink-ungueltig",
+      "path": "/",
+      "ids": [
+        "login",
+        "linkfenster"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-verbinden",
+      "path": "/einstellungen.html",
+      "ids": [],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-anmeldung",
+      "path": "/erweiterung-anmelden.html",
+      "ids": [],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-freigabe",
+      "path": "/erweiterung-anmelden.html",
+      "ids": [
+        "freigabe"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-popup",
+      "path": "/popup.html",
+      "ids": [
+        "heute"
+      ],
+      "widths": [
+        380
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-notiz",
+      "path": "/popup.html",
+      "ids": [
+        "heute",
+        "notizfenster"
+      ],
+      "widths": [
+        380
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-offline",
+      "path": "/popup.html",
+      "ids": [
+        "verbindung",
+        "heute"
+      ],
+      "widths": [
+        380
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-vollansicht",
+      "path": "/index.html",
+      "ids": [
+        "woche"
+      ],
+      "widths": [
+        1280,
+        390,
+        320
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    },
+    {
+      "name": "erweiterung-abgemeldet",
+      "path": "/popup.html",
+      "ids": [
+        "login"
+      ],
+      "widths": [
+        380
+      ],
+      "scales": [
+        100,
+        200
+      ],
+      "findings": []
+    }
+  ]
+}

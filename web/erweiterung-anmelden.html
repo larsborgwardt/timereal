@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Timereal · Erweiterung verbinden</title>
+    <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/erweiterung-anmelden.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Erweiterung verbinden</h1>
+      <p
+        id="arbeitsstatus"
+        class="arbeitsstatus"
+        role="status"
+        aria-atomic="true"
+      >
+        Verbindung wird geprüft…
+      </p>
+      <p id="meldung" role="alert" hidden></p>
+      <form id="anmelden" class="karte login" hidden>
+        <label
+          >Anmeldename<input
+            name="login"
+            required
+            autocomplete="username" /></label
+        ><label
+          >Passwort<input
+            name="passwort"
+            type="password"
+            required
+            autocomplete="current-password" /></label
+        ><button>Anmelden</button>
+      </form>
+      <section class="karte" id="freigabe" hidden>
+        <h2 id="konto"></h2>
+        <p>
+          Die Timereal-Erweiterung darf deine Zeiten und Buchungsziele über
+          dieses Konto bearbeiten. Ihre Sitzung kannst du unter Einstellungen
+          jederzeit abmelden.
+        </p>
+        <button id="verbinden">Erweiterung verbinden</button>
+        <p>
+          Wenn du diese Anmeldung nicht selbst begonnen hast, schließe dieses
+          Fenster.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+
+> timereal@0.6.2 build
+> tsc
+
+Verbindungsfenster: Fenster nicht mehr erreichbar
+Offene Fenster: [
+  'about:blank',
+  'http://127.0.0.1:37617/',
+  'chrome-extension://foobkcceoconhlclbnechjlimhkfbcno/popup.html',
+  'chrome-extension://foobkcceoconhlclbnechjlimhkfbcno/index.html'
+]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Betriebsaktionen benötigen die Websitzung und werden in der Erweiterung nicht angeboten.
+
+true !== false
+
+    at file:///home/hermes/workspace/sap-zeiterfassung/tests/erweiterung-browser.mjs:360:10
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processImmediate (node:internal/timers:541:9) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.2

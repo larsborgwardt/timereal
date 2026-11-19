@@ -1,0 +1,32 @@
+[Unit]
+Description=Timereal Betriebsverwaltung
+After=postgresql.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=timereal_app
+ExecStart=/opt/timereal-node/bin/node /opt/timereal-betrieb-current/verwaltung/start.mjs
+WorkingDirectory=/var/lib/timereal-betrieb
+Environment=HOME=/var/lib/timereal-betrieb
+Environment=PATH=/opt/timereal-node/bin:/usr/sbin:/usr/bin:/sbin:/bin
+RuntimeDirectory=timereal-betrieb
+RuntimeDirectoryMode=0750
+StateDirectory=timereal-betrieb
+StateDirectoryMode=0700
+UMask=0077
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=10
+KillMode=control-group
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

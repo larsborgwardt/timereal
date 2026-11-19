@@ -1,0 +1,5 @@
+
+> timereal@0.6.2 build
+> tsc
+
+Betriebsoberfläche: verlorene Antwort ohne Doppelauftrag, Neuladen, Passwortprüfung, Domainentwurf und responsive Ansichten bestanden.

@@ -1,0 +1,21 @@
+
+Timereal aktualisieren
+
+[1/6] Installation und Zielversion prüfen
+Installiert: 0.7.0 · Ziel: 0.7.1 · Datenbankschema: 6 → 6
+Browser-Adresse: https://example.org:443
+Port 3040 ist nur intern erreichbar und keine Browser-Adresse.
+✔ Updatehilfe ist ohne Administratorrechte verfügbar (3.405234ms)
+✔ Installationshilfe erklärt den Browserport vor Systemzugriffen (3.198947ms)
+✔ Ein Update braucht eine feste Version und lehnt Optionen als Versionsnamen ab (10.004502ms)
+✔ Vorbereitung und Aktivierung sind getrennte dokumentierte Aufrufe mit festem Commit (5.704023ms)
+✔ Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betriebsgeheimnisse (124.563114ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 260.413753
+Bereits vorbereiteten Stand erneut geprüft: v0.7.1 (be0562ec8a35635f63732752a159fa2b0ae709ba). Die bisherige Anwendung läuft weiter.

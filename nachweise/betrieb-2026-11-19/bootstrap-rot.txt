@@ -1,0 +1,1 @@
+FEHLER: Nach fehlgeschlagenem Bootstrap zeigt der Dienstlink auf den defekten Kandidaten.

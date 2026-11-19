@@ -1,0 +1,482 @@
+{
+  "quelle": "tests/betrieb-native-release.sh — privater Tag v0.7.0",
+  "vergleich": "Arbeitsbaum nach Abschluss der nativen Probe; keine Differenz für aufgelistete Dateien",
+  "dateien": [
+    {
+      "pfad": "betrieb/backup-einrichten.sh",
+      "sha256": "85e4129f3eab417b95e69f82ea30687d3ca62a8705d38adb4c11d0758ed1dd49"
+    },
+    {
+      "pfad": "betrieb/backup-lib.sh",
+      "sha256": "de1d1653d0cc863e125d81c143cc355c30da3e7fea966253f5454b89a674799a"
+    },
+    {
+      "pfad": "betrieb/extern-sichern.sh",
+      "sha256": "a5ff45c1bb678c4810675f94ea8a54e8d36acc69fedb8d8ad7bdd299b950c33f"
+    },
+    {
+      "pfad": "betrieb/https-einrichten.sh",
+      "sha256": "e45eeb8cfc0a3b3d11b057fd4d2479c0aab6572a4e4dac1915b37bb7d76c9515"
+    },
+    {
+      "pfad": "betrieb/install.sh",
+      "sha256": "6d350ff70ae23f006e7284a07f22efe0007a4ebabdd073130a904b93b682fe01"
+    },
+    {
+      "pfad": "betrieb/mail-einrichten.sh",
+      "sha256": "476cceb131690d0a6226886823fd58641514d8acd0b9a14277291910fcb95719"
+    },
+    {
+      "pfad": "betrieb/proxy-einrichten.sh",
+      "sha256": "7d8eb3dac78fdccb14f2ef62649135844126e06d48bdd8efcd128c4b499ffef3"
+    },
+    {
+      "pfad": "betrieb/sichern.sh",
+      "sha256": "22943e4aa8c8e3bf99e0d857240cde4f9bf59f2d25c618031d7b4fa1f62156ca"
+    },
+    {
+      "pfad": "betrieb/timereal-backup.service",
+      "sha256": "fe2683dc6b25b803f6f29158372fa3226e78895980fb07de9ce966a1cb7e8ee1"
+    },
+    {
+      "pfad": "betrieb/timereal-backup.timer",
+      "sha256": "7bfa1c779c5bba62b278b61e1e36bb480f36a768afa923ad203029003d9a6d3a"
+    },
+    {
+      "pfad": "betrieb/timereal-betrieb.service",
+      "sha256": "12ab516e74cca15fbf400449eb25e25b4d41ae0681de0dff4cadc1f2c29fb855"
+    },
+    {
+      "pfad": "betrieb/timereal-extern.service",
+      "sha256": "a4da762025b0b8b7e2145f47e39403a3f0c203947cfcf9fa33769000a4742630"
+    },
+    {
+      "pfad": "betrieb/timereal-extern.timer",
+      "sha256": "ce5b8f5194a3d6a2531431a6e28839b4993fc6a91ebd80b78f37f9629d96ec24"
+    },
+    {
+      "pfad": "betrieb/timereal-https.service",
+      "sha256": "6b48b95a4a8b2182d8ff1f7d3a903094572eda3b5f4bdead67aed9eee3f79c08"
+    },
+    {
+      "pfad": "betrieb/timereal.service",
+      "sha256": "1936c88dcee381d84b50bceef72edb63cbce28c4ba621462df1a19ee3e080428"
+    },
+    {
+      "pfad": "betrieb/update.sh",
+      "sha256": "b44fe3834671bcb8bb806b91e534169ec0b4134cca6cca4fd6e037bb9bbf8946"
+    },
+    {
+      "pfad": "betrieb/verwaltung-einrichten.sh",
+      "sha256": "ff42b30132c4dba42f519230da52dc4d53b0a520be5f59866f0a5ababf030f36"
+    },
+    {
+      "pfad": "betrieb/verwaltung/aktionen.mjs",
+      "sha256": "566a367a648a3cd9b41827a8b95ef4dc6241d09fbeea8a3e075d05c5636a7cff"
+    },
+    {
+      "pfad": "betrieb/verwaltung/auftraege.mjs",
+      "sha256": "e1f9a1523ad41b83538c6995559f8c4f1724278c44a4ccbd9d1008397a9b1147"
+    },
+    {
+      "pfad": "betrieb/verwaltung/dienst.mjs",
+      "sha256": "03c1a197f9eeb3b7c4ab49988af8e37e67554ac8a3f34cf92b6c001efc1b2b15"
+    },
+    {
+      "pfad": "betrieb/verwaltung/start.mjs",
+      "sha256": "897b69fdf5fbf8c0c9b75be9dbacf05d77f9d9e6d332d2946704b6d397cd0e1f"
+    },
+    {
+      "pfad": "betrieb/verwaltung/system.mjs",
+      "sha256": "2ec9f11575ba03d7a6243882328ed9668bce98903fb4fde69d30c7c7b4290131"
+    },
+    {
+      "pfad": "datenmodell/entwurf.sql",
+      "sha256": "4ae4e88470ad2878eead9655885bf73b0bdbdc5b30df598da14da15bc25a873f"
+    },
+    {
+      "pfad": "datenmodell/migrationen/001-grundmodell.sql",
+      "sha256": "c0090c24ec71600b4ec8974d2653144959d43889d1edbba4af4ac96cb9f24054"
+    },
+    {
+      "pfad": "datenmodell/migrationen/002-pilot.sql",
+      "sha256": "16aea720b22cb22b1907afbd3bcb26426c44bd756b119df841b2e73abd957c78"
+    },
+    {
+      "pfad": "datenmodell/migrationen/003-konten.sql",
+      "sha256": "6655ef4ee2287612ad1f7db0d3c18d835a0a23461ac2364a0f30234cd56ca1e1"
+    },
+    {
+      "pfad": "datenmodell/migrationen/004-arbeitsablauf.sql",
+      "sha256": "801fcefede5185c1b6dd044e1b69777ccaac91d87c0eb5f4dd9c7782074fc492"
+    },
+    {
+      "pfad": "datenmodell/migrationen/005-erweiterung.sql",
+      "sha256": "ba4e99dd1d670c35127cb2a9646e5287dfca7e258a79351fc1095b5db65acff5"
+    },
+    {
+      "pfad": "datenmodell/migrationen/006-kapazitaet.sql",
+      "sha256": "597ada3fa3a779bdfa42d9d8742b5644fdedcc11596ff6e33d25089c3f124b2b"
+    },
+    {
+      "pfad": "erweiterung/einstellungen.html",
+      "sha256": "5ad760c7b56da24cc762bb8c9cdb495bc80d42a9c12be2e72d915f0518d11559"
+    },
+    {
+      "pfad": "erweiterung/einstellungen.js",
+      "sha256": "399a22bc9173ef14823712531ffa8ab69a400198c5c23296d6db00d9b074ac99"
+    },
+    {
+      "pfad": "erweiterung/hintergrund.js",
+      "sha256": "52bebc7f3903242e3fc62db15127ea277313a0dce57a3ad402dea4ce6bfd250a"
+    },
+    {
+      "pfad": "erweiterung/manifest.json",
+      "sha256": "62940ae3c4d33c14e7ec7a92018832fa9b47746347b2a3b439b3fe233bf084a6"
+    },
+    {
+      "pfad": "erweiterung/popup.css",
+      "sha256": "19079b3ffd026354fad77d0f87ee8d62eaabc22e7fc2db16a4e002fbe02cd347"
+    },
+    {
+      "pfad": "package-lock.json",
+      "sha256": "2bb98379d4eb8cec013a60907a5667f3b017ead211d30a54197a9aa76a983f99"
+    },
+    {
+      "pfad": "package.json",
+      "sha256": "34b5118b90ddab313a4c04c0adf800f9d2976b875a6ff6df0abad82d785f67d9"
+    },
+    {
+      "pfad": "release.json",
+      "sha256": "a846751a6b46b058e0cdbd698a7eb28b03fa8027d26505378ccee38df39db938"
+    },
+    {
+      "pfad": "scripts/erweiterung-bauen.mjs",
+      "sha256": "633e0dcf98a7ef3fbe6c0304fbeca6d7e62ed129d11d0a4be63dbc34bde96d92"
+    },
+    {
+      "pfad": "src/app.ts",
+      "sha256": "fc54f5c4761be74526a14bef04a25f5e91fa7753ff3a2db5da4c04ca14224aa2"
+    },
+    {
+      "pfad": "src/betrieb.ts",
+      "sha256": "317d773058ce59c9508a80add1166f57cf04c6496d18a4d4165f3c04d242740a"
+    },
+    {
+      "pfad": "src/config.ts",
+      "sha256": "95b5ba59ab54f60e59109040a4696529f9e799bd85b5a1b5d7f85795bfb0211f"
+    },
+    {
+      "pfad": "src/db.ts",
+      "sha256": "379735bfd1e5c77e1c2cebb7cc789ae0c8e61f11e479c5d4f471ed482cbb345e"
+    },
+    {
+      "pfad": "src/erweiterung.ts",
+      "sha256": "4b5471179e8cd67e66981c8c261941adbdce5fa174be65ea0fe12264400996f8"
+    },
+    {
+      "pfad": "src/http.ts",
+      "sha256": "d66f07bb8ff25392c109e2b840f07e1ae414f33d288e7e941ff401013c49f95e"
+    },
+    {
+      "pfad": "src/konten-routen.ts",
+      "sha256": "25999d2182f7e79f71edf2611aed19db3b08b221f36431d5c5bcbaadbf34c97c"
+    },
+    {
+      "pfad": "src/konten.ts",
+      "sha256": "e29bf2d1f0710bc618cd4cdbdef37dc71ec6da6c266e206dd1280de09a699a24"
+    },
+    {
+      "pfad": "src/konto-cli.ts",
+      "sha256": "4e691aa4912e459300f735fac16256b3130b2d2a4a23566c4d9700ffbd671e3c"
+    },
+    {
+      "pfad": "src/korrektur.ts",
+      "sha256": "69eb471eeed5493d0e7e42c4c0f63ad8d08c48a1cbfc8ec13e27d4c095ad57c6"
+    },
+    {
+      "pfad": "src/mail-cli.ts",
+      "sha256": "b5b419583acb90737cba69507dd6c06235a3f434847afefac0e7f6eed452c816"
+    },
+    {
+      "pfad": "src/mail.ts",
+      "sha256": "83fe5bbe10176f80965bb67c659a563e9e15263d17ed9acc7a29eaff6f24dffc"
+    },
+    {
+      "pfad": "src/nachweise.ts",
+      "sha256": "99535616bf17416f66ff21eec0b3b6135ba1d83212667fa5aed2d1298c5cc39e"
+    },
+    {
+      "pfad": "src/server.ts",
+      "sha256": "9a6ae2d90b6cb8c7084856b9e67b06cb2bb7d1dca61f6cff24039e5f10363ae4"
+    },
+    {
+      "pfad": "src/session.ts",
+      "sha256": "17c37b2f833218240258cc061ae5d66f77ffe28875b7adaa52788a341c82cd57"
+    },
+    {
+      "pfad": "src/stammdaten-routen.ts",
+      "sha256": "bae1e342d0cc25a0e53114bd484eb5138463630aaa34da7b15ae6b3e5df86025"
+    },
+    {
+      "pfad": "src/timer.ts",
+      "sha256": "b24300730474292cc3d088e1a8778cb34d022cf493a6f46b0684aca1910986c3"
+    },
+    {
+      "pfad": "src/uebersicht.ts",
+      "sha256": "c73da9134b744fd35b1f91a13912a220ac03ab0ca4e8c52ed8d1fb30faa39dc0"
+    },
+    {
+      "pfad": "src/updates.ts",
+      "sha256": "e47861dfc12520213df9105e2de3032a026842eff628ec52f8478217134f9015"
+    },
+    {
+      "pfad": "src/version.ts",
+      "sha256": "776417d631c823a5fced66894842fbf3c3f4d34a479c1c642722cd0596adb29e"
+    },
+    {
+      "pfad": "src/zeitraum.ts",
+      "sha256": "1a07f70754734130aad97736ed1edc767a105fd998221b62509b73b955ad8bb0"
+    },
+    {
+      "pfad": "src/ziele.ts",
+      "sha256": "8eb70013b05fc55508fa64d560952093cec263a0d869be3ee2cd4e79920ad4db"
+    },
+    {
+      "pfad": "tests/arbeitsablauf-browser.mjs",
+      "sha256": "6c4877065da0b3bdbe165ef221ce66becff312540ec93b6213008ba4a40ae39c"
+    },
+    {
+      "pfad": "tests/ausbau.mjs",
+      "sha256": "a899b2c96e53252b7b6a4bcbf0b57cbc43576bcf7d0bdda60533645af636fce1"
+    },
+    {
+      "pfad": "tests/betrieb-api.mjs",
+      "sha256": "3170a63cc11ee1aaaff0bc9d08d6257755a6d4724e45910b84d51346eb4bc709"
+    },
+    {
+      "pfad": "tests/betrieb-ausgabe-fehler.sh",
+      "sha256": "29d04e7ac770d07fe9567016d48dbc71fe65c0c0bcb4312a4a7c015f59d98ea4"
+    },
+    {
+      "pfad": "tests/betrieb-ausgabe.sh",
+      "sha256": "fc3cf0d15cd246a14be3867ac2703bbdad25993cafdf7eaae0bedd8fd4e4adc3"
+    },
+    {
+      "pfad": "tests/betrieb-browser.mjs",
+      "sha256": "555034369e6ad26be00df5a3ae69a9e20088e9ce93360116d68b5ed6a93c8694"
+    },
+    {
+      "pfad": "tests/betrieb-dienst.test.mjs",
+      "sha256": "8ad0058c5ad47b5e1d85b0e1fb4fa097faaf16c4247e67da2396ef064e176094"
+    },
+    {
+      "pfad": "tests/betrieb-https-abbruch.sh",
+      "sha256": "8b168ab6f033edb80904467ad939955355bba77d41fc3a31c2104b032e910413"
+    },
+    {
+      "pfad": "tests/betrieb-konfiguration.test.mjs",
+      "sha256": "9571c8a03253d8746ee66010744cdbfebce46d5dee481a22b81028567525ec9f"
+    },
+    {
+      "pfad": "tests/betrieb-native-bootstrap.sh",
+      "sha256": "c977022a6f001beab64113c6156b1e32b685aef29c135b0120f3eacf9f9febd2"
+    },
+    {
+      "pfad": "tests/betrieb-native-domain.mjs",
+      "sha256": "b871b19c946288530d79bd7a7cc1ddc995faea4322ed7b9186650c816257f99b"
+    },
+    {
+      "pfad": "tests/betrieb-native-release.sh",
+      "sha256": "780a47f2fe35e27a1af41de79e3c3db2e35e8092e7355cdc305dc0454f633b45"
+    },
+    {
+      "pfad": "tests/betrieb-native-update.mjs",
+      "sha256": "6899ef318d0bf28b355f59fb756532ee9ead0dc22ddbdc54d8735b47dcbdc60c"
+    },
+    {
+      "pfad": "tests/betrieb-proxy.sh",
+      "sha256": "614639aeba39001859011d8be7f8d3e4685a1328e585de0a882bfa9468b5d244"
+    },
+    {
+      "pfad": "tests/betrieb-restore-kollision.sh",
+      "sha256": "919ec946e1df8a6fc9fea285201201ffbb3360e471a8a8a765c9e38214df4134"
+    },
+    {
+      "pfad": "tests/betrieb-system.test.mjs",
+      "sha256": "19da755f64b59d3c48372a5f75d1e7b22015805d01b1e4d7c603653ec66e0be7"
+    },
+    {
+      "pfad": "tests/betrieb.test.mjs",
+      "sha256": "ea0c501086ec54ba732627df152304ec40afe593bd6cc2715216ec365d62a1e2"
+    },
+    {
+      "pfad": "tests/betriebsauftraege.test.mjs",
+      "sha256": "53af5557879825c9b0b181ddfefa32899370ecd61c42dcadcc6924b4eef7057c"
+    },
+    {
+      "pfad": "tests/browser.mjs",
+      "sha256": "76c20df8c0653278c01787bc76472b44973471775aae6730b0434f9b74882d38"
+    },
+    {
+      "pfad": "tests/design-abdeckung.mjs",
+      "sha256": "115770da91249c2a592313b983ae03cebe154d0e1abb4936365382de2bc0cbaf"
+    },
+    {
+      "pfad": "tests/design-browser.mjs",
+      "sha256": "da99b2419e85ad60a0838e233fa7f01cc61fe01f17415f2660d8853b9709e48a"
+    },
+    {
+      "pfad": "tests/erweiterung-browser.mjs",
+      "sha256": "c38a356f2f9afc819bf3165573663aa272ddadb4e3903e763475e012e241914d"
+    },
+    {
+      "pfad": "tests/erweiterung-client.test.mjs",
+      "sha256": "bf0c6e96d62a634e5baad6100cb5ab17ad95901231ad3d846a522d6515d30bd4"
+    },
+    {
+      "pfad": "tests/erweiterung.mjs",
+      "sha256": "03aeaa0353af09a940def5ad6b16795982bcbbdbf51a8bad3402cc218649cf75"
+    },
+    {
+      "pfad": "tests/footer-browser.mjs",
+      "sha256": "9d6662dd172562cf98b1c6247ec4125bd58c0b3874d3af616b07e7b088a0b5f4"
+    },
+    {
+      "pfad": "tests/hilfe/design.mjs",
+      "sha256": "4caa0627c68f1be7a9f3a74973506665ae6adc1797a43e7fe5f5ed7952d32435"
+    },
+    {
+      "pfad": "tests/hilfe/smtp.mjs",
+      "sha256": "32d39699731dde56202637ef792e2dee8ee82a55f73fa5eb1df9b17fdf9c81d8"
+    },
+    {
+      "pfad": "tests/integration.mjs",
+      "sha256": "17be925069563a04e4aaa3c23a59dc4fbd794697dd8f1340256b20dd28aae2b9"
+    },
+    {
+      "pfad": "tests/kapazitaet-stoerungen.mjs",
+      "sha256": "c54fdd13ae71bac82aba4b77e40996feb2403c5400bea2130d37d95b2a0843a2"
+    },
+    {
+      "pfad": "tests/kapazitaet.mjs",
+      "sha256": "c0e86321c78d053ec955424a134acca5f73baad1e25d42b44339405f8d02c69a"
+    },
+    {
+      "pfad": "tests/konten-browser.mjs",
+      "sha256": "bbb01a6dd7591c2542165cd30ea3908240dbb85962010a6d65467bbe712c812d"
+    },
+    {
+      "pfad": "tests/konten.mjs",
+      "sha256": "cd1e2029f9a54c6b00da931ad45a44b08822224b0625132291e031a01485ba4d"
+    },
+    {
+      "pfad": "tests/last-bestand.sql",
+      "sha256": "bb2285fb1a5a52fa605c4e2d3c612c9330f3dde5465cd021fcd575289a5d5097"
+    },
+    {
+      "pfad": "tests/last-plaene.mjs",
+      "sha256": "e74bbfb3081d3744aaa5452d71db986566e263d32ee5a4b726b0e354c4df9950"
+    },
+    {
+      "pfad": "tests/last-schema-v05.sql",
+      "sha256": "0b8dfebfc06bc053a56866fab0b29a3fa92c6c0c8bab02ad903cb7c2a6208ab8"
+    },
+    {
+      "pfad": "tests/last-server.mjs",
+      "sha256": "a53a3050262c905c83fb18e20bb2578cdca8151be04673d71c2151a0300acdd0"
+    },
+    {
+      "pfad": "tests/last.mjs",
+      "sha256": "0cb2ef422bf45dc0b1838b217119693f2e7d1d81d68ac4925ad284fe66a6e6b0"
+    },
+    {
+      "pfad": "tests/last.sh",
+      "sha256": "ce72857c39e22d76ec6a97a418e0ec9f3d124e905bb1932e4f9b98eb7bcff083"
+    },
+    {
+      "pfad": "tests/mail-cli.test.mjs",
+      "sha256": "fec0801ec783e62eb2bf33f19cc9720040ac4346e42f7a8a4ece8bb4e2d32611"
+    },
+    {
+      "pfad": "tests/postgres.sh",
+      "sha256": "4f78d00373ce9569f384a5a6a26d93c6eaaa59fe9b0db63c7a3a80ccc4d68cc2"
+    },
+    {
+      "pfad": "tests/update-lxc.sh",
+      "sha256": "12a3f8282cc42dbcb1fc6d2abc4af2c88c256f3ebb9b2fc4513b73a490f99e8e"
+    },
+    {
+      "pfad": "tests/update-rollback.sh",
+      "sha256": "385085f185bad89815bb2823bccf9138d499b530009a87a23ef7258f1acff39d"
+    },
+    {
+      "pfad": "tests/update.test.mjs",
+      "sha256": "d20b2ab42301d2355c3b176bb481d85a954545776b72e321fa878fe125561f46"
+    },
+    {
+      "pfad": "tests/updates.test.mjs",
+      "sha256": "01618de6ff7b32682ecfbd61f65bde2a449960f52c668926d687d3e9d361f90c"
+    },
+    {
+      "pfad": "tests/version.test.mjs",
+      "sha256": "238257fe3f7d065ca08b946582ca330b4678971954279186d0e0f5b879de1ece"
+    },
+    {
+      "pfad": "tests/zeit.test.mjs",
+      "sha256": "35b18b815bea6a8c2f7808c2f21cc26c8414e87feb50cf4ea351ba6b536fcc78"
+    },
+    {
+      "pfad": "tsconfig.json",
+      "sha256": "b1679b886ef3d5eb03c3f78675a15c3773e20dab8dd23f3596a51dbedbddd16c"
+    },
+    {
+      "pfad": "web/app.css",
+      "sha256": "9ab0ed23364dafec5157e3d937a42f4565218aa39a7f2304bf1cff3556cf93c9"
+    },
+    {
+      "pfad": "web/app.js",
+      "sha256": "582bf22f2261b94b28fcf8e84caf2687aaa05556c2262cfe9281329479b3643f"
+    },
+    {
+      "pfad": "web/arbeitsablauf.js",
+      "sha256": "b9b5ee755ab22faa09b211f8ca34aa608488999d32224a4fc79c8f2c81ab9c98"
+    },
+    {
+      "pfad": "web/betrieb.js",
+      "sha256": "0813e5d2193eedd29d16f1c47fd29b648ce215616424c22466165d8043bffdd4"
+    },
+    {
+      "pfad": "web/erweiterung-anmelden.html",
+      "sha256": "342f41497b5c7c46ec217addde63b574cbb5246a0106d7d930c9a8c621d55b6c"
+    },
+    {
+      "pfad": "web/erweiterung-anmelden.js",
+      "sha256": "e0948fe99ffb4982b5448df0fad6073189555f9c1ff3a4d15761a4e4f7274127"
+    },
+    {
+      "pfad": "web/erweiterung-vertrag.js",
+      "sha256": "18114c6b60e8f30053ae234a5b8b4498cc26f9471edb1653511ca679b232c790"
+    },
+    {
+      "pfad": "web/index.html",
+      "sha256": "84120c189cf6fe7a5e94067e3db2a3add739eb5669a9e430e2410b87dc32988b"
+    },
+    {
+      "pfad": "web/konten.js",
+      "sha256": "1ea369ed95abc0b749bcbf5c8b2207706ff1af04fe8e63f5ed373aa5fffb635b"
+    },
+    {
+      "pfad": "web/transport.js",
+      "sha256": "cfa5a21495201065ec2a2047831aa95a1543a1a579c591946a7d76afef6629b9"
+    },
+    {
+      "pfad": "web/version.js",
+      "sha256": "e6345e28f7e247616082871f16bf4ee198bc4b86a7f09dc4b915bc87353a83bf"
+    },
+    {
+      "pfad": "web/zeit.js",
+      "sha256": "ee341665676cc301af1d51b071a39c2d02c2112aa09df5125f4308cfa0c30875"
+    }
+  ]
+}

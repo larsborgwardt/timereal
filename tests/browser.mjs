@@ -48,6 +48,10 @@ try {
       .waitFor();
   }
   const laptop = await anmelden(1280, 840);
+  await laptop
+    .getByRole("contentinfo")
+    .getByRole("link", { name: "GitHub", exact: true })
+    .waitFor();
   await neu(laptop, "Kunde A", "4711", "Speichern und starten");
   await laptop.getByRole("button", { name: "Leistungstext" }).click();
   await laptop.locator("#notiz").fill("Konfiguration geprüft");
@@ -63,7 +67,7 @@ try {
   await laptop
     .locator(".ziel")
     .filter({ hasText: "Kunde A" })
-    .getByRole("button")
+    .getByRole("button", { name: "Hierhin wechseln", exact: true })
     .click();
   await laptop
     .locator("#timer")
@@ -88,8 +92,11 @@ try {
   );
   await handy.getByRole("button", { name: "Nachweise", exact: true }).click();
   await handy.getByRole("button", { name: "Historie", exact: true }).click();
-  await handy.getByText("Konfiguration geprüft", { exact: true }).waitFor();
-  assert.equal(await handy.locator("article.eintrag").count(), 4);
+  await handy
+    .locator("#eintraege")
+    .getByText("Konfiguration geprüft", { exact: true })
+    .waitFor();
+  assert.equal(await handy.locator("#eintraege article.eintrag").count(), 4);
   await handy.getByRole("button", { name: "Abmelden" }).click();
   await handy.getByRole("heading", { name: "Anmelden" }).waitFor();
   console.log(

@@ -6,7 +6,7 @@ Die Web-App läuft auf einem eigenen Linux-Systemcontainer. Für den Pilot sind 
 flowchart LR
   Laptop[Web-App am Laptop]
   Handy[Web-App am Smartphone]
-  Popup[Geplante Browsererweiterung]
+  Popup[Browsererweiterung]
   subgraph LXC[Eigener unprivilegierter Debian-LXC]
     TLS[HTTPS · Caddy]
     API[TypeScript-API · Loopback]
@@ -21,7 +21,7 @@ flowchart LR
     Ziele & Timer & Beleg --> DB
   end
   Laptop & Handy -->|Sitzungscookie| TLS
-  Popup -. separat widerrufbare Sitzung .-> TLS
+  Popup -->|separat widerrufbare Sitzung| TLS
 ```
 
 ## Zuständigkeiten und Vertrauensgrenzen
@@ -75,6 +75,18 @@ Für Notizen gilt `PATCH /api/v1/abschnitte/{id}/notiz` mit Leistungstext und ge
 
 ## Pilot und anschließender Ausbau
 
-Der erste Pilottest funktioniert ohne Mailserver. Die Konten werden im Gast angelegt. Für den Betrieb mit Einladungen folgen Einmal-Token mit Ablauf und Hash, Versand über SMTP, Passwortzurücksetzung und die Verwaltungsansicht für Kontosperren. Die technische Sperre widerruft bereits Sitzungen und schließt einen laufenden Abschnitt als prüfpflichtig.
+Der erste Pilottest funktioniert ohne Mailserver. Die Konten werden im Gast angelegt. Ab Version 0.3.0 sind Einmal-Token mit Ablauf und Hash, Versand über SMTP, Passwortzurücksetzung und die Verwaltungsansicht für Kontosperren implementiert. Das Modul `konten` übernimmt die Fachlogik; `konten-routen` bindet sie an HTTP. Administrationsfunktionen in PostgreSQL geben Kontometadaten aus, ohne Zugriff auf fremde Kunden oder Zeiten zu gewähren. Die technische Sperre widerruft bereits Sitzungen und schließt einen laufenden Abschnitt als prüfpflichtig.
 
-Die Erweiterung folgt auf den Arbeitstag im Pilot. Ihr Popup verwendet diese Timer- und Notizbefehle. Zum Anmelden ist ein eigener Autorisierungsablauf mit PKCE, exakt registriertem Rücksprungziel und widerrufbarer Erweiterungssitzung vorgesehen. Die Berechtigung gilt für die Timereal-Adresse. Das Popup benötigt für die manuelle Zielauswahl keinen Zugriff auf Inhalte anderer Tabs. Offline vorgemerkte Wechsel müssen nach dem Wiederverbinden gegen den aktuellen Stand bestätigt werden.
+Ab Version 0.5.0 verwendet das Chromium-Popup dieselben HTML-/JavaScript-Module und Timer-/Notizbefehle wie die Web-App. Ein gemeinsamer Transportadapter ergänzt den Bearer-Zugang; die Fachlogik bleibt im Backend. Die Anmeldung bindet einen kurzlebigen Code an PKCE-S256, das feste Rücksprungziel der Erweiterungskennung und die weiterhin gültige Websitzung. Der Sitzungsschlüssel liegt adressgebunden im Sitzungsspeicher der Erweiterung und wird nach einem Browserneustart neu angefordert. Die Serverberechtigung wird beim Verbinden abgefragt; beim erfolgreichen Serverwechsel werden frühere Serverberechtigungen entfernt. Ein abgebrochener Verbindungsversuch ersetzt die bestehende Verbindung nicht.
+
+Die Erweiterung liest keine Inhalte anderer Tabs. Nach einer ausgebliebenen Antwort sperrt sie weitere Schreibaufrufe, bis der Benutzer den Serverstand neu geladen hat. Die nächste Timeraktion wird bestätigt; eine frühere Anfrage wird nicht automatisch nachgeholt. Dieser Zustand bleibt beim Schließen des Popups erhalten. Der Server verwendet weiterhin Versionsprüfung und Auftragsschlüssel für konkurrierende Geräte und Wiederholungen.
+
+Die Betriebsskripte liegen außerhalb der HTTP-Anwendung und benötigen root. Öffentliches HTTPS verwendet Caddy, eine externe Anwendungssicherung Restic über SFTP. Die Einrichtung gehört dem Betreiber; Zugangsdaten werden verdeckt eingelesen und nicht im Git-Bestand abgelegt. Einzelheiten und Grenzen stehen in der [Betriebsanleitung](betrieb/README.md).
+
+## Gleichzeitige Nutzer und begrenzte Ressourcen
+
+`GET /api/v1/arbeitsstand` liefert Timer, persönliche Ziele, Profil und Kunden innerhalb einer geprüften Kontotransaktion. Die Web-App und Erweiterung verwenden diesen gemeinsamen Abruf statt separater paralleler Anfragen für diese Daten. Die bisherigen Leseendpunkte bleiben für bestehende Clients verfügbar. Die gemeinsame Antwort enthält keine Passworthashes oder Sitzungsschlüssel.
+
+Die Kapazitätsplanung für Version 0.6 steht in [KAPAZITAET.md](KAPAZITAET.md). Der Produktionspool nutzt standardmäßig zwölf PostgreSQL-Verbindungen, unabhängig von der Zahl angemeldeter Browser. `TIMEREAL_DB_POOL_MAX` lässt Werte von 2 bis 32 zu; ungültige Konfiguration verhindert den Start. Poolwartezeit (3 s), SQL-Laufzeit (5 s), Sperrwartezeit (1 s) und Leerlauf in einer offenen Transaktion (10 s) sind begrenzt. Diese Vorgaben gelten für die Anwendungsverbindungen; Migration und Sicherung verwenden eigene Verbindungen.
+
+Bei einem solchen Engpass meldet die API HTTP 503 mit `Retry-After: 1`. Das ist keine Bestätigung einer Buchung. Der Nutzer lädt den aktuellen Zustand, bevor er erneut handelt; die bestehenden Auftrags- und Versionsprüfungen bleiben maßgeblich. Nach einem fehlgeschlagenen Rollback wird die Verbindung verworfen. Ein Fehler an einer unbenutzten Poolverbindung wird ohne Zugangsdaten protokolliert und beendet nicht den gesamten Node-Prozess.
