@@ -740,3 +740,26 @@ h2:focus-visible {
     width: 100%;
   }
 }
+
+#betrieb-balken {
+  display: block;
+  width: 100%;
+  height: 14px;
+  appearance: none;
+  border: 0;
+  border-radius: 20px;
+  background: #e3eaf0;
+  margin-top: 16px;
+}
+#betrieb-balken::-webkit-progress-bar {
+  background: #e3eaf0;
+  border-radius: 20px;
+}
+#betrieb-balken::-webkit-progress-value {
+  background: #08796f;
+  border-radius: 20px;
+}
+#betrieb-balken::-moz-progress-bar {
+  background: #08796f;
+  border-radius: 20px;
+}

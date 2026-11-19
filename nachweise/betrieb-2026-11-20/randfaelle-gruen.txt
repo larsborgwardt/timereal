@@ -1,0 +1,18 @@
+✔ Fortschritt folgt bestätigten Betriebsphasen; nur Erfolg füllt den Balken (0.822576ms)
+✔ Abgeschlossene Vorbereitung bleibt beim Übergang zur Installation sichtbar (0.1808ms)
+✔ Annahme ist dauerhaft, vertraulich und nach verlorener Antwort idempotent (12.631654ms)
+✔ Gleichzeitige Annahme erzeugt einen Auftrag; andere Betriebsaktionen kollidieren (7.050498ms)
+✔ Aktivierung benötigt den richtigen Vorzustand und einen eigenen Auftragsschlüssel (4.788896ms)
+✔ Unzulässige Argumente, fremde Pfade und Geheimnisse werden nicht gespeichert (2.599409ms)
+✔ Domainbestätigung gilt nur am neuen Ursprung, Rücknahme bleibt separat möglich (10.753528ms)
+✔ Beschädigter Bestand wird laut abgewiesen und nicht durch eine leere Datei ersetzt (3.07935ms)
+✔ Neue Domain wird bei gleichzeitigem Zugriff mehrerer Sitzungen nur einmal bestätigt (5.265789ms)
+✔ Ungeklärte Wiederherstellung sperrt weitere Betriebsaufträge bis zur Nachprüfung (4.536712ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 113.346022

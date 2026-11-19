@@ -1,5 +1,6 @@
 import { systemkonsole } from "./systemkonsole.js";
 import { auditOberflaeche } from "./audit.js";
+import { updateFortschritt } from "./betrieb-fortschritt.js";
 const prefix = "/verwaltung/betrieb";
 const laufend = new Set([
   "vorbereitung",
@@ -25,7 +26,8 @@ const titel = {
   pruefung: "Domain wird geprüft",
   geprueft: "Domain übernehmen",
   uebernahme: "Domain wird übernommen",
-  bestaetigung_ausstehend: "Neue Adresse bestätigen",
+  bestaetigung_ausstehend: "Neue Adresse wird geprüft",
+  abschlusspruefung: "Installation wird geprüft",
   ruecknahme: "Vorheriger Zugang wird wiederhergestellt",
   zurueckgesetzt: "Domainwechsel zurückgenommen",
 };
@@ -44,7 +46,9 @@ export function betriebsOberflaeche({
     laedt = false,
     generation = 0,
     transportFehler = false,
-    letzteNonce = null;
+    letzteNonce = null,
+    domainPruefung = false,
+    startPruefung = false;
   const konsole = systemkonsole({
     $,
     request,
@@ -105,9 +109,19 @@ export function betriebsOberflaeche({
         : update?.status === "unavailable"
           ? "Versionsprüfung derzeit nicht erreichbar. Bitte später erneut versuchen."
           : update?.updateAvailable
-            ? "Bereite das Update vor. Timereal bleibt dabei erreichbar."
+            ? "Ein Klick startet Vorbereitung, Datensicherung und Installation. Beim Neustart ist Timereal kurz nicht erreichbar. Deine Timer bleiben erhalten."
             : "Kein neueres stabiles Release gemeldet.",
     );
+    const blockiert = stand?.auftraege.find((j) => laufend.has(j.zustand));
+    if (blockiert?.typ === "domain")
+      text(
+        "updatehinweis",
+        blockiert.zustand === "bestaetigung_ausstehend"
+          ? "Der neue Domainzugang wird geprüft. Öffne unter Domainzugriff die neue Adresse; dein angemeldeter Zugriff wird automatisch erkannt."
+          : blockiert.zustand === "wiederherstellung_noetig"
+            ? "Der Domainwechsel benötigt eine Wiederherstellung. Den Hinweis findest du unter Domainzugriff."
+            : "Der Domainwechsel läuft. Nach seinem Abschluss sind Updates wieder verfügbar.",
+      );
     const link = $("#betrieb-release");
     link.hidden = !update?.releaseUrl;
     if (
@@ -131,7 +145,7 @@ export function betriebsOberflaeche({
     text(
       "domainhinweis",
       stand?.hinweis ??
-        "Ohne Bestätigung über die neue Adresse kehrt Timereal automatisch zum bisherigen Zugang zurück.",
+        "Öffne die neue Adresse. Dein angemeldeter Zugriff wird automatisch erkannt. Ohne erfolgreichen Zugriff kehrt Timereal zum bisherigen Zugang zurück.",
     );
     $("#betrieb-domainpruefen button").disabled =
       beschaeftigt || !stand?.domainUnterstuetzt || aktiv;
@@ -153,7 +167,9 @@ export function betriebsOberflaeche({
           ? (j.vorherigeVersion ? `v${j.vorherigeVersion} → ` : "") + j.tag
           : "https://" + j.domain) +
           " · " +
-          (titel[j.phase] ?? "Verarbeitung läuft"),
+          (typ === "update" && j.phase === "pruefung"
+            ? "Release wird geprüft"
+            : (titel[j.phase] ?? "Verarbeitung läuft")),
       );
       text(typ + "meldung", j.meldung);
       text(
@@ -162,22 +178,36 @@ export function betriebsOberflaeche({
       );
     }
     $("#betrieb-installieren").hidden = job("update")?.zustand !== "bereit";
+    const fortschritt = updateFortschritt(job("update"));
+    $("#betrieb-fortschritt").hidden =
+      !fortschritt || job("update")?.zustand === "bereit";
+    if (fortschritt) {
+      const balken = $("#betrieb-balken");
+      balken.value = fortschritt.abgeschlossen;
+      balken.max = fortschritt.gesamt;
+      balken.setAttribute(
+        "aria-valuetext",
+        `${fortschritt.abgeschlossen} von ${fortschritt.gesamt} Schritten abgeschlossen`,
+      );
+      $("#betrieb-fortschritt").classList.toggle("laeuft", fortschritt.laeuft);
+      text(
+        "fortschritttext",
+        fortschritt.laeuft || job("update")?.zustand === "erfolgreich"
+          ? `${fortschritt.text} · Schritt ${fortschritt.schritt} von ${fortschritt.gesamt}`
+          : (titel[job("update")?.zustand] ?? "Auftragsstand prüfen"),
+      );
+    }
     $("#betrieb-uebernehmen").hidden = job("domain")?.zustand !== "geprueft";
     $("#betrieb-bestaetigung").hidden =
       job("domain")?.zustand !== "bestaetigung_ausstehend";
     const d = job("domain");
     if (d?.zustand === "bestaetigung_ausstehend") {
-      const rest = Math.max(0, Math.ceil((d.frist - Date.now()) / 1000));
       text(
         "frist",
-        `Bestätigung ausstehend · noch ${Math.floor(rest / 60)}:${String(rest % 60).padStart(2, "0")}. Bisherige Adresse: ${d.vorherigeOrigin ?? "–"}`,
+        `Öffne die neue Adresse innerhalb von drei Minuten. Dein angemeldeter Zugriff wird automatisch erkannt. Bisherige Adresse: ${d.vorherigeOrigin ?? "–"}`,
       );
       $("#betrieb-neueadresse").href =
         "https://" + d.domain + "/#betrieb-domain";
-      sperren(
-        "bestaetigen",
-        beschaeftigt || location.origin !== "https://" + d.domain || rest === 0,
-      );
     }
     for (const f of ["installieren", "uebernehmen"])
       $("#betrieb-" + f + " button").disabled = beschaeftigt || aktiv;
@@ -210,6 +240,7 @@ export function betriebsOberflaeche({
       }
       text("status", "Auftragsstand aktualisiert.");
       anzeigen();
+      await domainZugriffErkennen(s);
     } catch (e) {
       if (vorher !== generation) return;
       text(
@@ -220,6 +251,26 @@ export function betriebsOberflaeche({
       );
     } finally {
       laedt = false;
+    }
+  }
+  async function domainZugriffErkennen(s) {
+    const d = s?.auftraege.find(
+      (j) => j.typ === "domain" && j.zustand === "bestaetigung_ausstehend",
+    );
+    if (
+      !d ||
+      beschaeftigt ||
+      domainPruefung ||
+      location.origin !== "https://" + d.domain
+    )
+      return;
+    domainPruefung = true;
+    try {
+      // Der Server entscheidet über Frist und Berechtigung. Eine abweichende
+      // Geräteuhr darf den erreichbaren Zugang nicht blockieren.
+      await senden(`/domain/${d.id}/bestaetigen`);
+    } finally {
+      domainPruefung = false;
     }
   }
   async function aktualisieren() {
@@ -275,7 +326,7 @@ export function betriebsOberflaeche({
     if (nonce?.signatur !== signatur)
       nonce = { signatur, key: crypto.randomUUID() };
     letzteNonce = nonce;
-    // Niemals Passwörter ablegen; der Server prüft sie bei jedem Versuch frisch.
+    // Nur den Auftragsschlüssel ablegen; die Websitzung wird serverseitig geprüft.
     try {
       sessionStorage.setItem("timereal-betriebsanfrage", JSON.stringify(nonce));
     } catch {
@@ -308,10 +359,10 @@ export function betriebsOberflaeche({
   );
   $("#betrieb-aktualisieren").onclick = () => void aktualisieren();
   $("#betrieb-vorbereiten").onclick = () =>
-    void senden("/updates/vorbereiten", { tag: "v" + update.latestVersion });
+    void senden("/updates/starten", { tag: "v" + update.latestVersion });
   $("#betrieb-domainpruefen").onsubmit = (ev) => {
     ev.preventDefault();
-    void senden("/domain/pruefen", {
+    void senden("/domain/speichern", {
       domain: ev.target.elements.domain.value.trim().toLowerCase(),
     });
   };
@@ -322,14 +373,9 @@ export function betriebsOberflaeche({
     $("#betrieb-" + form).onsubmit = (ev) => {
       ev.preventDefault();
       const j = job(typ);
-      if (j)
-        void senden(`/${pfad}/${j.id}/${form}`, {
-          passwort: ev.target.elements.passwort.value,
-        });
+      if (j) void senden(`/${pfad}/${j.id}/${form}`);
     };
   }
-  $("#betrieb-bestaetigen").onclick = () =>
-    void senden(`/domain/${job("domain").id}/bestaetigen`);
   $("#betrieb-zurueck").onclick = () =>
     void senden(`/domain/${job("domain").id}/zuruecknehmen`);
   setInterval(() => {
@@ -343,6 +389,18 @@ export function betriebsOberflaeche({
   return {
     laden,
     rolleSetzen(profil) {
+      if (!startPruefung && (profil.admin || profil.rolle === "betrieb")) {
+        startPruefung = true;
+        const vorher = generation;
+        void request(prefix + "/status")
+          .then((s) => {
+            if (vorher === generation) return domainZugriffErkennen(s);
+          })
+          .catch(() => {
+            // Der optionale Betriebsdienst darf die Zeiterfassung nicht blockieren.
+            // Seine Fehlermeldung erscheint beim Öffnen der Betriebsverwaltung.
+          });
+      }
       document.querySelector('[data-betrieb="berater"]').hidden = !profil.admin;
       document.querySelector('[data-betrieb="audit"]').hidden = !profil.admin;
       if (!profil.admin && ["berater", "audit"].includes(bereich))
@@ -358,6 +416,7 @@ export function betriebsOberflaeche({
       audit.zuruecksetzen();
       generation++;
       prueft = false;
+      startPruefung = false;
       stand = update = null;
       bereich = "berater";
       for (const id of ["domainpruefen", "installieren", "uebernehmen"])

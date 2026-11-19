@@ -37,6 +37,8 @@ const zustaende = new Set([
   "wiederherstellung_noetig",
 ]);
 const aktionen = {
+  "update-starten": ["update", null, "vorbereitung", "tag"],
+  "domain-speichern": ["domain", null, "pruefung", "domain"],
   "update-vorbereiten": ["update", null, "vorbereitung", "tag"],
   "update-installieren": ["update", "bereit", "sicherung", null],
   "domain-pruefen": ["domain", null, "pruefung", "domain"],
@@ -217,6 +219,17 @@ export class Auftragsbuch {
       const [typ, vorher, zustand] = aktionen[a.aktion];
       const b = structuredClone(this.#bestand);
       let job = a.jobId ? b.auftraege.find((j) => j.id === a.jobId) : null;
+      // Mehrere angemeldete Tabs können denselben neuen Zugang erkennen.
+      // Ein bereits bestätigter Zugang braucht keine zweite Zustandsänderung.
+      if (
+        a.aktion === "domain-bestaetigen" &&
+        job?.typ === "domain" &&
+        job.zustand === "erfolgreich"
+      ) {
+        if (a.daten.origin !== "https://" + job.domain)
+          fehler("HERKUNFT", "Zugriff über die neue Domain bestätigen.");
+        return { neu: false, auftrag: structuredClone(job) };
+      }
       if (vorher && (!job || job.typ !== typ || job.zustand !== vorher))
         fehler(
           "ZUSTAND",
@@ -243,13 +256,16 @@ export class Auftragsbuch {
           typ,
           konto: a.konto,
           erstelltAm: jetzt,
+          automatisch: ["update-starten", "domain-speichern"].includes(
+            a.aktion,
+          ),
           ...a.daten,
         };
         b.auftraege.push(job);
       }
       Object.assign(job, {
         zustand,
-        phase: zustand,
+        phase: typ === "update" && !vorher ? "pruefung" : zustand,
         aktualisiertAm: jetzt,
         veranlasstVon: a.konto,
       });

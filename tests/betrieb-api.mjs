@@ -8,7 +8,7 @@ import pg from "pg";
 import { createApp } from "../dist/app.js";
 import { issueSession, passwordHash } from "../dist/session.js";
 
-test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch", async (t) => {
+test("Betriebs-API erlaubt Aktionen ohne zweites Passwort nur mit aktiver Betriebs-Websitzung", async (t) => {
   const dir = await mkdtemp(join(tmpdir(), "timereal-ipc-"));
   const socket = join(dir, "test.sock");
   const empfangen = [];
@@ -183,17 +183,30 @@ test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreiba
   assert.equal(start.statusCode, 202, start.body);
   assert.equal(empfangen.at(-1).anfrage.konto, admin.id);
   const id = start.json().id;
-  const davor = empfangen.length;
-  assert.equal(
-    (await q(a, "POST", `/updates/${id}/installieren`, { passwort: "falsch" }))
-      .statusCode,
-    403,
-  );
-  assert.equal(empfangen.length, davor);
-  const install = await q(a, "POST", `/updates/${id}/installieren`, {
-    passwort: "BetriebTest!123456",
-  });
+  const install = await q(a, "POST", `/updates/${id}/installieren`, {});
   assert.equal(install.statusCode, 202, install.body);
+  for (const [path, daten, aktion] of [
+    ["/updates/starten", { tag: "v0.9.4" }, "update-starten"],
+    ["/domain/speichern", { domain: "zeit.example.org" }, "domain-speichern"],
+    [`/domain/${id}/uebernehmen`, {}, "domain-uebernehmen"],
+  ]) {
+    const davor = empfangen.length;
+    for (const [session, headers, code] of [
+      ["", {}, 401],
+      [b, {}, 403],
+      [a, { authorization: "Bearer " + ext }, 403],
+      [a, { origin: "https://fremd.test" }, 403],
+    ])
+      assert.equal(
+        (await q(session, "POST", path, daten, headers)).statusCode,
+        code,
+      );
+    assert.equal(empfangen.length, davor);
+    const result = await q(a, "POST", path, daten);
+    assert.equal(result.statusCode, 202, result.body);
+    assert.equal(empfangen.at(-1).anfrage.aktion, aktion);
+    assert.deepEqual(empfangen.at(-1).anfrage.daten, daten);
+  }
   assert.equal(JSON.stringify(empfangen).includes("BetriebTest"), false);
   assert.equal(
     (

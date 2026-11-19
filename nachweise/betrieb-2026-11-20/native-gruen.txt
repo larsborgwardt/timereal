@@ -1,0 +1,11 @@
+Bootstrap 0.6.2 → 0.8.2 bestanden.
+Fehlerhafter Betriebsdienst: Bootstrap stellt den bisherigen Dienst wieder her.
+Domainwechsel, neue Anmeldung und Bestätigung sowie Rückbau nach drei Minuten bestanden.
+Webupdate 0.8.2 → 0.9.0 und eigenständiger Dienstneustart bestanden.
+MFA-Schlüssel und echte Rücksicherung bestanden.
+Domain in einem Auftrag gespeichert; neuer Zugriff und anschließendes Update werden geprüft.
+Startfehler 0.9.1 → wieder erreichbare Version 0.9.0 bestanden.
+SIGKILL während des Dienstwechsels: Anwendung und eigener Betriebsdienst wiederhergestellt.
+Systemkonsole mit echtem journald, Dienstquellen und realen Updateabschlüssen bestanden.
+Speicherknappheit, echter Sicherungsfehler und nicht startbarer Vorgänger bestanden.
+Prüfbelege: /tmp/timereal-betrieb-release.wq0a9Lsp

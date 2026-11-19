@@ -65,20 +65,25 @@ async function warten(id, ziel) {
 try {
   await q("/anmeldung", { login, passwort });
   const key = randomUUID(),
-    url = "/verwaltung/betrieb/updates/vorbereiten";
+    automatisch = process.env.TIMEREAL_TEST_EINKLICK === "1",
+    url =
+      "/verwaltung/betrieb/updates/" +
+      (automatisch ? "starten" : "vorbereiten");
   const [a, b] = await Promise.all([
     q(url, { tag }, key),
     q(url, { tag }, key),
   ]);
   assert.equal(a.id, b.id);
-  await warten(a.id, "bereit");
-  console.log(
-    "Vorbereitung über echte API und HTTPS-Releasequelle abgeschlossen; doppelte Anfrage hat dieselbe Auftrags-ID.",
-  );
-  const startKey = randomUUID(),
-    startUrl = `/verwaltung/betrieb/updates/${a.id}/installieren`;
-  const started = await q(startUrl, { passwort }, startKey);
-  assert.equal(started.id, a.id);
+  if (!automatisch) {
+    await warten(a.id, "bereit");
+    console.log(
+      "Vorbereitung über echte API und HTTPS-Releasequelle abgeschlossen; doppelte Anfrage hat dieselbe Auftrags-ID.",
+    );
+    const startKey = randomUUID(),
+      startUrl = `/verwaltung/betrieb/updates/${a.id}/installieren`;
+    const started = await q(startUrl, { passwort }, startKey);
+    assert.equal(started.id, a.id);
+  }
   const ende = await warten(a.id, erwartet);
   assert.equal(ende.tag, tag);
   assert.equal(

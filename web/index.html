@@ -399,7 +399,7 @@
               >
               <div class="aktionen">
                 <button type="button" id="betrieb-vorbereiten" disabled>
-                  Update vorbereiten
+                  Update starten
                 </button>
               </div>
               <section
@@ -411,20 +411,22 @@
                 <p id="betrieb-updatephase"></p>
                 <p id="betrieb-updatemeta" class="neben"></p>
                 <p id="betrieb-updatemeldung"></p>
+                <div id="betrieb-fortschritt" hidden>
+                  <progress
+                    id="betrieb-balken"
+                    max="6"
+                    value="0"
+                    aria-label="Updatefortschritt"
+                  ></progress>
+                  <p id="betrieb-fortschritttext" role="status"></p>
+                </div>
                 <form id="betrieb-installieren" hidden>
                   <p>
                     Für Sicherung und Installation wird Timereal kurz
                     angehalten. Laufende Timer bleiben zeitlich erhalten.
                   </p>
-                  <label
-                    >Dein Passwort für das Update<input
-                      type="password"
-                      name="passwort"
-                      autocomplete="current-password"
-                      required
-                      maxlength="512"
-                  /></label>
-                  <button>Sichern und installieren</button>
+
+                  <button>Vorbereitetes Update installieren</button>
                 </form>
                 <p>
                   Du kannst diesen Tab schließen. Der Auftrag läuft auf dem
@@ -434,7 +436,10 @@
             </section>
             <aside class="karte">
               <h2>Updateverwaltung</h2>
-              <p>Updates werden erst nach deiner Bestätigung installiert.</p>
+              <p>
+                „Update starten“ führt Vorbereitung, Sicherung und Installation
+                automatisch aus.
+              </p>
               <dl>
                 <dt>Quelle</dt>
                 <dd>larsborgwardt/timereal</dd>
@@ -478,7 +483,7 @@
                   Reverse Proxy ein. Timereal übernimmt hier die passende App-
                   und Serverkonfiguration.
                 </p>
-                <button>Domain prüfen</button>
+                <button>Domain speichern</button>
               </form>
               <section
                 id="betrieb-domainauftrag"
@@ -491,18 +496,12 @@
                 <p id="betrieb-domainmeldung"></p>
                 <form id="betrieb-uebernehmen" hidden>
                   <p>
-                    Öffne nach der Übernahme die neue Adresse, melde dich an und
-                    bestätige den Zugriff innerhalb von drei Minuten. Sonst wird
-                    die vorherige Konfiguration wiederhergestellt.
+                    Öffne nach der Übernahme die neue Adresse und melde dich an.
+                    Der Zugriff wird automatisch erkannt. Ohne Zugriff innerhalb
+                    von drei Minuten wird die vorherige Konfiguration
+                    wiederhergestellt.
                   </p>
-                  <label
-                    >Dein Passwort für den Domainwechsel<input
-                      type="password"
-                      name="passwort"
-                      autocomplete="current-password"
-                      required
-                      maxlength="512"
-                  /></label>
+
                   <button>Domain übernehmen</button>
                 </form>
                 <div id="betrieb-bestaetigung" hidden>
@@ -514,9 +513,7 @@
                     >Neue Adresse öffnen und anmelden ↗</a
                   >
                   <div class="aktionen">
-                    <button type="button" id="betrieb-bestaetigen">
-                      Zugriff bestätigen</button
-                    ><button type="button" class="sek" id="betrieb-zurueck">
+                    <button type="button" class="sek" id="betrieb-zurueck">
                       Änderung zurücknehmen
                     </button>
                   </div>

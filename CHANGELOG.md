@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.9.4 — 20. November 2026
+
+- Updates starten mit einem Klick; Vorbereitung, Datensicherung und Installation laufen auf dem Server weiter. Ein horizontaler Fortschrittsbalken zeigt die tatsächlichen Phasen.
+- Domain speichern prüft und übernimmt die Konfiguration in einem Auftrag. Der angemeldete Zugriff über die neue Adresse wird automatisch erkannt.
+- Erneute Passworteingabe und manueller Bestätigungsklick entfallen für diese Betriebsaktionen. Betriebsrolle, Websitzung, Herkunftsprüfung und wiederholbare Auftragsschlüssel bleiben erforderlich.
+- Eine vorgehende Geräteuhr kann den Domainzugriff nicht mehr durch einen abgelaufenen lokalen Countdown blockieren. Bei einem blockierenden Domainauftrag erklärt die Updateansicht den Grund.
+- API 1 und Datenbankschema 10 bleiben erhalten. Hinweise zum einmaligen Umstieg aus einer gesperrten Altversion stehen in der Betriebsanleitung.
+
 ## 0.9.3 — 19. November 2026
 
 - Nachweise als echte Excel-Datei (`.xlsx`) herunterladen: gewählter Zeitraum, Suche und Ansicht, persönliche Daten, numerische Stunden/Dauer und erhaltene führende Nullen. Der Export verändert den Übernahmestatus nicht.

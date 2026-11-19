@@ -25,7 +25,9 @@ await owner.query(
   [login, await passwordHash(passwort)],
 );
 const socketPath = join(dir, "dienst.sock");
-let ausfuehrungen = 0;
+let ausfuehrungen = 0,
+  updateFortsetzen;
+const updateWartet = new Promise((resolve) => (updateFortsetzen = resolve));
 const dienst = await dienstStarten({
   verzeichnis: join(dir, "zustand"),
   socketPath,
@@ -38,21 +40,23 @@ const dienst = await dienstStarten({
   }),
   ausfuehren: async (aktion, j, buch) => {
     ausfuehrungen++;
-    if (aktion === "update-vorbereiten")
+    if (aktion === "update-starten") {
       await buch.fortschreiben(j.id, {
-        zustand: "bereit",
-        phase: "bereit",
+        phase: "vorbereitung",
         vorherigeVersion: "0.6.2",
       });
-    if (aktion === "update-installieren")
+      await updateWartet;
       await buch.fortschreiben(j.id, {
         zustand: "erfolgreich",
         phase: "erfolgreich",
       });
-    if (aktion === "domain-pruefen")
+    }
+    if (aktion === "domain-speichern")
       await buch.fortschreiben(j.id, {
-        zustand: "geprueft",
-        phase: "geprueft",
+        zustand: "bestaetigung_ausstehend",
+        phase: "bestaetigung_ausstehend",
+        frist: Date.now() + 180000,
+        vorherigeOrigin: "https://192.0.2.42",
       });
   },
   wiederherstellen: async () => {
@@ -101,7 +105,7 @@ try {
   const nav = page.getByRole("navigation", { name: "Verwaltungsbereiche" });
   await nav.getByRole("button", { name: "Updates", exact: true }).click();
   await page
-    .getByRole("button", { name: "Update vorbereiten", exact: true })
+    .getByRole("button", { name: "Update starten", exact: true })
     .waitFor();
   await page
     .getByText("Kein neueres stabiles Release gemeldet.", { exact: true })
@@ -158,21 +162,18 @@ try {
     .waitFor();
   assert.equal(releaseAbrufe, 2);
   let verloren = false;
-  await page.route(
-    "**/verwaltung/betrieb/updates/vorbereiten",
-    async (route) => {
-      const response = await route.fetch();
-      if (!verloren) {
-        verloren = true;
-        await route.abort();
-      } else await route.fulfill({ response });
-    },
-  );
+  await page.route("**/verwaltung/betrieb/updates/starten", async (route) => {
+    const response = await route.fetch();
+    if (!verloren) {
+      verloren = true;
+      await route.abort();
+    } else await route.fulfill({ response });
+  });
   await page
-    .getByRole("button", { name: "Update vorbereiten", exact: true })
+    .getByRole("button", { name: "Update starten", exact: true })
     .click();
   await page
-    .getByRole("heading", { name: "Bereit zur Installation", exact: true })
+    .getByRole("heading", { name: "Update wird vorbereitet", exact: true })
     .waitFor();
   assert.equal(ausfuehrungen, 1);
   await page.locator("#betrieb-fehler").waitFor({ state: "hidden" });
@@ -184,34 +185,47 @@ try {
     await page.locator("#betrieb-updatemeta").textContent(),
     new RegExp(login),
   );
-  assert.deepEqual(await pruefeAnsicht(page, "betrieb-update-bereit"), []);
+  assert.deepEqual(await pruefeAnsicht(page, "betrieb-update-laeuft"), []);
   await page.reload();
   await page.getByRole("button", { name: "Verwaltung", exact: true }).click();
   await nav.getByRole("button", { name: "Updates", exact: true }).click();
   await page
-    .getByRole("heading", { name: "Bereit zur Installation", exact: true })
+    .getByRole("heading", { name: "Update wird vorbereitet", exact: true })
     .waitFor();
+  assert.equal(
+    await page.locator('#verwaltung input[type="password"]').count(),
+    0,
+  );
+  assert.equal(
+    await page
+      .getByRole("progressbar", { name: "Updatefortschritt" })
+      .getAttribute("value"),
+    "1",
+  );
+  const updateAuftrag = dienst.buch.liste().find((j) => j.typ === "update");
+  await dienst.buch.fortschreiben(updateAuftrag.id, { phase: "pruefung" });
   await page
-    .getByLabel("Dein Passwort für das Update")
-    .fill("falsches-passwort");
-  await page
-    .getByRole("button", { name: "Sichern und installieren", exact: true })
-    .click();
-  await page.getByText("Das Passwort stimmt nicht.", { exact: true }).waitFor();
-  assert.equal(ausfuehrungen, 1);
-  await page.getByLabel("Dein Passwort für das Update").fill(passwort);
-  await page
-    .getByRole("button", { name: "Sichern und installieren", exact: true })
-    .click();
+    .locator("#betrieb-updatephase")
+    .getByText(/Release wird geprüft/)
+    .waitFor();
+  assert.equal(
+    await page
+      .getByRole("progressbar", { name: "Updatefortschritt" })
+      .getAttribute("value"),
+    "0",
+  );
+  updateFortsetzen();
   await page
     .getByRole("heading", { name: "Update abgeschlossen", exact: true })
     .waitFor();
-  assert.equal(ausfuehrungen, 2);
-  assert.deepEqual(await pruefeAnsicht(page, "betrieb-update-erfolgreich"), []);
+  assert.equal(ausfuehrungen, 1);
   assert.equal(
-    await page.getByLabel("Dein Passwort für das Update").inputValue(),
-    "",
+    await page
+      .getByRole("progressbar", { name: "Updatefortschritt" })
+      .getAttribute("value"),
+    "6",
   );
+  assert.deepEqual(await pruefeAnsicht(page, "betrieb-update-erfolgreich"), []);
   await nav.getByRole("button", { name: "Domainzugriff", exact: true }).click();
   await page
     .getByLabel("Öffentliche Domain", { exact: true })
@@ -224,12 +238,12 @@ try {
     "zeit.beispiel.de",
   );
   await page
-    .getByRole("button", { name: "Domain prüfen", exact: true })
+    .getByRole("button", { name: "Domain speichern", exact: true })
     .click();
   await page
-    .getByRole("heading", { name: "Domain übernehmen", exact: true })
+    .getByRole("heading", { name: "Neue Adresse wird geprüft", exact: true })
     .waitFor();
-  assert.deepEqual(await pruefeAnsicht(page, "betrieb-domain-geprueft"), []);
+  assert.deepEqual(await pruefeAnsicht(page, "betrieb-domain-zugriff"), []);
   const bilder = process.env.SCREENSHOT_DIR ?? "/tmp/timereal-betrieb-bilder";
   await mkdir(bilder, { recursive: true });
   for (const [name, width, zoom] of [
@@ -274,9 +288,10 @@ try {
     ).includes(passwort),
   );
   console.log(
-    "Betriebsoberfläche: verlorene Antwort ohne Doppelauftrag, Neuladen, Passwortprüfung, Domainentwurf und responsive Ansichten bestanden.",
+    "Betriebsoberfläche: verlorene Antwort ohne Doppelauftrag, Neuladen, Ein-Klick-Update mit Fortschrittsbalken, Domainentwurf und responsive Ansichten bestanden.",
   );
 } finally {
+  updateFortsetzen();
   await browser.close();
   await app.close();
   await dienst.schliessen();

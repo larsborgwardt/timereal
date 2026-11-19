@@ -25,6 +25,7 @@ test("Annahme ist dauerhaft, vertraulich und nach verlorener Antwort idempotent"
   const erster = await buch.annehmen(anfrage);
   assert.equal(erster.neu, true);
   assert.equal(erster.auftrag.zustand, "vorbereitung");
+  assert.equal(erster.auftrag.phase, "pruefung");
   const datei = join(dir, "auftraege.json");
   const gespeichert = JSON.parse(await readFile(datei, "utf8"));
   assert.equal(gespeichert.auftraege[0].id, erster.auftrag.id);
@@ -136,6 +137,46 @@ test("Beschädigter Bestand wird laut abgewiesen und nicht durch eine leere Date
   await writeFile(join(dir, "auftraege.json"), "kaputt");
   await assert.rejects(Auftragsbuch.oeffnen(dir));
   assert.equal(await readFile(join(dir, "auftraege.json"), "utf8"), "kaputt");
+});
+
+test("Neue Domain wird bei gleichzeitigem Zugriff mehrerer Sitzungen nur einmal bestätigt", async (t) => {
+  const { buch } = await bestand(t);
+  const { auftrag } = await buch.annehmen(
+    start({
+      aktion: "domain-speichern",
+      daten: { domain: "zeit.example.org" },
+    }),
+  );
+  await buch.fortschreiben(auftrag.id, {
+    zustand: "bestaetigung_ausstehend",
+    frist: Date.now() + 180000,
+  });
+  const bestaetigen = (konto, origin = "https://zeit.example.org") =>
+    start({
+      aktion: "domain-bestaetigen",
+      konto,
+      jobId: auftrag.id,
+      daten: { origin },
+    });
+  const antworten = await Promise.all([
+    buch.annehmen(bestaetigen("42")),
+    buch.annehmen(bestaetigen("43")),
+  ]);
+  assert.deepEqual(
+    antworten.map((r) => r.neu),
+    [true, false],
+  );
+  assert.ok(antworten.every((r) => r.auftrag.zustand === "erfolgreich"));
+  // Ein alter Tab darf das bestätigte Ergebnis erneut lesen, aber weder den
+  // Vorgang neu ausführen noch mit einem anderen Ursprung anerkennen.
+  await buch.fortschreiben(auftrag.id, { frist: Date.now() - 1 });
+  assert.equal((await buch.annehmen(bestaetigen("44"))).neu, false);
+  await assert.rejects(
+    buch.annehmen(bestaetigen("45", "https://fremd.example.org")),
+    { code: "HERKUNFT" },
+  );
+  await buch.fortschreiben(auftrag.id, { zustand: "zurueckgesetzt" });
+  await assert.rejects(buch.annehmen(bestaetigen("46")), { code: "ZUSTAND" });
 });
 
 test("Ungeklärte Wiederherstellung sperrt weitere Betriebsaufträge bis zur Nachprüfung", async (t) => {
