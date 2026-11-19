@@ -1,0 +1,9 @@
+Bootstrap 0.6.2 → 0.7.0 bestanden.
+Fehlerhafter Betriebsdienst: Bootstrap stellt den bisherigen Dienst wieder her.
+Domainwechsel, neue Anmeldung und Bestätigung sowie Rückbau nach drei Minuten bestanden.
+Webupdate 0.7.0 → 0.7.1 und eigenständiger Dienstneustart bestanden.
+Startfehler 0.7.2 → wieder erreichbare Version 0.7.1 bestanden.
+SIGKILL während des Dienstwechsels: Anwendung und eigener Betriebsdienst wiederhergestellt.
+Systemkonsole mit echtem journald, Dienstquellen und realen Updateabschlüssen bestanden.
+Speicherknappheit, echter Sicherungsfehler und nicht startbarer Vorgänger bestanden.
+Prüfbelege: /tmp/timereal-betrieb-release.Mn6YmIqa

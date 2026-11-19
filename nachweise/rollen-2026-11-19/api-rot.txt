@@ -1,0 +1,149 @@
+ pg_advisory_lock 
+------------------
+ 
+(1 row)
+
+CREATE TABLE
+BEGIN
+CREATE EXTENSION
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+COMMIT
+BEGIN
+REVOKE
+CREATE ROLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+CREATE FUNCTION
+ALTER TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+INSERT 0 2
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+ALTER TABLE
+CREATE POLICY
+GRANT
+GRANT
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+GRANT
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 1
+COMMIT
+ pg_advisory_unlock 
+--------------------
+ t
+(1 row)
+
+
+> timereal@0.8.0 build
+> tsc
+
+✖ Rollen trennen Verwaltung, widerrufen Sitzungen und schützen den letzten Administrator auch bei Konkurrenz (173.865421ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 294.013894
+
+✖ failing tests:
+
+test at tests/rollen.mjs:11:1
+✖ Rollen trennen Verwaltung, widerrufen Sitzungen und schützen den letzten Administrator auch bei Konkurrenz (173.865421ms)
+  AssertionError [ERR_ASSERTION]: {"message":"Route PATCH:/api/v1/verwaltung/konten/2/rolle not found","error":"Not Found","statusCode":404}
+  
+  404 !== 200
+  
+      at ok (file:///home/hermes/workspace/sap-zeiterfassung/tests/rollen.mjs:45:67)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/rollen.mjs:47:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

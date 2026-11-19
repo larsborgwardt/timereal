@@ -47,22 +47,22 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.8.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.8.1**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.8.0:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.8.0 &&
-bash /root/timereal-update.sh v0.8.0
+git -C /opt/timereal show v0.8.1:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.8.1 &&
+bash /root/timereal-update.sh v0.8.1
 ```
 
-Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.8.0. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.8.1. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
 
 Ab 0.6.1 zeigen Installation und Update nummerierte Schritte und eine Browser-Adresse mit ausdrücklichem Port. Der Updater liest dafür `PUBLIC_ORIGIN` aus `/etc/timereal/dienst.conf`; eine eingerichtete Domain oder ein abweichender Port bleibt sichtbar. Beim normalen LXC-Zugang steht beispielsweise `https://192.0.2.42:443` (Beispieladresse). 443 ist der HTTPS-Port, 3040 bleibt intern. Schon `--check` zeigt die konfigurierte Adresse und den Befehl zum eigentlichen Update. Es prüft dabei keinen externen Browserzugriff. Eine fehlende oder ungültige Adresse wird als Hinweis gemeldet und nicht durch eine vermutete IP ersetzt.
 
 Beim Update sind die Vorbereitung mit noch laufender Anwendung und die Phase mit angehaltenem Dienst getrennt benannt. Die Ausgabe nennt Sicherung und Migrationsprotokoll. Bei Fehlern stehen Phase, Exitcode und der Befehl `journalctl -u timereal -u timereal-https -n 80 --no-pager` am Ende. Eine gescheiterte Startprüfung wird als Abbruch mit Ergebnis der Wiederherstellung gemeldet. Der Erfolgsabschluss prüft den Dienst im Container; öffne die ausgegebene Adresse anschließend auch auf deinem Endgerät.
 
-Ab 0.7.0 ist **Verwaltung → Updates** der Einstieg für reguläre kompatible Folgeupdates. Die Vorbereitung lässt die App laufen; **Sichern und installieren** verlangt das aktuelle Administratorpasswort. Der Server führt den angenommenen Auftrag auch bei geschlossenem Browser weiter. Nach dem Neustart wird sein Ergebnis erneut angezeigt. Der Betriebsdienst prüft ein stabiles Release aus `larsborgwardt/timereal` und dessen Betriebsprotokoll. Die Browsererweiterung kann diese Aktionen nicht ausführen.
+Ab 0.7.0 ist **Verwaltung → Updates** der Einstieg für reguläre kompatible Folgeupdates. Die Vorbereitung lässt die App laufen; **Sichern und installieren** verlangt das aktuelle Passwort des ausführenden Kontos. Der Server führt den angenommenen Auftrag auch bei geschlossenem Browser weiter. Nach dem Neustart wird sein Ergebnis erneut angezeigt. Der Betriebsdienst prüft ein stabiles Release aus `larsborgwardt/timereal` und dessen Betriebsprotokoll. Die Browsererweiterung kann diese Aktionen nicht ausführen.
 
 Als Konsolenweg für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg; neue Tags vorher wieder mit `git fetch --tags origin` abholen. Der Updateweg verwendet `/opt/timereal` nur als Git-Quelle, `/opt/timereal-releases` für gebaute Stände und `/opt/timereal-current` als aktiven Zeiger. `git pull` oder ein erneuter Aufruf von `install.sh` ist auf einer versionierten Installation kein Updateweg.
 
@@ -87,7 +87,7 @@ Bei „manuelle Wiederherstellung erforderlich“ keine neue Aktion starten. Akt
 
 ## Berater einladen (ab 0.3.0)
 
-Das erste bei der Installation angelegte Konto ist Administrator. Nach dem Update erscheinen **Verwaltung** und **Einstellungen**. In der Verwaltung kannst du andere Berater per E-Mail einladen, offene Einladungen erneut senden oder widerrufen und Beraterkonten sperren. Eine Sperre beendet einen laufenden Timer als prüfpflichtigen Abschnitt und widerruft die Sitzungen. Administratorkonten sind in dieser Ansicht gegen eine Sperre geschützt; die vorhandene Konten-CLI bleibt für die Wiederherstellung im Container verfügbar.
+Das erste bei der Installation angelegte Konto ist Administrator. Nach dem Update erscheinen **Verwaltung** und **Einstellungen**. In der Verwaltung kannst du andere Berater per E-Mail einladen, offene Einladungen erneut senden oder widerrufen und Beraterkonten sperren. Eine Sperre beendet einen laufenden Timer als prüfpflichtigen Abschnitt und widerruft die Sitzungen. Ab 0.8.1 stehen Berater, Betrieb und Administrator zur Auswahl. Das eigene und das letzte aktive Administratorkonto bleiben geschützt; andere Administratorkonten können gesperrt werden. Ein Rollenwechsel widerruft Sitzungen, lässt den Timer aber weiterlaufen; die vorhandene Konten-CLI bleibt für die Wiederherstellung im Container verfügbar.
 
 Richte zuerst SMTP in der Root-Konsole ein:
 
@@ -101,7 +101,7 @@ Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Sende
 
 ## Vorhandener Nginx / Nginx Proxy Manager
 
-Ab 0.7.0 wird die Domain unter **Verwaltung → Domainzugriff** eingerichtet. **Domain prüfen** zeigt das vorhandene HTTPS-Ziel mit Port an; **Domain übernehmen** verlangt das aktuelle Administratorpasswort. Öffne danach die neue Adresse, melde dich erneut an und bestätige den Zugriff innerhalb von drei Minuten. Ohne Bestätigung wird die vorherige Konfiguration serverseitig wiederhergestellt. Das funktioniert auch nach Schließen des Tabs; der Betriebsdienst liest die gespeicherte Frist bei einem Neustart erneut.
+Ab 0.7.0 wird die Domain unter **Verwaltung → Domainzugriff** eingerichtet. **Domain prüfen** zeigt das vorhandene HTTPS-Ziel mit Port an; **Domain übernehmen** verlangt das aktuelle Passwort des ausführenden Kontos. Öffne danach die neue Adresse, melde dich erneut an und bestätige den Zugriff innerhalb von drei Minuten. Ohne Bestätigung wird die vorherige Konfiguration serverseitig wiederhergestellt. Das funktioniert auch nach Schließen des Tabs; der Betriebsdienst liest die gespeicherte Frist bei einem Neustart erneut.
 
 Timereal konfiguriert den eigenen Caddy-Dienst und `PUBLIC_ORIGIN`. Den vorgeschalteten Nginx-Host, DNS und das öffentliche Zertifikat konfigurierst du selbst. Die unterstützte Vorlage stammt aus dem Timereal-Installer; eigene Caddy-Anpassungen werden nicht überschrieben. Für die Wiederherstellung oder ältere Versionen bleibt der folgende Konsolenweg verfügbar. Proxy-Patch 2 wurde mit 0.6.2 eingeführt.
 
@@ -189,7 +189,7 @@ Das Update legt zusätzliche Indizes an. Bei einem großen Altbestand kann die P
 
 ## Versionsfooter und Updateprüfung (ab 0.6.2)
 
-Ab 0.8.0 zeigt **Verwaltung → Systemlogs** die echte Systemkonsole für Administratoren. Quelle, Level, Freitextsuche, Live-Pause, Aktualisierung und Textdownload arbeiten auf dem begrenzten Journalausschnitt. Der Betriebsdienst wird beim Update automatisch mit aktualisiert. [Bedienung und Grenzen](../ADMIN-BETRIEB.md#systemkonsole-ab-080).
+Ab 0.8.0 zeigt **Verwaltung → Systemlogs** die echte Systemkonsole für Administratoren; ab 0.8.1 auch für die Rolle Betrieb. Quelle, Level, Freitextsuche, Live-Pause, Aktualisierung und Textdownload arbeiten auf dem begrenzten Journalausschnitt. Der Betriebsdienst wird beim Update automatisch mit aktualisiert. [Bedienung und Grenzen](../ADMIN-BETRIEB.md#systemkonsole-ab-080).
 
 Der Footer zeigt die laufende Serverversion und verlinkt das GitHub-Repository. Ein neueres stabiles Release erscheint als „Update verfügbar: v…“ mit Link zu dessen Versionshinweisen. Ab 0.7.0 können Administratoren kompatible Folgeupdates unter **Verwaltung → Updates** vorbereiten und installieren; für ältere Installationen gilt der oben beschriebene einmalige Konsolenumstieg.
 
@@ -197,7 +197,7 @@ Die automatische Prüfung des Servers verwendet bei Bedarf `https://api.github.c
 
 Ab **0.7.2** fragt **Verwaltung → Updates → Status aktualisieren** GitHub sofort neu ab und aktualisiert auch den Footer. Manuelle Prüfungen benötigen eine aktive Administrator-Websitzung und sind pro Serverprozess auf einen Versuch je Minute begrenzt. Die automatische Prüfung behält ihren Cache. Die Abschaltung der Versionsprüfung gilt auch für den manuellen Knopf.
 
-Bei **0.7.0 oder 0.7.1** kann ein gerade veröffentlichtes Release noch bis zu sechs Stunden fehlen; auch der bisherige Knopf liest nur den Cache. Einmal `systemctl restart timereal` in der LXC-Konsole leert ihn. Danach die Seite neu laden und das Update in der Verwaltung installieren. Alternativ ist der oben beschriebene direkte Konsolenupdate auf 0.8.0 möglich.
+Bei **0.7.0 oder 0.7.1** kann ein gerade veröffentlichtes Release noch bis zu sechs Stunden fehlen; auch der bisherige Knopf liest nur den Cache. Einmal `systemctl restart timereal` in der LXC-Konsole leert ihn. Danach die Seite neu laden und das Update in der Verwaltung installieren. Alternativ ist der oben beschriebene direkte Konsolenupdate auf 0.8.1 möglich.
 
 Die Prüfung ist standardmäßig aktiviert. Zum Abschalten in `/etc/timereal/dienst.conf` die Zeile `TIMEREAL_UPDATE_CHECK=false` setzen und anschließend `systemctl restart timereal` ausführen. `true` aktiviert sie wieder; andere Werte führen beim Dienststart zu einer klaren Konfigurationsfehlermeldung. Das Updateskript erhält diese Konfiguration.
 

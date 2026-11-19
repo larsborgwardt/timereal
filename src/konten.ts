@@ -6,7 +6,7 @@ export async function profil(db: PoolClient) {
   const {
     rows: [k],
   } = await db.query(
-    "select id,login_referenz as login,email,ist_admin as admin,zeitzone,nachkommastellen,pruefminuten from konto where id=aktuelles_konto()",
+    "select id,login_referenz as login,email,ist_admin as admin,rolle,zeitzone,nachkommastellen,pruefminuten from konto where id=aktuelles_konto()",
   );
   return k;
 }

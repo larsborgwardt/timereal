@@ -13,9 +13,9 @@ test("Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betr
     });
     assert.equal(response.statusCode, 200, response.body);
     assert.deepEqual(response.json(), {
-      version: "0.8.0",
+      version: "0.8.1",
       apiVersion: 1,
-      schemaVersion: 6,
+      schemaVersion: 7,
     });
     const pkg = JSON.parse(
       await readFile(new URL("../package.json", import.meta.url)),

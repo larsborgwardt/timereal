@@ -331,6 +331,11 @@ export function betriebsOberflaeche({
   }, 2000);
   return {
     laden,
+    rolleSetzen(profil) {
+      document.querySelector('[data-betrieb="berater"]').hidden = !profil.admin;
+      if (!profil.admin && bereich === "berater") bereich = "updates";
+      anzeigen();
+    },
     domainOeffnen() {
       bereich = "domain";
       anzeigen();

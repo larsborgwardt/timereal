@@ -3,6 +3,7 @@ import type { PoolClient } from "pg";
 export type Privat = <T>(
   req: FastifyRequest,
   run: (db: PoolClient) => Promise<T>,
+  kontenAendern?: boolean,
 ) => Promise<T>;
 export const id = { type: "string", pattern: "^[1-9][0-9]{0,17}$" };
 export const version = { type: "string", pattern: "^(0|[1-9][0-9]{0,17})$" };

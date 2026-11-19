@@ -78,3 +78,7 @@ Migration `004-arbeitsablauf.sql` ergänzt eine Fassung an Kunden und Buchungszi
 ## Erweiterungszugang ab 0.5.0
 
 Migration `005-erweiterung.sql` ergänzt `erweiterungscode` mit Code-Hash, Konto, autorisierender Websitzung, PKCE-Challenge, festem Rücksprungziel, Ablauf nach drei Minuten und Verbrauchszeitpunkt. Die Anwendungsrolle kann über RLS eigene Codes anlegen. Die begrenzte Funktion `erweiterung_anmelden` prüft Konto und Ursprungs-Websitzung, verbraucht den Code unter Sperre und legt eine Sitzung des Kanals `erweiterung` an. Doppelte Codeeinlösung, veraltete Websitzung, falscher Verifier und abweichendes Rücksprungziel ergeben keinen Zugang. Die Browsererweiterung schreibt in dieselben Zeitabschnitte wie die Web-App.
+
+## Rollen ab 0.8.1
+
+Migration 007 ergänzt `ist_betrieb` und die gespeicherte abgeleitete Spalte `rolle`. Die bestehende Eigenschaft `ist_admin` und die ältere Kontenlesefunktion bleiben kompatibel. Die Anwendungsrolle liest ihre eigene Rolle; Änderungen sind nur über die geprüfte Verwaltungsfunktion möglich. Kontensperre und Rollenwechsel erhalten eine gemeinsame Transaktionssperre vor der Sitzungsbindung. Dadurch wird eine parallel widerrufene Sitzung vor dem Schreiben erneut geprüft. Rollenwechsel widerrufen Sitzungen, ohne den Timer zu beenden. [Vertrag und Rechte](ROLLEN.md), [Prüfung](nachweise/0.8.1.md).

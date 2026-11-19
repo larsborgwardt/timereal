@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { Pool } from "pg";
+import type { Pool, PoolClient } from "pg";
 import { Fehler, transaktion } from "./db.js";
 import {
   id,
@@ -50,12 +50,23 @@ export function kontenRouten(
       versuche.set(key, v);
     }
   }
+  function verwaltung<T>(
+    req: FastifyRequest,
+    run: (db: PoolClient) => Promise<T>,
+    kontenAendern = false,
+  ) {
+    if (req.headers.authorization)
+      throw new Fehler(403, "Eine Administrator-Websitzung ist erforderlich.");
+    return privat(req, run, kontenAendern);
+  }
   async function versenden(req: FastifyRequest, email: string, id?: string) {
     if (!mail.konfiguriert)
       throw new Fehler(503, "Mailversand ist noch nicht eingerichtet.");
     // Erst COMMIT, dann externer Versand. Fehler bleiben sichtbar; die
     // gespeicherte Einladung kann über die Verwaltung erneut gesendet werden.
-    const link = await privat(req, (db) => einladen(db, origin(), email, id));
+    const link = await verwaltung(req, (db) =>
+      einladen(db, origin(), email, id),
+    );
     await mail.senden(link.email, "einladung", link.url);
     return { id: link.id, versendet: true };
   }
@@ -71,13 +82,13 @@ export function kontenRouten(
     (req) => privat(req, (db) => profilMail(db, req.body.email)),
   );
   app.get("/api/v1/verwaltung/konten", (req) =>
-    privat(
+    verwaltung(
       req,
-      async (db) => (await db.query("select * from konten_lesen()")).rows,
+      async (db) => (await db.query("select * from konten_mit_rollen()")).rows,
     ),
   );
   app.get("/api/v1/verwaltung/mail", (req) =>
-    privat(req, async (db) => {
+    verwaltung(req, async (db) => {
       await db.query("select admin_pruefen()");
       return { konfiguriert: mail.konfiguriert };
     }),
@@ -91,23 +102,63 @@ export function kontenRouten(
       },
     },
     (req) =>
-      privat(req, async (db) => {
-        const {
-          rows: [r],
-        } = await db.query("select konto_sperre($1,$2) as ok", [
-          req.params.id,
-          req.body.aktiv,
-        ]);
-        if (!r.ok)
-          throw new Fehler(
-            409,
-            "Administratorkonten sind hier geschützt oder das Konto fehlt.",
-          );
-        return { gespeichert: true };
-      }),
+      verwaltung(
+        req,
+        async (db) => {
+          const {
+            rows: [r],
+          } = await db.query("select konto_sperre($1,$2) as ok", [
+            req.params.id,
+            req.body.aktiv,
+          ]);
+          if (!r.ok)
+            throw new Fehler(
+              409,
+              "Das eigene oder letzte Administratorkonto ist geschützt oder das Konto fehlt.",
+            );
+          return { gespeichert: true };
+        },
+        true,
+      ),
+  );
+  app.patch<{ Params: { id: string }; Body: { rolle: string } }>(
+    "/api/v1/verwaltung/konten/:id/rolle",
+    {
+      schema: {
+        params: objekt({ id }, ["id"]),
+        body: objekt(
+          {
+            rolle: {
+              type: "string",
+              enum: ["berater", "betrieb", "administrator"],
+            },
+          },
+          ["rolle"],
+        ),
+      },
+    },
+    (req) =>
+      verwaltung(
+        req,
+        async (db) => {
+          const {
+            rows: [r],
+          } = await db.query("select konto_rolle_aendern($1,$2) as ok", [
+            req.params.id,
+            req.body.rolle,
+          ]);
+          if (!r.ok)
+            throw new Fehler(
+              409,
+              "Das eigene oder letzte Administratorkonto ist geschützt oder das Konto fehlt.",
+            );
+          return { gespeichert: true };
+        },
+        true,
+      ),
   );
   app.get("/api/v1/verwaltung/einladungen", (req) =>
-    privat(
+    verwaltung(
       req,
       async (db) => (await db.query("select * from einladungen_lesen()")).rows,
     ),
@@ -126,7 +177,7 @@ export function kontenRouten(
     "/api/v1/verwaltung/einladungen/:id",
     { schema: { params: objekt({ id: uuid }, ["id"]) } },
     (req) =>
-      privat(req, async (db) => {
+      verwaltung(req, async (db) => {
         const {
           rows: [r],
         } = await db.query("select einladung_widerrufen($1) as ok", [

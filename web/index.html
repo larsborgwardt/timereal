@@ -152,27 +152,57 @@
         <p>Zugänge verwalten und Timereal auf dem eigenen Server betreiben.</p>
         <nav class="register betriebsregister" aria-label="Verwaltungsbereiche">
           <button type="button" data-betrieb="berater" aria-current="page">
-            Berater
+            Konten
           </button>
           <button type="button" data-betrieb="updates">Updates</button>
           <button type="button" data-betrieb="domain">Domainzugriff</button>
           <button type="button" data-betrieb="logs">Systemlogs</button>
         </nav>
         <div id="betrieb-berater" data-betrieb-panel>
+          <div class="rollenraster">
+            <section class="karte">
+              <h2>Zugänge und Rollen</h2>
+              <p>
+                Die Rolle bestimmt die Verwaltungsrechte. Kunden und Zeiten
+                bleiben persönlich.
+              </p>
+              <div id="kontoliste"></div>
+              <p class="stand">
+                Der letzte aktive Administrator kann nicht herabgestuft oder
+                gesperrt werden.
+              </p>
+            </section>
+            <aside class="karte">
+              <h2>Welche Rolle passt?</h2>
+              <p>
+                <strong>Berater</strong><br />Eigene Zeiten, Buchungsziele und
+                Kontoeinstellungen.
+              </p>
+              <p>
+                <strong>Betrieb</strong><br />Zusätzlich Updates, Domainzugriff
+                und Systemlogs.
+              </p>
+              <p>
+                <strong>Administrator</strong><br />Zusätzlich Konten,
+                Einladungen und Rollen.
+              </p>
+              <p>
+                Ein Rollenwechsel meldet das betroffene Konto auf seinen Geräten
+                ab. Der Timer läuft weiter.
+              </p>
+            </aside>
+          </div>
           <form id="einladen" class="karte filter">
             <label
               >E-Mail-Adresse<input
                 name="email"
                 type="email"
                 required
-                maxlength="250" /></label
-            ><button>Berater einladen</button>
+                maxlength="250"
+            /></label>
+            <button>Berater einladen</button>
             <p id="mailhinweis"></p>
           </form>
-          <section class="karte">
-            <h2>Beraterkonten</h2>
-            <div id="kontoliste"></div>
-          </section>
           <section class="karte">
             <h2>Einladungen</h2>
             <div id="einladungsliste"></div>
@@ -312,7 +342,7 @@
                     angehalten. Laufende Timer bleiben zeitlich erhalten.
                   </p>
                   <label
-                    >Administratorpasswort für das Update<input
+                    >Dein Passwort für das Update<input
                       type="password"
                       name="passwort"
                       autocomplete="current-password"
@@ -391,7 +421,7 @@
                     die vorherige Konfiguration wiederhergestellt.
                   </p>
                   <label
-                    >Administratorpasswort für den Domainwechsel<input
+                    >Dein Passwort für den Domainwechsel<input
                       type="password"
                       name="passwort"
                       autocomplete="current-password"

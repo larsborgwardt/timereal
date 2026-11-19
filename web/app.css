@@ -631,3 +631,22 @@ h2:focus-visible {
     text-align: left;
   }
 }
+
+.rollenraster {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.konto label {
+  width: 200px;
+  max-width: 100%;
+}
+.konto strong {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .rollenraster {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

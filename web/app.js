@@ -332,12 +332,16 @@ async function laden() {
   if (nr !== refreshNr) return;
   const fokusZurueck = fokusMerken();
   konten.aktualisieren(snapshot.profil);
+  betrieb.rolleSetzen(snapshot.profil);
   state = snapshot.timer;
   ziele = snapshot.ziele;
   kunden = snapshot.kunden;
   if (seite === "login") {
     seite = "heute";
-    if (snapshot.profil.admin && location.hash === "#betrieb-domain") {
+    if (
+      (snapshot.profil.admin || snapshot.profil.rolle === "betrieb") &&
+      location.hash === "#betrieb-domain"
+    ) {
       seite = "verwaltung";
       betrieb.domainOeffnen();
       history.replaceState(null, "", location.pathname);
@@ -655,6 +659,7 @@ const konten = kontenOberflaeche({
   bediene,
   melden,
   abmelden: zeigeLogin,
+  istErweiterung: transport.istErweiterung,
 });
 const betrieb = betriebsOberflaeche({
   $,
