@@ -74,7 +74,32 @@ export async function pruefeAnsicht(
               !el.getAttribute("aria-labelledby"),
           )
           .map(label);
-        return { small, overflow, dialogName, fieldsWithoutLabel, exitVisible };
+        // Aktionsbuttons brauchen neben ihrer Trefferfläche auch freien Abstand.
+        // Navigationsregister können bewusst unmittelbar aneinander anschließen.
+        const actions = controls.filter(
+          (el) => el.matches("button") && !el.closest("nav,.register"),
+        );
+        const crowdedActions = [];
+        for (let i = 0; i < actions.length; i++) {
+          for (const other of actions.slice(i + 1)) {
+            const first = actions[i];
+            if (first.parentElement !== other.parentElement) continue;
+            const a = first.getBoundingClientRect();
+            const b = other.getBoundingClientRect();
+            const gapX = Math.max(0, b.left - a.right, a.left - b.right);
+            const gapY = Math.max(0, b.top - a.bottom, a.top - b.bottom);
+            if (Math.hypot(gapX, gapY) < 7.5)
+              crowdedActions.push(`${label(first)} / ${label(other)}`);
+          }
+        }
+        return {
+          small,
+          overflow,
+          dialogName,
+          fieldsWithoutLabel,
+          exitVisible,
+          crowdedActions,
+        };
       });
       for (const [kind, values] of Object.entries(result)) {
         if (Array.isArray(values)) {

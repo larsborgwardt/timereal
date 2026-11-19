@@ -4,7 +4,7 @@ Die Erweiterung verwendet den bestehenden Timereal-Server. Ihr Popup bedient den
 
 ## Bauen und laden
 
-Für den Testpilot kannst du auch `timereal-erweiterung-0.7.0.zip` aus dem [Release v0.7.0](https://github.com/larsborgwardt/timereal/releases/tag/v0.7.0) herunterladen und entpacken. Lade dann den entpackten Ordner im Browser; die ZIP-Datei selbst wird nicht als Erweiterung geladen.
+Für den Testpilot kannst du auch `timereal-erweiterung-0.7.1.zip` aus dem [Release v0.7.1](https://github.com/larsborgwardt/timereal/releases/tag/v0.7.1) herunterladen und entpacken. Lade dann den entpackten Ordner im Browser; die ZIP-Datei selbst wird nicht als Erweiterung geladen.
 
 Im Repository `npm ci --ignore-scripts` und `node scripts/erweiterung-bauen.mjs` ausführen. In `chrome://extensions` beziehungsweise `edge://extensions` den Entwicklermodus einschalten und **Entpackte Erweiterung laden** wählen. Ordner: `dist/erweiterung`. Das Browserleistensymbol anschließend anheften. Ein Update lädt denselben Ordner erneut; der öffentliche Schlüssel im Manifest hält die Kennung stabil. Ein privater Signaturschlüssel liegt nicht im Repository.
 

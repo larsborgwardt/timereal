@@ -1,0 +1,279 @@
+
+> timereal@0.7.0 test
+> bash tests/postgres.sh
+
+ pg_advisory_lock
+------------------
+
+(1 row)
+
+CREATE TABLE
+BEGIN
+CREATE EXTENSION
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+COMMIT
+BEGIN
+REVOKE
+CREATE ROLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+CREATE FUNCTION
+ALTER TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+INSERT 0 2
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+ALTER TABLE
+CREATE POLICY
+GRANT
+GRANT
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+GRANT
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 1
+COMMIT
+ pg_advisory_unlock
+--------------------
+ t
+(1 row)
+
+
+> timereal@0.7.0 build
+> tsc
+
+
+> timereal@0.7.0 test:db
+> node --test tests/integration.mjs
+
+✔ Laptop, Handy, Wiederholung und persönliche Kontogrenze (218.907354ms)
+✔ Eine Pause bleibt auf dem anderen Gerät erhalten und endet durch Fortsetzen oder Stopp (83.897088ms)
+✔ Bereits übertragene Stunde in 20 / 12 / 28 Minuten teilen und externes Storno bestätigen (99.04528ms)
+✔ Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Rollback (27.204587ms)
+✔ Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung (70.425396ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 638.352729
+✔ Kundenpflege, Einstellungen und Woche rechnen echte Minuten über Tages- und Sommerzeitgrenzen (333.928643ms)
+✔ Erweiterung: PKCE, Einmalcode, Rücksprungziel, CORS und eigener Sitzungswiderruf (311.041874ms)
+✔ Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und Sperre (716.201994ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 858.229027
+✔ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (266.484245ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 396.511949
+Datenbankverbindung beendet 57P01
+✔ Der Produktionspool begrenzt SQL, Sperren und Verbindungswartezeit (84.989666ms)
+✔ Eine Kontosperre wartet begrenzt; danach bleibt der Pool benutzbar (225.153119ms)
+✔ Ein belegter Verbindungspool antwortet vorübergehend nicht verfügbar und erholt sich (144.434867ms)
+✔ SQL-Abbruch rollt eine bereits vorgenommene Änderung zurück (140.123367ms)
+✔ Ein fehlgeschlagener Rollback verwirft die Verbindung und erhält den ursprünglichen Fehler (0.406528ms)
+✔ Die optimierten Zeitraumzugriffe erhalten Null-Minuten- und Mitternachtsgrenzen (67.30066ms)
+✔ Ein gemeinsamer Arbeitsstand liefert Timer und Stammdaten ausschließlich aus dem eigenen Konto (69.109875ms)
+✔ Das Anmeldelimit zählt Großschreibungsvarianten desselben Kontos gemeinsam (453.932265ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1322.035188
+{"smtp":{"schnell":{"status":200,"exit":0,"idleAbbruch":false,"unbehandeltesErrorEvent":false},"langsam":{"status":200,"exit":0,"idleAbbruch":false,"unbehandeltesErrorEvent":false},"nachrichten":2,"verzoegerteBestaetigungen":1,"langsamerLinkInDb":1}}
+{"annahmeHinterProxy":[200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]}
+✔ Proxy-Patch: Hilfe und ungültige Domain/IP vor Systemzugriffen (55.318798ms)
+✔ Öffentliches HTTPS: Hilfe und strikte Domain-Eingabe vor Systemzugriffen (52.24768ms)
+✔ Externe Sicherung braucht einen ausdrücklich gewählten Vorgang (47.888203ms)
+✔ Sicherungsziel erlaubt ausschließlich SFTP mit absolutem Pfad (62.295768ms)
+✔ Beim Serverwechsel bleiben keine Berechtigungen für vorherige Server übrig (1.069072ms)
+✔ Die Erweiterung verbindet nur HTTPS-Origins oder lokales Loopback und entfernt keine versteckten URL-Bestandteile (0.308943ms)
+✔ Mailkonfiguration prüft echtes SMTP vor dem Schreiben und gibt keine Zugangsdaten aus (282.556538ms)
+✔ Updatehilfe ist ohne Administratorrechte verfügbar (10.866208ms)
+✔ Installationshilfe erklärt den Browserport vor Systemzugriffen (5.82115ms)
+✔ Ein Update braucht eine feste Version und lehnt Optionen als Versionsnamen ab (19.233307ms)
+✔ Vorbereitung und Aktivierung sind getrennte dokumentierte Aufrufe mit festem Commit (22.096401ms)
+✔ Vergleicht stabile Versionen numerisch und erzeugt nur eigene Release-Links (4.888057ms)
+✔ 100 gleichzeitige Abfragen teilen einen Abruf und dessen Cache (23.513954ms)
+✔ Netzfehler behalten den letzten Erfolg, behaupten aber keinen frischen Stand (1.193365ms)
+✔ Fehler, unzulässige Release-Daten und übergroße Antworten sind kein aktueller Stand (3.438237ms)
+✔ Deaktiviert führt die Prüfung keinen Abruf aus; Konfiguration ist eindeutig (0.919143ms)
+✔ Die öffentliche Updateauskunft benötigt keine Datenbankverbindung (184.32702ms)
+✔ Ein echter HTTP-Server bestätigt Timeout auch während des Antwortkörpers (88.496221ms)
+✔ Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betriebsgeheimnisse (174.488285ms)
+✔ Lokale Eingaben unterscheiden Sommerzeitlücke und die doppelte Stunde (43.400576ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 499.652458
+✔ Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart (32.09909ms)
+✔ Domain wird aus unterstütztem Bestand abgeleitet; eigene Proxyregeln bleiben geschützt (2.155412ms)
+✔ Nur stabile Releases mit strikt höherer Version können vorbereitet werden (0.442647ms)
+✔ Ein Webupdate braucht einen passenden versionsgebundenen Betriebsvertrag (0.600477ms)
+✔ Abbruch zwischen Konfigurationsdateien erlaubt Rückbau, fremde Änderungen nicht (0.336923ms)
+✔ Realer flock bleibt nach dem Lockprozess bestehen und ist an Kindprozesse vererbbar (16.985239ms)
+✔ Prozessfehler, Ausgabebegrenzung und Zeitüberschreitung führen zu Fehlern (117.882912ms)
+✔ Annahme ist dauerhaft, vertraulich und nach verlorener Antwort idempotent (11.067374ms)
+✔ Gleichzeitige Annahme erzeugt einen Auftrag; andere Betriebsaktionen kollidieren (4.070812ms)
+✔ Aktivierung benötigt den richtigen Vorzustand und einen eigenen Auftragsschlüssel (3.835984ms)
+✔ Unzulässige Argumente, fremde Pfade und Geheimnisse werden nicht gespeichert (1.599039ms)
+✔ Domainbestätigung gilt nur am neuen Ursprung, Rücknahme bleibt separat möglich (3.597724ms)
+✔ Beschädigter Bestand wird laut abgewiesen und nicht durch eine leere Datei ersetzt (1.563911ms)
+✔ Ungeklärte Wiederherstellung sperrt weitere Betriebsaufträge bis zur Nachprüfung (2.506088ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 184.698525
+Footer: Version, Update-, Fehler- und Deaktiviert-Zustände, Tastatur, 320/390/1120 Pixel, 200 % Text und keine externen Browserabfragen bestanden.
+Browserprobe bestanden: getrennte Sitzungen, Kundenwechsel, Pause, Stopp, Historie, Abmeldung.
+Verwaltungsprobe bestanden: SMTP, Annahme, eigene Sitzungen, Sperre und mobile Darstellung.
+Arbeitsablauf im Browser bestanden: Nachtrag, Übertragung, 20/12/28-Teilung, Vergleich, gemeinsame Grenzen, Woche, Pflege, Sofortstart, interne Zeit, mobile Ansicht und Zeitumstellung.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Design-/Bedienbefunde
++ actual - expected
+
++ [
++   'nachweise 1280px 100% crowdedActions: filter-reset / Zeit nachtragen',
++   'nachweise 1280px 200% crowdedActions: filter-reset / Zeit nachtragen',
++   'nachweise 390px 100% crowdedActions: filter-reset / Zeit nachtragen',
++   'nachweise 390px 200% crowdedActions: filter-reset / Zeit nachtragen',
++   'nachweise 320px 100% crowdedActions: filter-reset / Zeit nachtragen',
++   'nachweise 320px 200% crowdedActions: filter-reset / Zeit nachtragen',
++   'historie 1280px 100% crowdedActions: filter-reset / Zeit nachtragen',
++   'historie 1280px 200% crowdedActions: filter-reset / Zeit nachtragen',
++   'historie 390px 100% crowdedActions: filter-reset / Zeit nachtragen',
++   'historie 390px 200% crowdedActions: filter-reset / Zeit nachtragen',
++   'historie 320px 100% crowdedActions: filter-reset / Zeit nachtragen',
++   'historie 320px 200% crowdedActions: filter-reset / Zeit nachtragen'
++ ]
+- []
+
+    at file:///home/hermes/workspace/sap-zeiterfassung/tests/design-browser.mjs:322:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [
+    'nachweise 1280px 100% crowdedActions: filter-reset / Zeit nachtragen',
+    'nachweise 1280px 200% crowdedActions: filter-reset / Zeit nachtragen',
+    'nachweise 390px 100% crowdedActions: filter-reset / Zeit nachtragen',
+    'nachweise 390px 200% crowdedActions: filter-reset / Zeit nachtragen',
+    'nachweise 320px 100% crowdedActions: filter-reset / Zeit nachtragen',
+    'nachweise 320px 200% crowdedActions: filter-reset / Zeit nachtragen',
+    'historie 1280px 100% crowdedActions: filter-reset / Zeit nachtragen',
+    'historie 1280px 200% crowdedActions: filter-reset / Zeit nachtragen',
+    'historie 390px 100% crowdedActions: filter-reset / Zeit nachtragen',
+    'historie 390px 200% crowdedActions: filter-reset / Zeit nachtragen',
+    'historie 320px 100% crowdedActions: filter-reset / Zeit nachtragen',
+    'historie 320px 200% crowdedActions: filter-reset / Zeit nachtragen'
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.2

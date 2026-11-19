@@ -10,7 +10,7 @@ Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte u
 | 0.8.0 | Benutzer-/Rollenverwaltung, lesbares Audit-Protokoll, Systemlogs mit Suche, Level, Liveanzeige, Aktualisierung und Download | Rollenmatrix, Aufbewahrung und Exportgrenzen; neue Zielbilder vor dem UI-Bau; Kontotrennung und echte Journalquelle |
 | 0.9.0 | Kontoprofil und Zwei-Faktor-Anmeldung einschließlich Wiederherstellung; Erweiterung mit neuem Anmeldevertrag und weiteren Browserprüfungen | Neue Zielbilder vor dem UI-Bau; Einrichtung, Replay-Schutz, Recovery und Widerruf; real geladene Erweiterung |
 
-0.7.0 ist implementiert und wird als eigenes Lieferpaket veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. 0.8.0 und 0.9.0 sind Planungsziele, keine verfügbaren Releases. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
+0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.8.0 und 0.9.0 sind Planungsziele, keine verfügbaren Releases. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
 
 ## Entscheidungsjournal
 
@@ -20,7 +20,11 @@ Lars beantwortet die Bildfrage zu `mockups/11-konten-und-protokolle.html` mit **
 
 ### D-RELEASE-002 — Systemlog als Konsole, 19. November 2026
 
-Lars konkretisiert die Änderung: **„systemlog soll die cli zeigen wie beim nginx-proxy-manager“**. Der neue Logbereich zeigt fortlaufende Monospace-Zeilen mit Zeit, Quelle, Level und Meldung sowie Liveanzeige, Suche, Aktualisierung und Download. Das ist eine Ansicht der Systemausgabe; eine frei ausführbare Shell wird aus diesem Logwunsch nicht abgeleitet. Die überarbeiteten Bilder `mockups/12-systemkonsole-desktop.png` und `mockups/12-systemkonsole-mobil.png` sind zur Freigabe vorgelegt. Die Konsolenansicht wartet wie die anderen neuen Ansichten auf die Bildfreigabe.
+Lars konkretisiert die Änderung: **„systemlog soll die cli zeigen wie beim nginx-proxy-manager“**. Der neue Logbereich zeigt fortlaufende Monospace-Zeilen mit Zeit, Quelle, Level und Meldung sowie Liveanzeige, Suche, Aktualisierung und Download. Das ist eine Ansicht der Systemausgabe; eine frei ausführbare Shell wird aus diesem Logwunsch nicht abgeleitet. Die überarbeiteten Bilder `mockups/12-systemkonsole-desktop.png` und `mockups/12-systemkonsole-mobil.png` wurden vorgelegt; ihre Freigabe folgt in D-RELEASE-003.
+
+### D-RELEASE-003 — Konsolenansicht freigegeben, 19. November 2026
+
+Lars bestätigt die Bilder 12 für Laptop und Smartphone mit **„Konsolenansicht freigeben (empfohlen)“**. Damit ist die Konsolenansicht zur Umsetzung freigegeben. Die übrigen neuen Ansichten für Rollen, Audit und Kontosicherheit erhalten dadurch keine Bildfreigabe. Der danach gemeldete Abstandsfehler unter Nachweise wird zuerst als Korrekturpaket 0.7.1 ausgeliefert; die Systemkonsole bleibt beauftragt.
 
 ## Umsetzungsfolge
 
