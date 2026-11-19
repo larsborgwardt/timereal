@@ -84,13 +84,13 @@ Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Sende
 
 ## Vorhandener Nginx / Nginx Proxy Manager
 
-Wenn ein vorgeschalteter Proxy bereits das öffentliche HTTPS-Zertifikat bereitstellt, verwende **Proxy-Patch 1** (`betrieb/proxy-einrichten.sh`). Das Skript lässt sich einzeln auf einen bestehenden Pilot kopieren; ein Anwendungsupdate und eine Datenbankmigration sind dafür nicht erforderlich. Es erwartet die vom Timereal-Installer erzeugte interne HTTPS-Konfiguration. Eigene Caddy-Anpassungen führen zum Abbruch ohne Umschaltung.
+Wenn ein vorgeschalteter Proxy bereits das öffentliche HTTPS-Zertifikat bereitstellt, verwende **Proxy-Patch 2** (`betrieb/proxy-einrichten.sh`) aus Version 0.6.2. Das Skript lässt sich einzeln auf einen bestehenden Pilot kopieren; ein Anwendungsupdate und eine Datenbankmigration sind dafür nicht erforderlich. Es erwartet die vom Timereal-Installer erzeugte interne HTTPS-Konfiguration. Eigene Caddy-Anpassungen führen zum Abbruch ohne Umschaltung.
 
 Ersetze Domain und lokale IPv4-Adresse durch deinen Bestand. Im LXC als root zuerst prüfen, danach anwenden:
 
 ```bash
-bash /root/timereal-proxy-patch.sh --check zeit.example.org 192.0.2.42
-bash /root/timereal-proxy-patch.sh zeit.example.org 192.0.2.42
+bash /opt/timereal-current/betrieb/proxy-einrichten.sh --check zeit.example.org 192.0.2.42 &&
+bash /opt/timereal-current/betrieb/proxy-einrichten.sh zeit.example.org 192.0.2.42
 ```
 
 Der vorgeschaltete Proxy leitet auf `https://192.0.2.42:443` weiter und übergibt den öffentlichen Hostnamen. Für eine aktivierte Upstream-Zertifikatsprüfung muss er der Timereal-Test-CA vertrauen; der Patch deaktiviert keine Zertifikatsprüfung. Das öffentliche Zertifikat bleibt beim vorgeschalteten Proxy. Port 3040 bleibt an Loopback gebunden.
@@ -99,7 +99,9 @@ Der Patch ergänzt die öffentliche Domain im Caddy-Siteblock und setzt `PUBLIC_
 
 Für einen Domainwechsel denselben Befehl mit dem neuen DNS-Namen ausführen. Die bisherige öffentliche Domain wird ersetzt, die lokale IP bleibt erhalten. DNS-Namen werden kleingeschrieben und ohne Protokoll, Port oder Pfad übergeben; internationale Namen in Punycode-Schreibweise. Diese Variante verwendet Port 443 und eine lokale IPv4-Adresse. Die Anmeldung und die Erweiterung anschließend über die neue öffentliche Domain verwenden. Der IP-Zugang bleibt für Diagnoseabrufe verfügbar; Schreibanfragen von der alten Adresse werden durch die Herkunftsprüfung abgewiesen.
 
-Die Nachprüfung des Skripts erfolgt innerhalb des Containers. Öffne anschließend die öffentliche Domain auch außerhalb deines lokalen Netzes, um die Nginx-/Routerstrecke zu prüfen. Der [Prüfnachweis](../nachweise/proxy-patch-1.md) beschreibt den getesteten Umfang.
+Die Befehle oben verwenden den Patch aus der auf 0.6.2 aktualisierten Installation. Für die einzelne Verwendung ohne Anwendungsupdate lade das Skript aus dem festen Git-Tag `v0.6.2` herunter und verwende seinen lokalen Dateipfad.
+
+Die Nachprüfung des Skripts erfolgt innerhalb des Containers. Öffne anschließend die öffentliche Domain auch außerhalb deines lokalen Netzes, um die Nginx-/Routerstrecke zu prüfen. Der [ursprüngliche Prüfnachweis](../nachweise/proxy-patch-1.md) und die [Ergänzung für 0.6.2](../nachweise/0.6.2.md) beschreiben den getesteten Umfang.
 
 ## Öffentliches HTTPS direkt am Container
 
