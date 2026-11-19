@@ -55,7 +55,7 @@ export function createApp(
     secure: boolean;
     origin?: string;
     smtp?: MailConfig;
-    updateCheck?: () => Promise<UpdateStatus>;
+    updateCheck?: (force?: boolean) => Promise<UpdateStatus>;
     betriebSocket?: string;
   },
 ) {
@@ -151,10 +151,14 @@ export function createApp(
       );
       return run(db);
     });
+  const checkUpdates =
+    options.updateCheck ??
+    updateChecker({ version: release.version, enabled: false });
   betriebsRouten(
     app,
     privat,
     options.betriebSocket ?? "/run/timereal-betrieb/dienst.sock",
+    checkUpdates,
   );
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
@@ -181,9 +185,6 @@ export function createApp(
     return { status: "ok" };
   });
   app.get("/api/v1/version", async () => release);
-  const checkUpdates =
-    options.updateCheck ??
-    updateChecker({ version: release.version, enabled: false });
   app.get("/api/v1/updates", async () => checkUpdates());
   app.post<{ Body: { login: string; passwort: string } }>(
     "/api/v1/anmeldung",

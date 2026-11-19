@@ -3,6 +3,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import { Fehler } from "./db.js";
 import { objekt, uuid, wort, type Privat } from "./http.js";
 import { verify } from "./session.js";
+import type { UpdateStatus } from "./updates.js";
 
 /** Privilegierte Operationen bleiben hinter dem lokalen, root-eigenen Socket. */
 export function betriebsAufruf(
@@ -84,8 +85,10 @@ export function betriebsRouten(
   app: FastifyInstance,
   privat: Privat,
   socketPath: string,
+  checkUpdates: (force?: boolean) => Promise<UpdateStatus>,
 ) {
   const prefix = "/api/v1/verwaltung/betrieb";
+  let naechsteVersionspruefung = 0;
   const versuche = new Map<string, { bis: number; anzahl: number }>();
   function passwortLimit(konto: string) {
     const jetzt = Date.now();
@@ -122,6 +125,26 @@ export function betriebsRouten(
     await admin(req);
     return betriebsAufruf(socketPath, { aktion: "status" });
   });
+  app.post(
+    prefix + "/updates/pruefen",
+    { schema: { body: objekt({}, []) } },
+    async (req, reply) => {
+      await admin(req);
+      const jetzt = Date.now();
+      if (jetzt < naechsteVersionspruefung) {
+        const rest = Math.ceil((naechsteVersionspruefung - jetzt) / 1000);
+        reply.header("Retry-After", String(rest));
+        throw new Fehler(
+          429,
+          `Bitte warte ${rest} Sekunden bis zur nächsten Versionsprüfung.`,
+        );
+      }
+      // Prozessweit reservieren, bevor GitHub kontaktiert wird: auch parallele
+      // Administratorsitzungen können keine unbeschränkten Abrufe auslösen.
+      naechsteVersionspruefung = jetzt + 60000;
+      return checkUpdates(true);
+    },
+  );
   app.get<{ Params: { id: string } }>(
     prefix + "/auftraege/:id",
     { schema: { params: objekt({ id: uuid }, ["id"]) } },

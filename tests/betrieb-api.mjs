@@ -43,10 +43,24 @@ test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreiba
   const role = new URL(process.env.TEST_DATABASE_URL);
   role.username = "timereal_app";
   role.password = "nur-fuer-diese-wegwerfdatenbank";
+  const updatePruefungen = [];
   const app = createApp(new pg.Pool({ connectionString: role.href }), {
     secure: true,
     origin: "https://zeit.test",
     betriebSocket: socket,
+    updateCheck: async (frisch = false) => {
+      updatePruefungen.push(frisch);
+      return {
+        status: "ok",
+        currentVersion: "0.7.0",
+        latestVersion: "0.7.1",
+        updateAvailable: true,
+        checkedAt: new Date().toISOString(),
+        repositoryUrl: "https://github.com/larsborgwardt/timereal",
+        releaseUrl:
+          "https://github.com/larsborgwardt/timereal/releases/tag/v0.7.1",
+      };
+    },
   });
   t.after(async () => {
     await app.close();
@@ -89,7 +103,51 @@ test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreiba
     403,
   );
   assert.equal(empfangen.length, 0);
+  for (const [session, headers, code] of [
+    ["", {}, 401],
+    [b, {}, 403],
+    [a, { authorization: "Bearer " + ext }, 403],
+    [a, { origin: "https://fremd.test" }, 403],
+  ])
+    assert.equal(
+      (await q(session, "POST", "/updates/pruefen", {}, headers)).statusCode,
+      code,
+    );
+  assert.equal(
+    (await q(a, "POST", "/updates/pruefen", { url: "https://fremd.test" }))
+      .statusCode,
+    400,
+  );
+  assert.deepEqual(updatePruefungen, []);
+  const frisch = await q(a, "POST", "/updates/pruefen", {});
+  assert.equal(frisch.statusCode, 200, frisch.body);
+  assert.equal(frisch.json().latestVersion, "0.7.1");
+  assert.deepEqual(updatePruefungen, [true]);
+  const nochmal = await q(a, "POST", "/updates/pruefen", {});
+  assert.equal(nochmal.statusCode, 429);
+  assert.ok(Number(nochmal.headers["retry-after"]) > 0);
+  assert.deepEqual(updatePruefungen, [true]);
+  await app.inject("/api/v1/updates?force=true");
+  assert.deepEqual(
+    updatePruefungen,
+    [true, false],
+    "Öffentlicher Zugriff kann den Cache nicht umgehen",
+  );
+  assert.equal(
+    empfangen.length,
+    0,
+    "Versionsabfrage benötigt keine root-Aktion",
+  );
   const status = await q(a, "GET", "/status");
+  const a2 = await issueSession(db, admin.id, "web", hash);
+  assert.equal((await q(a2, "POST", "/updates/pruefen", {})).statusCode, 429);
+  t.mock.timers.enable({ apis: ["Date"], now: Date.now() + 60001 });
+  try {
+    assert.equal((await q(a2, "POST", "/updates/pruefen", {})).statusCode, 200);
+    assert.deepEqual(updatePruefungen, [true, false, true]);
+  } finally {
+    t.mock.timers.reset();
+  }
   assert.equal(status.statusCode, 200, status.body);
   const start = await q(a, "POST", "/updates/vorbereiten", { tag: "v0.7.0" });
   assert.equal(start.statusCode, 202, start.body);
@@ -124,4 +182,5 @@ test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreiba
     admin.id,
   ]);
   assert.equal((await q(a, "GET", "/status")).statusCode, 401);
+  assert.equal((await q(a, "POST", "/updates/pruefen", {})).statusCode, 401);
 });

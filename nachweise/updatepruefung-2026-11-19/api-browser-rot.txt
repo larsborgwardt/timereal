@@ -1,0 +1,59 @@
+✔ Laptop, Handy, Wiederholung und persönliche Kontogrenze (416.276082ms)
+✔ Eine Pause bleibt auf dem anderen Gerät erhalten und endet durch Fortsetzen oder Stopp (164.344271ms)
+✔ Bereits übertragene Stunde in 20 / 12 / 28 Minuten teilen und externes Storno bestätigen (162.888651ms)
+✔ Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Rollback (45.604883ms)
+✔ Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung (123.097446ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1142.046513
+✖ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (320.014433ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 499.117562
+
+✖ failing tests:
+
+test at tests/betrieb-api.mjs:11:1
+✖ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (320.014433ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  404 !== 401
+  
+      at TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/betrieb-api.mjs:103:13)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 401,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 6000ms exceeded.
+Call log:
+[2m  - waiting for locator('#betrieb-neu').getByText('v99.0.0', { exact: true }) to be visible[22m
+
+    at /home/hermes/workspace/sap-zeiterfassung/tests/betrieb-browser.mjs:110:76 {
+  log: [
+    "  - waiting for locator('#betrieb-neu').getByText('v99.0.0', { exact: true }) to be visible"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.22.2
+API_EXIT=1 BROWSER_EXIT=1

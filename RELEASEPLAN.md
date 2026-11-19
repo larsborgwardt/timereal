@@ -10,7 +10,7 @@ Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte u
 | 0.8.0 | Benutzer-/Rollenverwaltung, lesbares Audit-Protokoll, Systemlogs mit Suche, Level, Liveanzeige, Aktualisierung und Download | Rollenmatrix, Aufbewahrung und Exportgrenzen; neue Zielbilder vor dem UI-Bau; Kontotrennung und echte Journalquelle |
 | 0.9.0 | Kontoprofil und Zwei-Faktor-Anmeldung einschließlich Wiederherstellung; Erweiterung mit neuem Anmeldevertrag und weiteren Browserprüfungen | Neue Zielbilder vor dem UI-Bau; Einrichtung, Replay-Schutz, Recovery und Widerruf; real geladene Erweiterung |
 
-0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.8.0 und 0.9.0 sind Planungsziele, keine verfügbaren Releases. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
+0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. 0.8.0 und 0.9.0 sind Planungsziele, keine verfügbaren Releases. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
 
 ## Entscheidungsjournal
 

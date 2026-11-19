@@ -4,6 +4,8 @@
 
 ## Bedienung
 
+**Ergänzung 0.7.2:** „Status aktualisieren“ unter Updates umgeht den Versionscache und fragt GitHub neu ab. Das Ergebnis steht anschließend auch dem Footer zur Verfügung. Die Prüfung ist auf einen Versuch je Minute pro Serverprozess begrenzt; gesperrte oder widerrufene Sitzungen, Berater und Erweiterungssitzungen können sie nicht auslösen. Eine abgeschaltete Versionsprüfung bleibt abgeschaltet. Vor 0.7.2 liest der Knopf nur den bisherigen Cache; der einmalige Übergang ist in der [Betriebsanleitung](betrieb/README.md#versionsfooter-und-updateprüfung-ab-062) beschrieben.
+
 Unter **Verwaltung** stehen die Bereiche **Berater**, **Updates** und **Domainzugriff**. Persönliche Einstellungen bleiben unter Einstellungen. Betriebsaktionen sind für Administratoren vorgesehen.
 
 ### Updates
@@ -50,11 +52,12 @@ flowchart LR
 
 ## Auftrags- und API-Vertrag
 
-Implementierte Endpunkte; der Unix-Betriebsdienst muss eingerichtet sein:
+Implementierte Endpunkte; bis auf die reine Versionsprüfung muss der Unix-Betriebsdienst eingerichtet sein:
 
 | Endpunkt unter `/api/v1/verwaltung/betrieb` | Zweck |
 |---|---|
 | `GET /status` | Betriebsdienst erreichbar, aktuelle Konfiguration, jüngster Auftrag |
+| `POST /updates/pruefen` | Ab 0.7.2: Administrator-Websitzung, Origin-Prüfung, leeres JSON-Objekt; sofortige Versionsprüfung ohne root-Aktion; bei erneutem Versuch innerhalb einer Minute HTTP 429 mit `Retry-After` |
 | `POST /updates/vorbereiten` | Festes stabiles Release prüfen und separat bauen; Auftragsschlüssel |
 | `POST /updates/:id/installieren` | Bestätigtes Ziel aktivieren; aktuelles Passwort und Auftragsschlüssel |
 | `POST /domain/pruefen` | Domain gegen Konfiguration prüfen; unveränderlichen Prüfvorgang erzeugen |
