@@ -1,0 +1,50 @@
+[
+  {
+    "selector": ".konsole",
+    "color": "#e3edf5",
+    "background": "#101c2a",
+    "ratio": 14.49
+  },
+  {
+    "selector": ".logzeit",
+    "color": "#a9bbcc",
+    "background": "#101c2a",
+    "ratio": 8.73
+  },
+  {
+    "selector": ".log-info",
+    "color": "#8ecbff",
+    "background": "#101c2a",
+    "ratio": 9.94
+  },
+  {
+    "selector": ".log-success",
+    "color": "#8ee0b2",
+    "background": "#101c2a",
+    "ratio": 11.01
+  },
+  {
+    "selector": ".log-debug",
+    "color": "#b3b9c7",
+    "background": "#101c2a",
+    "ratio": 8.74
+  },
+  {
+    "selector": ".log-warn",
+    "color": "#f4cd7a",
+    "background": "#101c2a",
+    "ratio": 11.35
+  },
+  {
+    "selector": ".log-fatal",
+    "color": "#ffaaa0",
+    "background": "#101c2a",
+    "ratio": 9.42
+  },
+  {
+    "selector": ".log-complete",
+    "color": "#93e0dc",
+    "background": "#101c2a",
+    "ratio": 11.41
+  }
+]

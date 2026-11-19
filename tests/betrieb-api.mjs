@@ -19,6 +19,10 @@ test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreiba
     const data = JSON.parse(Buffer.concat(teile).toString());
     empfangen.push(data);
     res.setHeader("content-type", "application/json");
+    if (data.aktion === "logs") {
+      res.end(JSON.stringify({ zeilen: [{ text: "x".repeat(100000) }] }));
+      return;
+    }
     res.end(
       JSON.stringify({
         erreichbar: true,
@@ -80,6 +84,32 @@ test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreiba
       },
       payload,
     });
+  for (const [session, headers, code] of [
+    ["", {}, 401],
+    [b, {}, 403],
+    [a, { authorization: "Bearer " + ext }, 403],
+  ])
+    assert.equal(
+      (await q(session, "GET", "/logs", undefined, headers)).statusCode,
+      code,
+    );
+  assert.equal(empfangen.length, 0);
+  for (const query of [
+    "quelle=ssh.service",
+    "level=trace",
+    "suche=" + "a".repeat(201),
+    "datei=/etc/shadow",
+  ])
+    assert.equal((await q(a, "GET", "/logs?" + query)).statusCode, 400);
+  assert.equal(empfangen.length, 0);
+  const logs = await q(a, "GET", "/logs?quelle=https&level=warn&suche=Fehler");
+  assert.equal(logs.statusCode, 200, logs.body);
+  assert.equal(logs.json().zeilen[0].text.length, 100000);
+  assert.equal(logs.headers["cache-control"], "no-store");
+  assert.deepEqual(empfangen.pop(), {
+    aktion: "logs",
+    filter: { quelle: "https", level: "warn", suche: "Fehler" },
+  });
   assert.equal((await q(b, "GET", "/status")).statusCode, 403);
   assert.equal((await q("", "GET", "/status")).statusCode, 401);
   assert.equal(
@@ -182,5 +212,6 @@ test("Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreiba
     admin.id,
   ]);
   assert.equal((await q(a, "GET", "/status")).statusCode, 401);
+  assert.equal((await q(a, "GET", "/logs")).statusCode, 401);
   assert.equal((await q(a, "POST", "/updates/pruefen", {})).statusCode, 401);
 });

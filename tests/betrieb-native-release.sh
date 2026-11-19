@@ -52,6 +52,8 @@ const fault='\nif [[ ! -f /var/lib/timereal-betrieb/pruefabbruch ]]; then\n touc
 fs.writeFileSync(bootstrap,fs.readFileSync(bootstrap,'utf8').replace('umask 022','umask 022'+fault));
 JS
 version 0.7.3
+tar -xOf "$out/kandidat.tar" betrieb/verwaltung-einrichten.sh > "$out/kandidat/betrieb/verwaltung-einrichten.sh"
+version 0.7.4
 git clone -q --bare "$out/kandidat" "$out/mirror/timereal.git"
 git -C "$out/mirror/timereal.git" update-server-info
 openssl req -x509 -newkey rsa:2048 -nodes -days 1 -keyout "$out/mirror/key.pem" -out "$out/mirror/cert.pem" -subj '/CN=Timereal-Pruefung' -addext 'subjectAltName=DNS:github.com,DNS:api.github.com' >"$out/tls.log" 2>&1
@@ -62,7 +64,7 @@ https.createServer({key:fs.readFileSync('/mirror/key.pem'),cert:fs.readFileSync(
  const url=new URL(req.url,'https://github.com');
  if(url.pathname.startsWith('/repos/larsborgwardt/timereal/releases/')){
   const tag=url.pathname.endsWith('/latest')?'v0.7.1':url.pathname.split('/').pop();
-  if(!['v0.7.1','v0.7.2','v0.7.3'].includes(tag)){res.writeHead(404);res.end();return;}
+  if(!['v0.7.1','v0.7.2','v0.7.3','v0.7.4'].includes(tag)){res.writeHead(404);res.end();return;}
   res.setHeader('content-type','application/json');res.end(JSON.stringify({tag_name:tag,draft:false,prerelease:false,html_url:`https://github.com/larsborgwardt/timereal/releases/tag/${tag}`}));return;
  }
  const prefix='/larsborgwardt/timereal.git/';
@@ -105,4 +107,8 @@ for _ in {1..30}; do
 done
 [[ $current == /opt/timereal-betrieb/0.7.3-* ]] || { echo 'FEHLER: Anwendung meldet Erfolg, der abgebrochene Betriebsdienstwechsel wurde aber nicht nachgeholt.' >&2; exit 1; }
 echo 'SIGKILL während des Dienstwechsels: Anwendung und eigener Betriebsdienst wiederhergestellt.'
-docker exec "$guest" bash -c 'curl --fail --silent --unix-socket /run/timereal-betrieb/dienst.sock -H "Content-Type: application/json" -d "{\"aktion\":\"status\"}" http://localhost/' >"$out/status.json"
+docker exec "$guest" env TIMEREAL_WEGWERFTEST=1 TIMEREAL_LOG_ABSCHLUSS=1 /opt/timereal-node/bin/node /opt/timereal-current/tests/systemkonsole-native.mjs >"$out/systemkonsole.log" 2>&1
+echo 'Systemkonsole mit echtem journald, Dienstquellen und realen Updateabschlüssen bestanden.'
+docker exec "$guest" bash -c 'for _ in {1..30}; do if curl --fail --silent --max-time 3 --unix-socket /run/timereal-betrieb/dienst.sock -H "Content-Type: application/json" -d "{\"aktion\":\"status\"}" http://localhost/; then exit 0; fi; sleep 1; done; exit 1' >"$out/status.json"
+docker exec "$guest" env TIMEREAL_WEGWERFTEST=1 bash /opt/timereal-current/tests/betrieb-native-fehler.sh v0.7.4 >"$out/fehlerfaelle.log" 2>&1
+echo 'Speicherknappheit, echter Sicherungsfehler und nicht startbarer Vorgänger bestanden.'

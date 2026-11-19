@@ -47,16 +47,16 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.7.2**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.8.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.7.2:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.7.2 &&
-bash /root/timereal-update.sh v0.7.2
+git -C /opt/timereal show v0.8.0:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.8.0 &&
+bash /root/timereal-update.sh v0.8.0
 ```
 
-Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.7.2. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.8.0. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
 
 Ab 0.6.1 zeigen Installation und Update nummerierte Schritte und eine Browser-Adresse mit ausdrücklichem Port. Der Updater liest dafür `PUBLIC_ORIGIN` aus `/etc/timereal/dienst.conf`; eine eingerichtete Domain oder ein abweichender Port bleibt sichtbar. Beim normalen LXC-Zugang steht beispielsweise `https://192.0.2.42:443` (Beispieladresse). 443 ist der HTTPS-Port, 3040 bleibt intern. Schon `--check` zeigt die konfigurierte Adresse und den Befehl zum eigentlichen Update. Es prüft dabei keinen externen Browserzugriff. Eine fehlende oder ungültige Adresse wird als Hinweis gemeldet und nicht durch eine vermutete IP ersetzt.
 
@@ -189,13 +189,15 @@ Das Update legt zusätzliche Indizes an. Bei einem großen Altbestand kann die P
 
 ## Versionsfooter und Updateprüfung (ab 0.6.2)
 
+Ab 0.8.0 zeigt **Verwaltung → Systemlogs** die echte Systemkonsole für Administratoren. Quelle, Level, Freitextsuche, Live-Pause, Aktualisierung und Textdownload arbeiten auf dem begrenzten Journalausschnitt. Der Betriebsdienst wird beim Update automatisch mit aktualisiert. [Bedienung und Grenzen](../ADMIN-BETRIEB.md#systemkonsole-ab-080).
+
 Der Footer zeigt die laufende Serverversion und verlinkt das GitHub-Repository. Ein neueres stabiles Release erscheint als „Update verfügbar: v…“ mit Link zu dessen Versionshinweisen. Ab 0.7.0 können Administratoren kompatible Folgeupdates unter **Verwaltung → Updates** vorbereiten und installieren; für ältere Installationen gilt der oben beschriebene einmalige Konsolenumstieg.
 
 Die automatische Prüfung des Servers verwendet bei Bedarf `https://api.github.com/repos/larsborgwardt/timereal/releases/latest`, höchstens einmal innerhalb von sechs Stunden pro Prozess. Gleichzeitige Anfragen teilen denselben Abruf. Fehlgeschlagene Prüfungen werden erst nach 15 Minuten erneut versucht; ein Neustart leert den Cache. Die offene Oberfläche fragt stündlich und bei Rückkehr zum Tab den eigenen Server ab. Es werden keine Kundendaten, Buchungstexte, Anmeldenamen oder Sitzungsschlüssel an GitHub gesendet; GitHub sieht technisch die ausgehende Server-IP und einen allgemeinen User-Agent. Die Browserprüfung benötigt keine Verbindung des Endgeräts zu GitHub. Beim bewussten Öffnen des Repository-/Release-Links wird GitHub normal im neuen Tab geladen.
 
 Ab **0.7.2** fragt **Verwaltung → Updates → Status aktualisieren** GitHub sofort neu ab und aktualisiert auch den Footer. Manuelle Prüfungen benötigen eine aktive Administrator-Websitzung und sind pro Serverprozess auf einen Versuch je Minute begrenzt. Die automatische Prüfung behält ihren Cache. Die Abschaltung der Versionsprüfung gilt auch für den manuellen Knopf.
 
-Bei **0.7.0 oder 0.7.1** kann ein gerade veröffentlichtes Release noch bis zu sechs Stunden fehlen; auch der bisherige Knopf liest nur den Cache. Einmal `systemctl restart timereal` in der LXC-Konsole leert ihn. Danach die Seite neu laden und das Update in der Verwaltung installieren. Alternativ ist der oben beschriebene direkte Konsolenupdate auf 0.7.2 möglich.
+Bei **0.7.0 oder 0.7.1** kann ein gerade veröffentlichtes Release noch bis zu sechs Stunden fehlen; auch der bisherige Knopf liest nur den Cache. Einmal `systemctl restart timereal` in der LXC-Konsole leert ihn. Danach die Seite neu laden und das Update in der Verwaltung installieren. Alternativ ist der oben beschriebene direkte Konsolenupdate auf 0.8.0 möglich.
 
 Die Prüfung ist standardmäßig aktiviert. Zum Abschalten in `/etc/timereal/dienst.conf` die Zeile `TIMEREAL_UPDATE_CHECK=false` setzen und anschließend `systemctl restart timereal` ausführen. `true` aktiviert sie wieder; andere Werte führen beim Dienststart zu einer klaren Konfigurationsfehlermeldung. Das Updateskript erhält diese Konfiguration.
 

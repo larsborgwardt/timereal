@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { request } from "node:http";
 import { dienstStarten } from "../betrieb/verwaltung/dienst.mjs";
+import { journalLeser } from "../betrieb/verwaltung/journal.mjs";
 
 function ipc(socketPath, daten) {
   return new Promise((resolve, reject) => {
@@ -19,16 +20,52 @@ function ipc(socketPath, daten) {
     req.end(JSON.stringify(daten));
   });
 }
+test("Systemkonsole liest über den Unix-Socket nur validierte Journalfilter", async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), "timereal-journal-ipc-"));
+  const socketPath = join(dir, "dienst.sock");
+  let prozesse = 0;
+  const server = await dienstStarten({
+    verzeichnis: join(dir, "zustand"),
+    socketPath,
+    lockPath: join(dir, "lock"),
+    journal: journalLeser({
+      ausfuehren: async () => {
+        prozesse++;
+        return { stdout: "" };
+      },
+    }),
+  });
+  t.after(async () => {
+    await server.schliessen();
+    await rm(dir, { recursive: true, force: true });
+  });
+  const result = await ipc(socketPath, {
+    aktion: "logs",
+    filter: { quelle: "all" },
+  });
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.zeilen, []);
+  assert.equal(prozesse, 1);
+  for (const data of [
+    { aktion: "logs", filter: { quelle: "ssh.service" } },
+    { aktion: "logs", filter: {}, befehl: "id" },
+    { aktion: "logs", filter: { datei: "/etc/shadow" } },
+  ])
+    assert.equal((await ipc(socketPath, data)).status, 400);
+  assert.equal(prozesse, 1);
+});
 test("Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart", async (t) => {
   const dir = await mkdtemp(join(tmpdir(), "timereal-dienst-"));
   const socketPath = join(dir, "dienst.sock");
   let freigeben;
   const warte = new Promise((r) => (freigeben = r));
   let aufrufe = 0;
+  const ereignisse = [];
   const options = {
     verzeichnis: join(dir, "zustand"),
     socketPath,
     lockPath: join(dir, "lock"),
+    protokoll: (level, msg) => ereignisse.push({ level, msg }),
     status: async () => ({ origin: "https://zeit.test" }),
     ausfuehren: async (_aktion, job, buch) => {
       aufrufe++;
@@ -64,6 +101,16 @@ test("Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach 
   );
   freigeben();
   await server.ausstehend();
+  assert.ok(
+    ereignisse.some(
+      (e) =>
+        e.level === "success" && e.msg === "Update zur Installation bereit.",
+    ),
+  );
+  assert.ok(
+    !ereignisse.some((e) => e.level === "complete"),
+    "Vorbereitung ist noch keine Installation",
+  );
   assert.equal(
     (await ipc(socketPath, { aktion: "auftrag", id: erster.id })).zustand,
     "bereit",

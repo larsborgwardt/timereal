@@ -20,6 +20,35 @@ const laufend = new Set([
 ]);
 
 export async function dienstStarten(options) {
+  const protokoll =
+    options.protokoll ??
+    ((level, msg) =>
+      console.log(JSON.stringify({ timereal_log: 1, level, msg })));
+  function ergebnisProtokoll(job) {
+    const ergebnisse = {
+      bereit: ["success", "Update zur Installation bereit."],
+      geprueft: ["success", "Domainprüfung abgeschlossen."],
+      erfolgreich: [
+        "complete",
+        job.typ === "update"
+          ? "Update abgeschlossen."
+          : "Domainwechsel bestätigt.",
+      ],
+      fehlgeschlagen: ["error", "Betriebsauftrag fehlgeschlagen."],
+      vorherige_version_aktiv: ["warn", "Vorherige Version wieder aktiv."],
+      wiederherstellung_noetig: [
+        "fatal",
+        "Betriebsauftrag benötigt Wiederherstellung.",
+      ],
+      bestaetigung_ausstehend: [
+        "info",
+        "Domain übernommen; Zugriffsbestätigung ausstehend.",
+      ],
+      zurueckgesetzt: ["warn", "Domainwechsel zurückgenommen."],
+    };
+    const eintrag = ergebnisse[job.zustand];
+    if (eintrag) protokoll(...eintrag);
+  }
   const buch = await Auftragsbuch.oeffnen(options.verzeichnis);
   const sperren = new Map(),
     arbeiten = new Set();
@@ -32,6 +61,12 @@ export async function dienstStarten(options) {
     if (handle) await handle.close();
   }
   async function ausfuehren(aktion, job) {
+    protokoll(
+      "info",
+      job.typ === "update"
+        ? "Updateauftrag wird ausgeführt."
+        : "Domainauftrag wird ausgeführt.",
+    );
     try {
       await options.ausfuehren(aktion, job, buch, sperren.get(job.id));
     } catch (error) {
@@ -61,6 +96,7 @@ export async function dienstStarten(options) {
         error.code ?? error.name,
       );
     } finally {
+      ergebnisProtokoll(buch.lesen(job.id));
       if (buch.lesen(job.id).zustand !== "bestaetigung_ausstehend")
         await freigeben(job.id);
     }
@@ -79,6 +115,7 @@ export async function dienstStarten(options) {
     sperren.set(job.id, await betriebssperre(options.lockPath));
     try {
       await options.wiederherstellen(job, buch, sperren.get(job.id));
+      ergebnisProtokoll(buch.lesen(job.id));
     } finally {
       if (buch.lesen(job.id).zustand !== "bestaetigung_ausstehend")
         await freigeben(job.id);
@@ -139,6 +176,16 @@ export async function dienstStarten(options) {
               .map(oeffentlicherAuftrag),
           };
         else if (
+          data?.aktion === "logs" &&
+          Object.keys(data).every((k) => ["aktion", "filter"].includes(k))
+        ) {
+          if (!options.journal)
+            throw new Betriebsfehler(
+              "JOURNAL",
+              "Systemkonsole benötigt einen aktuellen Betriebsdienst.",
+            );
+          antwort = await options.journal(data.filter);
+        } else if (
           data?.aktion === "auftrag" &&
           Object.keys(data).every((k) => ["aktion", "id"].includes(k))
         )

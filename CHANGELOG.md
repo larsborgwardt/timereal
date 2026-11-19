@@ -1,5 +1,17 @@
 # Änderungen
 
+## 0.8.0 — 19. November 2026
+
+- Prozessausgaben erhalten UTF-8-Zeichen auch bei aufgeteilten Datenblöcken.
+- Native Updateproben für Speicherknappheit, fehlgeschlagene Datenbanksicherung und einen nicht startbaren Vorgänger.
+
+- Systemkonsole unter Verwaltung → Systemlogs: echte Journalmeldungen von Anwendung, Betriebsdienst und HTTPS mit Quelle, Level und Freitextsuche.
+- Liveanzeige mit Pause, unabhängig schaltbarem automatischem Scrollen, manueller Aktualisierung und Download des angezeigten Stands. Eine pausierte Anzeige bleibt auch bei Fensterwechsel pausiert.
+- Begrenzter Abruf der letzten 500 Einträge aus 24 Stunden. Fehler bleiben sichtbar; der zuletzt erfolgreich geladene Stand wird als solcher angezeigt.
+- Zugriff über aktive Administrator-Websitzungen; feste Dienstauswahl über den Betriebsdienst. Erkannte Zugangsdaten und strukturierte Anfragefelder werden vor Suche, Anzeige und Download entfernt; Logtext wird nicht als HTML ausgeführt.
+- Start- und Abschlussereignisse unterscheiden info, success und complete; Journalprioritäten liefern zusätzlich warn, error, debug und fatal.
+- API-Version 1, Datenbankschema 6 und Betriebsprotokoll 1 bleiben kompatibel. Der Betriebsdienst wird beim regulären Update mit aktualisiert. Rollen-/Audit- und Kontosicherheitsansichten bleiben eigene Folgepakete nach Bildfreigabe.
+
 ## 0.7.2 — 19. November 2026
 
 - „Status aktualisieren“ unter Verwaltung → Updates prüft sofort bei GitHub auf ein neueres stabiles Release. Der bisherige Knopf lieferte bis zu sechs Stunden lang nur den zwischengespeicherten Stand.

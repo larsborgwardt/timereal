@@ -681,7 +681,7 @@ $("#verbindung-laden").onclick = () =>
     );
   });
 if (transport.istErweiterung) {
-  for (const bereich of ["updates", "domain"])
+  for (const bereich of ["updates", "domain", "logs"])
     document.querySelector(`[data-betrieb="${bereich}"]`).hidden = true;
   $("#anmelden").hidden = true;
   $("#vergessen").hidden = true;

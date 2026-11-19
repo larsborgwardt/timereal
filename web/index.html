@@ -156,6 +156,7 @@
           </button>
           <button type="button" data-betrieb="updates">Updates</button>
           <button type="button" data-betrieb="domain">Domainzugriff</button>
+          <button type="button" data-betrieb="logs">Systemlogs</button>
         </nav>
         <div id="betrieb-berater" data-betrieb-panel>
           <form id="einladen" class="karte filter">
@@ -177,6 +178,88 @@
             <div id="einladungsliste"></div>
           </section>
         </div>
+        <section
+          id="betrieb-logs"
+          data-betrieb-panel
+          class="karte logkarte"
+          hidden
+          aria-labelledby="konsole-titel"
+        >
+          <div class="zeile">
+            <div>
+              <h2 id="konsole-titel">Systemlogs</h2>
+              <p>Die Konsolenausgabe deiner Timereal-Installation.</p>
+            </div>
+            <p id="konsole-status" role="status">Noch nicht geladen</p>
+          </div>
+          <form id="konsole-filter" class="filter">
+            <label
+              >Quelle<select name="quelle">
+                <option value="all">Alle Timereal-Dienste</option>
+                <option value="anwendung">Anwendung</option>
+                <option value="betrieb">Betriebsdienst</option>
+                <option value="https">HTTPS</option>
+              </select></label
+            >
+            <label
+              >Level<select name="level">
+                <option value="all">all</option>
+                <option value="info">info</option>
+                <option value="warn">warn</option>
+                <option value="error">error</option>
+                <option value="debug">debug</option>
+                <option value="success">success</option>
+                <option value="fatal">fatal</option>
+                <option value="complete">complete</option>
+              </select></label
+            >
+            <label
+              >Freitextsuche<input
+                name="suche"
+                type="search"
+                maxlength="200"
+                placeholder="Logs durchsuchen …"
+            /></label>
+            <button>Filtern</button>
+          </form>
+          <div class="aktionen logaktionen">
+            <label class="logschalter"
+              ><input type="checkbox" id="konsole-live" checked />Live</label
+            >
+            <label class="logschalter"
+              ><input
+                type="checkbox"
+                id="konsole-scrollen"
+                checked
+              />Automatisch scrollen</label
+            >
+            <button type="button" class="sek" id="konsole-laden">
+              Aktualisieren
+            </button>
+            <button type="button" class="sek" id="konsole-download" disabled>
+              Herunterladen
+            </button>
+          </div>
+          <p id="konsole-fehler" role="alert" hidden></p>
+          <div
+            class="konsole"
+            id="konsole-ausgabe"
+            role="region"
+            aria-label="Konsolenausgabe"
+            tabindex="0"
+          >
+            <div class="konsolenkopf">
+              <span>timereal · Systemausgabe</span
+              ><span id="konsole-anzahl">0 Zeilen</span>
+            </div>
+            <pre id="konsole-zeilen"></pre>
+          </div>
+          <p id="konsole-abruf" class="hinweis">Nur lesbar</p>
+          <p id="konsole-grenze" class="hinweis">
+            Durchsucht die letzten 500 Einträge der vergangenen 24 Stunden.
+            Erkannte Zugangsdaten werden ausgeblendet.
+          </p>
+        </section>
         <div id="betrieb-bereich" hidden>
           <p id="betrieb-status" role="status" aria-live="polite"></p>
           <p id="betrieb-fehler" role="alert" hidden></p>

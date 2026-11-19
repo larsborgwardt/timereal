@@ -1,0 +1,163 @@
+ pg_advisory_lock
+------------------
+
+(1 row)
+
+CREATE TABLE
+BEGIN
+CREATE EXTENSION
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+COMMIT
+BEGIN
+REVOKE
+CREATE ROLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+CREATE FUNCTION
+ALTER TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+INSERT 0 2
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+ALTER TABLE
+CREATE POLICY
+GRANT
+GRANT
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+GRANT
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 1
+COMMIT
+ pg_advisory_unlock
+--------------------
+ t
+(1 row)
+
+
+> timereal@0.7.2 build
+> tsc
+
+
+> timereal@0.7.2 test:db
+> node --test tests/integration.mjs
+
+✔ Laptop, Handy, Wiederholung und persönliche Kontogrenze (202.511394ms)
+✔ Eine Pause bleibt auf dem anderen Gerät erhalten und endet durch Fortsetzen oder Stopp (84.883413ms)
+✔ Bereits übertragene Stunde in 20 / 12 / 28 Minuten teilen und externes Storno bestätigen (91.188797ms)
+✔ Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Rollback (21.325564ms)
+✔ Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung (65.864935ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 599.044885
+✔ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (286.205747ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 411.056003
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Pausiert bedeutet keine Folgeabrufe
+
+2 !== 1
+
+    at file:///home/hermes/workspace/sap-zeiterfassung/tests/systemkonsole-browser.mjs:56:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 2,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.2
