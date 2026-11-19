@@ -157,6 +157,7 @@
           <button type="button" data-betrieb="updates">Updates</button>
           <button type="button" data-betrieb="domain">Domainzugriff</button>
           <button type="button" data-betrieb="logs">Systemlogs</button>
+          <button type="button" data-betrieb="audit">Audit-Protokoll</button>
         </nav>
         <div id="betrieb-berater" data-betrieb-panel>
           <div class="rollenraster">
@@ -184,7 +185,7 @@
               </p>
               <p>
                 <strong>Administrator</strong><br />Zusätzlich Konten,
-                Einladungen und Rollen.
+                Einladungen, Rollen und Audit-Protokoll.
               </p>
               <p>
                 Ein Rollenwechsel meldet das betroffene Konto auf seinen Geräten
@@ -208,6 +209,49 @@
             <div id="einladungsliste"></div>
           </section>
         </div>
+        <section
+          id="betrieb-audit"
+          data-betrieb-panel
+          class="karte"
+          hidden
+          aria-labelledby="audit-titel"
+        >
+          <h2 id="audit-titel">Audit-Protokoll</h2>
+          <p>
+            Sicherheits- und Verwaltungsereignisse der vergangenen 180 Tage.
+          </p>
+          <form id="audit-filter" class="filter">
+            <label>Von<input name="von" type="date" /></label>
+            <label>Bis<input name="bis" type="date" /></label>
+            <label
+              >Suchbegriff<input name="suche" type="search" maxlength="200"
+            /></label>
+            <button id="audit-filtern">Filtern</button>
+          </form>
+          <p id="audit-status" role="status"></p>
+          <p id="audit-fehler" role="alert" hidden></p>
+          <ul
+            id="audit-liste"
+            class="audit-liste"
+            aria-label="Audit-Ereignisse"
+          ></ul>
+          <p id="audit-leer" hidden>Keine Ereignisse für diese Filter.</p>
+          <div class="aktionen">
+            <button type="button" id="audit-laden" class="sek">
+              Aktualisieren
+            </button>
+            <button type="button" id="audit-download" class="sek" disabled>
+              Auswahl herunterladen
+            </button>
+            <button type="button" id="audit-mehr" class="sek" disabled>
+              Weitere laden
+            </button>
+          </div>
+          <p class="hinweis">
+            Download als JSON, bis zu 5.000 Ereignisse. Der Zeitraum bezieht
+            sich auf deine Zeitzone.
+          </p>
+        </section>
         <section
           id="betrieb-logs"
           data-betrieb-panel

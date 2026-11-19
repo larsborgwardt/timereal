@@ -47,16 +47,16 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.8.1**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.8.2**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.8.1:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.8.1 &&
-bash /root/timereal-update.sh v0.8.1
+git -C /opt/timereal show v0.8.2:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.8.2 &&
+bash /root/timereal-update.sh v0.8.2
 ```
 
-Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.8.1. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.8.2. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
 
 Ab 0.6.1 zeigen Installation und Update nummerierte Schritte und eine Browser-Adresse mit ausdrücklichem Port. Der Updater liest dafür `PUBLIC_ORIGIN` aus `/etc/timereal/dienst.conf`; eine eingerichtete Domain oder ein abweichender Port bleibt sichtbar. Beim normalen LXC-Zugang steht beispielsweise `https://192.0.2.42:443` (Beispieladresse). 443 ist der HTTPS-Port, 3040 bleibt intern. Schon `--check` zeigt die konfigurierte Adresse und den Befehl zum eigentlichen Update. Es prüft dabei keinen externen Browserzugriff. Eine fehlende oder ungültige Adresse wird als Hinweis gemeldet und nicht durch eine vermutete IP ersetzt.
 
@@ -197,10 +197,14 @@ Die automatische Prüfung des Servers verwendet bei Bedarf `https://api.github.c
 
 Ab **0.7.2** fragt **Verwaltung → Updates → Status aktualisieren** GitHub sofort neu ab und aktualisiert auch den Footer. Manuelle Prüfungen benötigen eine aktive Administrator-Websitzung und sind pro Serverprozess auf einen Versuch je Minute begrenzt. Die automatische Prüfung behält ihren Cache. Die Abschaltung der Versionsprüfung gilt auch für den manuellen Knopf.
 
-Bei **0.7.0 oder 0.7.1** kann ein gerade veröffentlichtes Release noch bis zu sechs Stunden fehlen; auch der bisherige Knopf liest nur den Cache. Einmal `systemctl restart timereal` in der LXC-Konsole leert ihn. Danach die Seite neu laden und das Update in der Verwaltung installieren. Alternativ ist der oben beschriebene direkte Konsolenupdate auf 0.8.1 möglich.
+Bei **0.7.0 oder 0.7.1** kann ein gerade veröffentlichtes Release noch bis zu sechs Stunden fehlen; auch der bisherige Knopf liest nur den Cache. Einmal `systemctl restart timereal` in der LXC-Konsole leert ihn. Danach die Seite neu laden und das Update in der Verwaltung installieren. Alternativ ist der oben beschriebene direkte Konsolenupdate auf 0.8.2 möglich.
 
 Die Prüfung ist standardmäßig aktiviert. Zum Abschalten in `/etc/timereal/dienst.conf` die Zeile `TIMEREAL_UPDATE_CHECK=false` setzen und anschließend `systemctl restart timereal` ausführen. `true` aktiviert sie wieder; andere Werte führen beim Dienststart zu einer klaren Konfigurationsfehlermeldung. Das Updateskript erhält diese Konfiguration.
 
 Die Version bleibt auch ohne GitHub erreichbar. „Updateprüfung nicht möglich“ ist kein Nachweis, dass die installierte Version aktuell ist. Falls bereits ein neueres Release bekannt war, bleibt der Hinweis mit dem letzten erfolgreichen Prüfzeitpunkt sichtbar. `/api/v1/updates` liefert diesen Zustand ohne Betriebsgeheimnisse. Ein Timeout nach fünf Sekunden und eine Größenbegrenzung verhindern unbegrenztes Warten auf GitHub.
 
 Der Footer gehört zur Web-App. Die Chromium-Erweiterung hat eine eigene Paketversion; ihr weiterer Ausbau steht im Backlog.
+
+## Audit-Protokoll ab 0.8.2
+
+Unter **Verwaltung → Audit-Protokoll** sehen Administratoren die protokollierten Konto- und Sicherheitsereignisse der letzten 180 Tage. Datum und Suche begrenzen die Auswahl; weitere Einträge lassen sich nachladen und als JSON herunterladen. Der Datumsfilter verwendet die eigene Profilzeitzone. Migration 8 legt das Protokoll an; ältere Ereignisse werden nicht nachträglich erfunden. Das Lesefenster löscht keine Daten. [Ereignisse, Zugriffs- und Exportgrenzen](../AUDIT.md).

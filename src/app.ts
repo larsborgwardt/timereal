@@ -6,6 +6,7 @@ import {
 import { stammdatenRouten } from "./stammdaten-routen.js";
 import { kontenRouten } from "./konten-routen.js";
 import { betriebsRouten } from "./betrieb.js";
+import { auditRouten } from "./audit.js";
 import { profil } from "./konten.js";
 import type { MailConfig } from "./mail.js";
 import { id, version, wort, tag, objekt } from "./http.js";
@@ -167,6 +168,7 @@ export function createApp(
     options.betriebSocket ?? "/run/timereal-betrieb/dienst.sock",
     checkUpdates,
   );
+  auditRouten(app, privat);
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
     ["/app.js", "app.js", "text/javascript"],
@@ -174,6 +176,7 @@ export function createApp(
     ["/konten.js", "konten.js", "text/javascript"],
     ["/betrieb.js", "betrieb.js", "text/javascript"],
     ["/systemkonsole.js", "systemkonsole.js", "text/javascript"],
+    ["/audit.js", "audit.js", "text/javascript"],
     ["/zeit.js", "zeit.js", "text/javascript"],
     ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],
@@ -225,8 +228,10 @@ export function createApp(
       const {
         rows: [konto],
       } = await pool.query("select * from login_suchen($1)", [req.body.login]);
-      if (!(await verify(req.body.passwort, konto?.hash)))
+      if (!(await verify(req.body.passwort, konto?.hash))) {
+        await pool.query("select audit_anmeldefehler($1)", [konto?.id ?? null]);
         throw new Fehler(401, "Anmeldung fehlgeschlagen.");
+      }
       const token = await transaktion(pool, (db) =>
         issueSession(db, konto.id, "web", konto.hash),
       );

@@ -1,6 +1,6 @@
 # Timereal — beauftragter Ausbau und Auslieferung
 
-Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte umsetzen und als Release verfügbar machen. Ausgangsstand: `4d3e1ee026fa4f13e6ec3bdf9818a18fc81a44c6`; veröffentlichter Stand: 0.6.2. Die Art der jeweiligen Prüfumgebung ist im versionsbezogenen Nachweis genannt.
+Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte umsetzen und als Release verfügbar machen. Ausgangsstand bei Auftragserteilung: `4d3e1ee026fa4f13e6ec3bdf9818a18fc81a44c6`, damals veröffentlichtes Release 0.6.2. Die Art der jeweiligen Prüfumgebung ist im versionsbezogenen Nachweis genannt.
 
 ## Lieferpakete
 
@@ -12,7 +12,7 @@ Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte u
 | 0.8.2 | Lesbares Audit-Protokoll | Bilder 11 freigegeben (D-RELEASE-005); Administratoransicht, 180-Tage-Lesefenster und begrenzter Export |
 | 0.9.0 | Kontoprofil und Zwei-Faktor-Anmeldung einschließlich Wiederherstellung; Erweiterung mit neuem Anmeldevertrag und weiteren Browserprüfungen | Bilder 13 freigegeben (D-RELEASE-006); Einrichtung, Replay-Schutz, Recovery und Widerruf; real geladene Erweiterung |
 
-0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. Die Systemkonsole wird als eigenes Paket 0.8.0 geliefert; Veröffentlichung und Prüfbelege stehen in `nachweise/0.8.0.md`. Benutzer und Rollen sind in 0.8.1 umgesetzt; Prüfbelege stehen in `nachweise/0.8.1.md`. Audit 0.8.2 und Kontosicherheit 0.9.0 bleiben die nächsten Pakete. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
+0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. Die Systemkonsole wird als eigenes Paket 0.8.0 geliefert; Veröffentlichung und Prüfbelege stehen in `nachweise/0.8.0.md`. Benutzer und Rollen sind in 0.8.1 umgesetzt; Prüfbelege stehen in `nachweise/0.8.1.md`. Audit ist in 0.8.2 umgesetzt; Prüfbelege stehen in `nachweise/0.8.2.md`. Kontosicherheit 0.9.0 bleibt das nächste Paket. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
 
 ## Entscheidungsjournal
 

@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.8.2 — 19. November 2026
+
+- Audit-Protokoll unter Verwaltung: Konto-, Rollen-, Sperr-, Passwort-, E-Mail-, Einladungs- und Sitzungsereignisse; fehlgeschlagene Anmeldungen ohne Speicherung unbekannter eingegebener Namen.
+- Administrator-Websitzung erforderlich. Filter nach Datum in der eigenen Zeitzone und Suchtext, Nachladen und JSON-Export mit sichtbarer Begrenzung.
+- Ereignisse der Datenänderungen werden in derselben Datenbanktransaktion gespeichert; Zurückrollen und unveränderte Werte erzeugen keinen Änderungserfolg.
+- Protokoll ohne Passwort-, Link- oder Sitzungsschlüssel und ohne Buchungstexte. Das 180-Tage-Lesefenster ist keine automatische Löschregel.
+- Additive Migration auf Schema 8; API 1 und Betriebsprotokoll 1 bleiben kompatibel. Vorhandene lange Kontonamen bleiben unterstützt.
+
 ## 0.8.1 — 19. November 2026
 
 - Kontenansicht mit den Rollen Berater, Betrieb und Administrator sowie erklärten Berechtigungen. Persönliche Kunden und Zeiten bleiben getrennt.
