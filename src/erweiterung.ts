@@ -19,10 +19,19 @@ export const extensionId = createHash("sha256")
 export const extensionOrigin = "chrome-extension://" + extensionId;
 export const extensionRedirect =
   "https://" + extensionId + ".chromiumapp.org/timereal";
+// Öffentliche CRX-ID des offiziellen Microsoft-Edge-Eintrags (Partner Center).
+// Keine Wildcard: jede Herkunft ist an ihr eigenes Rücksprungziel gebunden.
+const clients = [extensionId, "lidpjdoofliniabfnkljpfadffmjockd"].map((id) => ({
+  origin: "chrome-extension://" + id,
+  redirect: "https://" + id + ".chromiumapp.org/timereal",
+}));
+export function istErweiterungsherkunft(origin: string | undefined): boolean {
+  return clients.some((client) => client.origin === origin);
+}
 export function extensionCors(req: FastifyRequest, reply: FastifyReply) {
-  if (req.headers.origin === extensionOrigin) {
+  if (istErweiterungsherkunft(req.headers.origin)) {
     reply
-      .header("Access-Control-Allow-Origin", extensionOrigin)
+      .header("Access-Control-Allow-Origin", req.headers.origin!)
       .header("Vary", "Origin");
     if (req.method === "OPTIONS") {
       if (
@@ -61,7 +70,10 @@ export function erweiterungRouten(
   privat: Privat,
   webToken: (req: FastifyRequest) => string,
 ) {
-  const redirect = { type: "string", const: extensionRedirect };
+  const redirect = {
+    type: "string",
+    enum: clients.map((client) => client.redirect),
+  };
   app.post<{ Body: { challenge: string; state: string; redirect: string } }>(
     "/api/v1/erweiterung/freigabe",
     {
@@ -98,7 +110,7 @@ export function erweiterungRouten(
         );
         return {
           weiter:
-            extensionRedirect +
+            req.body.redirect +
             "?" +
             new URLSearchParams({ code, state: req.body.state }).toString(),
         };
@@ -119,8 +131,19 @@ export function erweiterungRouten(
         ),
       },
     },
-    (req) =>
-      transaktion(pool, async (db) => {
+    (req) => {
+      if (
+        !clients.some(
+          (client) =>
+            client.origin === req.headers.origin &&
+            client.redirect === req.body.redirect,
+        )
+      )
+        throw new Fehler(
+          403,
+          "Herkunft und Rücksprungziel passen nicht zusammen.",
+        );
+      return transaktion(pool, async (db) => {
         const token = randomBytes(32).toString("hex"),
           challenge = createHash("sha256")
             .update(req.body.verifier)
@@ -139,6 +162,7 @@ export function erweiterungRouten(
             "Anmeldung abgelaufen oder ungültig. Bitte erneut verbinden.",
           );
         return { token };
-      }),
+      });
+    },
   );
 }

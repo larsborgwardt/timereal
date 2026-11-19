@@ -1,6 +1,6 @@
 import {
   extensionCors,
-  extensionOrigin,
+  istErweiterungsherkunft,
   erweiterungRouten,
 } from "./erweiterung.js";
 import { stammdatenRouten } from "./stammdaten-routen.js";
@@ -92,7 +92,7 @@ export function createApp(
     const cors = extensionCors(req, reply);
     if (cors) return cors;
     if (
-      req.headers.origin !== extensionOrigin &&
+      !istErweiterungsherkunft(req.headers.origin) &&
       req.method !== "GET" &&
       req.method !== "HEAD" &&
       !req.headers.authorization &&

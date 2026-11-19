@@ -6,11 +6,11 @@ Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen P
 
 Die freigegebenen Bilder 13/14 sind umgesetzt: Anzeigename, bestätigte E-Mail-Änderung, Authenticator, Wiederherstellungscodes und Faktorverwaltung. Die Chromium-Erweiterung verwendet die neue vollständige Anmeldung und besitzt weiterhin eine separat widerrufbare Sitzung. [Vertrag](KONTOSICHERHEIT.md) · [Prüfbelege](nachweise/0.9.0.md).
 
-Die Erweiterung wird als ZIP zum entpackten Laden veröffentlicht. Ein getrenntes Edge-Upload-Paket entfernt die im Partner Center abgelehnten Entwicklungsfelder. **Die Edge-Store-Veröffentlichung ist beauftragt und noch nicht fertig:** Nach dem Upload fehlen die von Microsoft vergebene Erweiterungs-ID, ihre konkrete Serverfreigabe für CORS und Anmelderücksprung sowie ein Anmeldetest der Store-Ausgabe. Es gibt keine pauschale Freigabe fremder Erweiterungs-IDs. [Upload-Anleitung](erweiterung/README.md#microsoft-partner-center). Firefox-Erweiterung und Safari/WebKit bleiben gesondert offen.
+Das getrennte Edge-Upload-Paket enthält kein `key`. Die von Lars gelieferte Microsoft-CRX-ID ist ab Server 0.9.1 konkret für CORS und PKCE-Anmelderücksprung freigegeben. Fremde Kennungen und vertauschte Rücksprünge bleiben gesperrt. Die Browserprobe lädt eine Wegwerfkopie des Upload-ZIPs mit dem öffentlichen Microsoft-Schlüssel und prüft damit die echte CRX-ID. **Offen bleibt die Veröffentlichung im Partner Center und die Installation des von Microsoft signierten Store-Pakets.** [Upload-Anleitung](erweiterung/README.md#microsoft-partner-center). Firefox-Erweiterung und Safari/WebKit bleiben gesondert offen.
 
 ## Mailversand im Adminbereich
 
-Von Lars beauftragt; Bildentwurf 15 freigegeben. SMTP ist im Release 0.9.0 bisher nur über `betrieb/mail-einrichten.sh` einrichtbar, obwohl die Web-App bereits Einladungen und E-Mail-Bestätigung verwendet. **Verwaltung → Mailversand** mit sicherer Passwortspeicherung, Prüfen vor Übernahme und Testmail ist in Arbeit und noch nicht ausgeliefert.
+Von Lars beauftragt; Bildentwurf 15 freigegeben. SMTP ist bis Release 0.9.1 bisher nur über `betrieb/mail-einrichten.sh` einrichtbar, obwohl die Web-App bereits Einladungen und E-Mail-Bestätigung verwendet. **Verwaltung → Mailversand** mit sicherer Passwortspeicherung, Prüfen vor Übernahme und Testmail ist in Arbeit und noch nicht ausgeliefert.
 
 ## Umfang von 0.7.0
 
@@ -35,6 +35,7 @@ Speicherknappheit, ein echter `pg_dump`-Fehler und ein nicht startbarer Vorgäng
 | Thema | Abgrenzung / nächster Nachweis |
 |---|---|
 | Systemlogs auf Lars’ v0.8.2 | Gemeldet: „Verbindung unterbrochen“ über die Container-IP. Der ergänzende Fehlertext fehlt; die Ursache auf dieser Instanz ist nicht belegt. Native Journalprüfungen ersetzen diese Diagnose nicht. |
+| Erweiterung: sporadischer Timeout nach Pausieren | CI-Lauf 44594040098 scheiterte einmal; Wiederholung am unveränderten Commit bestand. Ursache nicht belegt. [Issue #10](https://github.com/larsborgwardt/timereal/issues/10). |
 | Diagnose vorübergehender 503 unter Last | Hauptzweig-CI 44553467620: erster Kapazitätsjob scheiterte beim Arbeitsstand, Wiederholung am unveränderten Commit bestand; Ursache nicht belegt. Fehlerpfad mit geheimnisfreiem Fehlercode und Zeitbezug sowie Ausgabebeleg bei vorzeitigem Lasttestabbruch ergänzen und den nächsten Fehler damit einordnen. [Releasebeleg](nachweise/0.8.2.md). |
 | Proxmox-LXC-Pilot | Neue 0.7.0-Betriebsfunktionen wurden im eigenen Debian-13/systemd-Prüfgast gemessen. Update auf Lars' LXC und externer Domainaufruf erfolgen durch Lars. |
 | Geräte und Hilfstechnik | VoiceOver-Ausgabe, physische Touchgeräte und Safari/WebKit sind nicht geprüft. Firefox 159 ist für den Konsolenablauf geprüft; die übrigen Ansichten und die Firefox-Erweiterung bleiben offen. |

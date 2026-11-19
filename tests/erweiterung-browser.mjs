@@ -1,10 +1,12 @@
 import { chromium } from "playwright-core";
 import assert from "node:assert/strict";
 import pg from "pg";
-import { randomBytes } from "node:crypto";
+import { randomBytes, createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { mkdir, mkdtemp, readFile, writeFile, cp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { execFileSync } from "node:child_process";
+const edgeStore = process.argv.includes("--edge-store");
 import { createApp } from "../dist/app.js";
 import { passwordHash, issueSession } from "../dist/session.js";
 import { totp } from "../dist/mfa-crypto.js";
@@ -60,12 +62,42 @@ const recovery = activate.json().codes[0];
 // Die native Chrome-Berechtigungsabfrage ist kein Web-DOM. Nur der lokale Testserver
 // wird in einer Wegwerf-Kopie vorab erlaubt; Authentifizierung/API bleiben unverändert.
 const dir = await mkdtemp(resolve(tmpdir(), "timereal-extension-"));
-await cp(resolve("dist/erweiterung"), dir, { recursive: true });
+if (edgeStore) {
+  const { version } = JSON.parse(
+    await readFile("erweiterung/manifest.json", "utf8"),
+  );
+  execFileSync("unzip", [
+    "-q",
+    resolve(`dist/timereal-erweiterung-${version}-edge-store.zip`),
+    "-d",
+    dir,
+  ]);
+} else await cp(resolve("dist/erweiterung"), dir, { recursive: true });
 const manifest = JSON.parse(
   await readFile(resolve(dir, "manifest.json"), "utf8"),
 );
 assert.equal(manifest.host_permissions, undefined);
 assert.deepEqual(manifest.permissions, ["storage", "identity"]);
+if (edgeStore) {
+  assert.equal(
+    Object.hasOwn(manifest, "key"),
+    false,
+    "Das Upload-ZIP enthält keinen Schlüssel.",
+  );
+  // Öffentlicher Schlüssel aus dem Partner-Center-Export vom 19.11.2026.
+  // Nur die Wegwerf-Testkopie erhält ihn, damit Chromium Microsofts CRX-ID verwendet.
+  manifest.key = (
+    await readFile("tests/hilfe/microsoft-edge-public-key.pem", "utf8")
+  )
+    .replace(/-----[^-]+-----/g, "")
+    .replace(/\s/g, "");
+  const derived = createHash("sha256")
+    .update(Buffer.from(manifest.key, "base64"))
+    .digest("hex")
+    .slice(0, 32)
+    .replace(/[0-9a-f]/g, (c) => String.fromCharCode(97 + parseInt(c, 16)));
+  assert.equal(derived, "lidpjdoofliniabfnkljpfadffmjockd");
+}
 manifest.host_permissions = ["http://127.0.0.1/*"];
 await writeFile(resolve(dir, "manifest.json"), JSON.stringify(manifest));
 const ctx = await chromium.launchPersistentContext("", {
@@ -76,7 +108,9 @@ const ctx = await chromium.launchPersistentContext("", {
   viewport: { width: 1000, height: 900 },
 });
 ctx.setDefaultTimeout(10000);
-const id = "foobkcceoconhlclbnechjlimhkfbcno";
+const id = edgeStore
+  ? "lidpjdoofliniabfnkljpfadffmjockd"
+  : "foobkcceoconhlclbnechjlimhkfbcno";
 const origin = "chrome-extension://" + id;
 let settings;
 const errors = [];
@@ -97,6 +131,11 @@ try {
     };
   });
   await settings.goto(origin + "/einstellungen.html");
+  assert.equal(await settings.evaluate(() => chrome.runtime.id), id);
+  assert.equal(
+    await settings.evaluate(() => chrome.identity.getRedirectURL("timereal")),
+    `https://${id}.chromiumapp.org/timereal`,
+  );
   await settings.waitForFunction(
     () => typeof window.releaseSettingsLoad === "function",
   );
@@ -445,7 +484,7 @@ try {
   assert.deepEqual(errors, []);
   assert.deepEqual(designErrors, []);
   console.log(
-    "Echte Chromium-Erweiterung geprüft: Anmeldung, geschlossener App-Tab, Wechsel und Notiz, Smartphone, Pause/Stopp, Offline-Bestätigung, Vollansicht und Sitzungswiderruf.",
+    `Chromium-Erweiterung ${id} geprüft: Anmeldung, geschlossener App-Tab, Wechsel und Notiz, Smartphone, Pause/Stopp, Offline-Bestätigung, Vollansicht und Sitzungswiderruf.`,
   );
 } catch (e) {
   console.error(

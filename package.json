@@ -1,6 +1,6 @@
 {
   "name": "timereal",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "private": true,
   "type": "module",
   "description": "Pers\u00f6nliche Zeiterfassung mit gemeinsamem Timer",

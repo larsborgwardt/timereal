@@ -6,7 +6,7 @@ Die Erweiterung verwendet den bestehenden Timereal-Server. Ihr Popup bedient den
 
 ### Microsoft Partner Center
 
-Für **Packages → Upload package** das Paket **`timereal-erweiterung-0.9.0-edge-store.zip`** verwenden. Das bisherige `timereal-erweiterung-0.9.0.zip` ist das Entwicklungspaket zum entpackten Laden und wird wegen seines `key`-Feldes vom Partner Center zurückgewiesen.
+Für **Packages → Upload package** das Paket **`timereal-erweiterung-0.9.1-edge-store.zip`** verwenden. Das bisherige `timereal-erweiterung-0.9.0.zip` ist das Entwicklungspaket zum entpackten Laden und wird wegen seines `key`-Feldes vom Partner Center zurückgewiesen.
 
 Das Upload-Paket wird mit dem folgenden Befehl erstellt (Node.js 24 und `zip` erforderlich):
 
@@ -14,9 +14,13 @@ Das Upload-Paket wird mit dem folgenden Befehl erstellt (Node.js 24 und `zip` er
 node scripts/erweiterung-bauen.mjs --target edge-store --zip
 ```
 
-Ergebnis unter `dist/`: ZIP und zugehörige SHA256-Datei. `manifest.json` liegt direkt an der ZIP-Wurzel. Der Build entfernt `key` und `update_url` nur aus dem Store-Paket; das Quellmanifest für die Entwicklung bleibt erhalten. Das Versionsfeld bleibt 0.9.0, da sich der Anwendungscode gegenüber dem bestehenden Paket nicht geändert hat.
+Ergebnis unter `dist/`: ZIP und zugehörige SHA256-Datei. `manifest.json` liegt direkt an der ZIP-Wurzel. Der Build entfernt `key` und `update_url` nur aus dem Store-Paket; das Quellmanifest für die Entwicklung bleibt erhalten. Die Erweiterung trägt Version 0.9.1. Der Server muss für die Store-Anmeldung mindestens Version 0.9.1 verwenden.
 
-**Vor Veröffentlichung bleibt die Store-Anmeldung zu verbinden:** Microsoft vergibt eine eigene Erweiterungs-ID. Die Anwendung 0.9.0 akzeptiert bisher ausschließlich die Entwicklungs-ID `foobkcceoconhlclbnechjlimhkfbcno`. Nach dem ersten erfolgreichen Upload die Microsoft-Erweiterungs-ID beziehungsweise Store-URL mitteilen, damit diese konkrete Kennung für CORS und den Anmelderücksprung freigegeben und mit PKCE geprüft werden kann. Die Partner-Center-Produkt-ID (GUID) ist nicht die Browser-Erweiterungs-ID. Das Entfernen von `key` alleine behebt den Uploadfehler, aber noch nicht diese Anmeldung. Bis zu diesem Nachweis den Eintrag als Entwurf behalten.
+**Store-Anmeldung ab Server 0.9.1:** Die von Microsoft vergebene CRX-ID lautet `lidpjdoofliniabfnkljpfadffmjockd`. Diese Kennung ist für CORS und den eigenen Anmelderücksprung `https://lidpjdoofliniabfnkljpfadffmjockd.chromiumapp.org/timereal` freigeschaltet. Die Entwicklungs-ID bleibt separat unterstützt. Produkt-ID (GUID) und Store-ID werden nicht als Browserkennung verwendet.
+
+Zuerst den Timereal-Server auf 0.9.1 aktualisieren. Danach das Edge-Store-ZIP im bestehenden Timereal-Eintrag hochladen. Ein dort bereits angenommenes Edge-Store-Paket 0.9.0 kann ebenfalls mit Server 0.9.1 verbunden werden; der Anmeldefehler lag auf der Serverseite. Das lokale Entwicklungspaket bleibt für den Store ungeeignet.
+
+Die Anmeldung einschließlich zweitem Faktor, Timerwechsel und Sitzungswiderruf ist in Chromium mit Microsofts öffentlichem Schlüssel und der echten CRX-ID geprüft. Dafür erhält nur eine entpackte Wegwerf-Testkopie den öffentlichen Schlüssel; das Upload-ZIP enthält weiterhin kein `key`. Microsofts signierte Store-Installation wird nach Veröffentlichung separat geprüft.
 
 Die lokalen Paket- und Chromium-Startprüfungen sind keine Bestätigung der Microsoft-Zertifizierung. Store-Beschreibung, Datenschutzangaben, Logo, Berechtigungsbegründungen und Prüfanweisungen werden im Partner Center ergänzt. Grundlage: [Microsofts Veröffentlichungsanleitung](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension) und [Portierung nach Edge](https://learn.microsoft.com/en-us/microsoft-edge/extensions/developer-guide/port-chrome-extension).
 
@@ -38,7 +42,7 @@ Ohne Serverantwort wird kein Wechsel automatisch nachgeholt. „Aktuellen Stand 
 
 Die Erweiterung fordert `storage`, `identity` und zur Laufzeit die Berechtigung für den gewählten Server an. Es gibt keine Inhaltsskripte und keinen Zugriff auf Inhalte anderer Tabs. API-Sitzungen sind auf den Erweiterungskanal beschränkt. Die Anmeldung bindet einen kurzlebigen Einmalcode an PKCE-S256, einen zufälligen Zustand und das feste Rücksprungziel der Erweiterung.
 
-Technische Grundlagen: [Chrome Identity](https://developer.chrome.com/docs/extensions/reference/api/identity), [Chrome Storage](https://developer.chrome.com/docs/extensions/reference/api/storage). Die Browserprobe verwendet [Playwrights Erweiterungsbetrieb mit persistentem Chromium-Kontext](https://playwright.dev/docs/chrome-extensions). Der Store-Weg und die noch erforderliche ID-Anbindung sind oben beschrieben.
+Technische Grundlagen: [Chrome Identity](https://developer.chrome.com/docs/extensions/reference/api/identity), [Chrome Storage](https://developer.chrome.com/docs/extensions/reference/api/storage). Die Browserprobe verwendet [Playwrights Erweiterungsbetrieb mit persistentem Chromium-Kontext](https://playwright.dev/docs/chrome-extensions). Der Store-Weg und die Server-Mindestversion sind oben beschrieben.
 
 ## Anmeldung mit zweitem Faktor
 
