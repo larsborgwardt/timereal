@@ -30,4 +30,8 @@ SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=7) AS rollen \gse
 \if :rollen
 \ir migrationen/007-rollen.sql
 \endif
+SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=8) AS audit \gset
+\if :audit
+\ir migrationen/008-audit.sql
+\endif
 SELECT pg_advisory_unlock(675039138012);

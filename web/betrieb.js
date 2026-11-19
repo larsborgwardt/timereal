@@ -1,4 +1,5 @@
 import { systemkonsole } from "./systemkonsole.js";
+import { auditOberflaeche } from "./audit.js";
 const prefix = "/verwaltung/betrieb";
 const laufend = new Set([
   "vorbereitung",
@@ -49,6 +50,11 @@ export function betriebsOberflaeche({
     request,
     sichtbar: () => bereich === "logs" && !$("#verwaltung").hidden,
   });
+  const audit = auditOberflaeche({
+    $,
+    request,
+    sichtbar: () => bereich === "audit" && !$("#verwaltung").hidden,
+  });
   const text = (id, wert) => {
     const el = $("#betrieb-" + id),
       neu = wert ?? "";
@@ -70,8 +76,11 @@ export function betriebsOberflaeche({
   const job = (typ) => stand?.auftraege.find((j) => j.typ === typ);
   function anzeigen() {
     $("#betrieb-berater").hidden = bereich !== "berater";
-    $("#betrieb-bereich").hidden = ["berater", "logs"].includes(bereich);
+    $("#betrieb-bereich").hidden = ["berater", "logs", "audit"].includes(
+      bereich,
+    );
     $("#betrieb-logs").hidden = bereich !== "logs";
+    $("#betrieb-audit").hidden = bereich !== "audit";
     for (const name of ["updates", "domain"])
       $("#betrieb-" + name).hidden = bereich !== name;
     document.querySelectorAll("[data-betrieb]").forEach((b) => {
@@ -179,6 +188,7 @@ export function betriebsOberflaeche({
     $("#betrieb-fehler").hidden = !e;
   }
   async function laden() {
+    if (bereich === "audit") return audit.laden();
     if (bereich === "logs") return konsole.liveLaden();
     if (bereich === "berater" || $("#verwaltung").hidden || laedt || prueft)
       return;
@@ -323,6 +333,7 @@ export function betriebsOberflaeche({
   $("#betrieb-zurueck").onclick = () =>
     void senden(`/domain/${job("domain").id}/zuruecknehmen`);
   setInterval(() => {
+    if (bereich === "audit") return;
     if (bereich === "logs") return konsole.liveLaden();
     if (!$("#verwaltung").hidden && bereich !== "berater") {
       anzeigen();
@@ -333,7 +344,9 @@ export function betriebsOberflaeche({
     laden,
     rolleSetzen(profil) {
       document.querySelector('[data-betrieb="berater"]').hidden = !profil.admin;
-      if (!profil.admin && bereich === "berater") bereich = "updates";
+      document.querySelector('[data-betrieb="audit"]').hidden = !profil.admin;
+      if (!profil.admin && ["berater", "audit"].includes(bereich))
+        bereich = "updates";
       anzeigen();
     },
     domainOeffnen() {
@@ -342,6 +355,7 @@ export function betriebsOberflaeche({
     },
     zuruecksetzen() {
       konsole.zuruecksetzen();
+      audit.zuruecksetzen();
       generation++;
       prueft = false;
       stand = update = null;

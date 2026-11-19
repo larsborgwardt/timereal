@@ -14,6 +14,17 @@ erDiagram
   SITZUNG ||--o{ ERWEITERUNGSCODE : autorisiert
   KONTO ||--o{ ERWEITERUNGSCODE : besitzt
   KONTO ||--o{ TIMER_AUFTRAG : verarbeitet
+  AUDIT_ART ||--o{ AUDIT_EREIGNIS : benennt
+  AUDIT_EREIGNIS {
+    bigint id PK
+    timestamptz zeit
+    text art FK
+    text akteur
+    text ziel
+    text vorher
+    text nachher
+    text kanal
+  }
   KONTO {
     bigint id PK
     bigint timer_version
@@ -82,3 +93,9 @@ Migration `005-erweiterung.sql` ergänzt `erweiterungscode` mit Code-Hash, Konto
 ## Rollen ab 0.8.1
 
 Migration 007 ergänzt `ist_betrieb` und die gespeicherte abgeleitete Spalte `rolle`. Die bestehende Eigenschaft `ist_admin` und die ältere Kontenlesefunktion bleiben kompatibel. Die Anwendungsrolle liest ihre eigene Rolle; Änderungen sind nur über die geprüfte Verwaltungsfunktion möglich. Kontensperre und Rollenwechsel erhalten eine gemeinsame Transaktionssperre vor der Sitzungsbindung. Dadurch wird eine parallel widerrufene Sitzung vor dem Schreiben erneut geprüft. Rollenwechsel widerrufen Sitzungen, ohne den Timer zu beenden. [Vertrag und Rechte](ROLLEN.md), [Prüfung](nachweise/0.8.1.md).
+
+## Audit-Protokoll ab 0.8.2
+
+Migration 008 ergänzt `audit_art` und `audit_ereignis`. Die Ereignisse halten Kontobezeichnungen zum Ereigniszeitpunkt als Text fest; sie sind keine Fremdschlüssel auf heutige Kontonamen. Trigger an Konto, Sitzung und Kontolink schreiben innerhalb der jeweiligen Transaktion. Für fehlgeschlagene Passwortanmeldungen meldet der Server ein gesondertes Ereignis, ohne unbekannte eingereichte Namen abzulegen.
+
+Die Anwendungsrolle hat keine direkten Tabellenrechte. Die Lesefunktion prüft die aktive Administratorrolle, begrenzt den Zeitraum auf 180 Tage und verwendet ID-Cursor; der HTTP-Vertrag verlangt zusätzlich eine Websitzung. Änderungs-/Löschtrigger schützen vor gewöhnlichen SQL-Updates, ersetzen aber keine Kontrolle des Datenbankeigentümers. Die Migration ergänzt keine historischen Ereignisse. Aufbewahrung und Wartung sind getrennt vom Lesefenster zu entscheiden. [Daten- und Zugriffsvertrag](AUDIT.md).
