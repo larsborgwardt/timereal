@@ -55,7 +55,10 @@ jobs:
           BROWSER_TEST: '1'
           SCREENSHOT_DIR: screenshots
       - name: Betriebsskripte prüfen
-        run: bash -n betrieb/*.sh
+        run: |
+          for script in betrieb/*.sh tests/betrieb-ausgabe*.sh; do
+            bash -n "$script" || exit
+          done
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:

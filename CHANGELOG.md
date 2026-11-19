@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.6.1 — 19. November 2026
+
+- Installation und Update zeigen die Browser-Adresse mit ausdrücklichem Port; HTTPS-Port 443 und interner Port 3040 werden erklärt.
+- Nummerierte Phasen, Versionsvergleich, Hinweise auf die Dienstunterbrechung sowie Pfade für Sicherung und Migrationsprotokoll.
+- Abbrüche nennen die betroffene Phase, den Exitcode und einen Diagnosebefehl. Der Updater meldet das Ergebnis der Wiederherstellung des vorherigen Diensts.
+- Installationshilfe ohne Systemzugriff; der Update-Prüfmodus zeigt Adresse und nächsten Befehl, ohne den Dienst anzuhalten.
+- Patchversion bei unverändertem Datenbankschema 6 und API-Version 1.
+
 ## 0.6.0 — 19. November 2026
 
 - Kapazitätsauslegung für 100 gleichzeitig aktive Berater mit gewachsenem persönlichem Zeitbestand.

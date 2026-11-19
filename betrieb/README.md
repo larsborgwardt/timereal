@@ -47,16 +47,20 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.6.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.6.1**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.6.0:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.6.0 &&
-bash /root/timereal-update.sh v0.6.0
+git -C /opt/timereal show v0.6.1:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.6.1 &&
+bash /root/timereal-update.sh v0.6.1
 ```
 
-Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.6.0. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.6.1. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
+
+Ab 0.6.1 zeigen Installation und Update nummerierte Schritte und eine Browser-Adresse mit ausdrücklichem Port. Der Updater liest dafür `PUBLIC_ORIGIN` aus `/etc/timereal/dienst.conf`; eine eingerichtete Domain oder ein abweichender Port bleibt sichtbar. Beim normalen LXC-Zugang steht beispielsweise `https://192.0.2.42:443` (Beispieladresse). 443 ist der HTTPS-Port, 3040 bleibt intern. Schon `--check` zeigt die konfigurierte Adresse und den Befehl zum eigentlichen Update. Es prüft dabei keinen externen Browserzugriff. Eine fehlende oder ungültige Adresse wird als Hinweis gemeldet und nicht durch eine vermutete IP ersetzt.
+
+Beim Update sind die Vorbereitung mit noch laufender Anwendung und die Phase mit angehaltenem Dienst getrennt benannt. Die Ausgabe nennt Sicherung und Migrationsprotokoll. Bei Fehlern stehen Phase, Exitcode und der Befehl `journalctl -u timereal -u timereal-https -n 80 --no-pager` am Ende. Eine gescheiterte Startprüfung wird als Abbruch mit Ergebnis der Wiederherstellung gemeldet. Der Erfolgsabschluss prüft den Dienst im Container; öffne die ausgegebene Adresse anschließend auch auf deinem Endgerät.
 
 Für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg; neue Tags vorher wieder mit `git fetch --tags origin` abholen. Der Updateweg verwendet `/opt/timereal` nur als Git-Quelle, `/opt/timereal-releases` für gebaute Stände und `/opt/timereal-current` als aktiven Zeiger. `git pull` oder ein erneuter Aufruf von `install.sh` ist auf einer versionierten Installation kein Updateweg.
 
