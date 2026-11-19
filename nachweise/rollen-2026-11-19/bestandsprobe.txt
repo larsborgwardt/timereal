@@ -1,0 +1,3 @@
+psql:/tmp/datenmodell/entwurf.sql:4: NOTICE:  relation "timereal_migration" already exists, skipping
+Schemaergänzung ohne Bestandsänderung: Vergleich gleich.
+Absichtlich geänderter Kontoname: Vergleich ungleich.
