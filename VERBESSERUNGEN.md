@@ -33,3 +33,13 @@ D02/D03 sind Anforderungen an die neue Oberfläche; sie werden nicht als zuvor v
 
 - E01: Die Erweiterung ließ frühes Absenden und Eingeben vor Abschluss ihres asynchronen Starts zu. Adressfeld und Verbindungsbutton werden jetzt erst nach Laden des gespeicherten Zustands bedienbar. Der verzögerte Start und die anschließende echte Anmeldung sind geprüft.
 - B01: Geplante schnelle Proxy-Wechsel konnten die systemd-Startsperre erreichen und den Rückbau verhindern. Proxy-Patch 2 setzt die Zähler vor dem geplanten Neustart zurück; echte Dienst- und HTTPS-Prüfungen bleiben maßgeblich. Die native Probe erzwingt eine Startsperre und prüft auch den Rückbau nach einem einmaligen Neustartfehler.
+
+## Nachtrag: Repository-Präsentation und neue Betriebsaufträge
+
+Lars weist am 19. November 2026 darauf hin, dass die Repository-Startseite nicht wie die betrachteten Projekte aufbereitet ist. Der bisherige funktionale Vergleich hat diese Präsentationsaufgabe nicht erledigt. Die README auf dem GitHub-Standardzweig `main` zeigt bei der erneuten Prüfung noch den ursprünglichen Pilotstand; der neuere Inhalt liegt im Entwicklungszweig.
+
+Erneut gelesene README-Einstiege: [Gotify](https://github.com/gotify/server/blob/master/README.md), [Uptime Kuma](https://github.com/louislam/uptime-kuma/blob/master/README.md), [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx/blob/dev/README.md) und [BookStack](https://github.com/BookStackApp/BookStack/blob/development/readme.md). Geprüft gegen die Frage „Was fehlt beim Einstieg in Timereal?“: Produktzweck vor Installationsdetails, sichtbare Screenshots, Release-/Prüfstatus, direkte Dokumentationswege, getrennte Abschnitte für Installation und Aktualisierung sowie Beiträge und Lizenz. Die fremden README-Dateien wurden in ihren Einstiegsabschnitten geprüft; Sponsorenlisten oder ein Vollaudit sind damit nicht erfasst.
+
+Die neue Timereal-README setzt diese Struktur mit eigenen Texten und echten Bildern der Version 0.6.2 um. Ein Bild des geplanten Adminbereichs wird nicht als vorhandene Funktion präsentiert. Bestehende Releases und künftige Funktionen sind ausdrücklich getrennt. Die Installationsbefehle verwenden einen veröffentlichten Tag, die Betriebslinks den dazugehörigen Dokumentationsstand. Die Screenshot-Herkunft steht unter `docs/images/README.md`.
+
+Zusätzlich beauftragt sind inzwischen Updates und Domainzugriff im Adminbereich. Der [Entwurf für 0.7.0](ADMIN-BETRIEB.md) ersetzt für diese künftige Version die reine Konsolenbedienung aus F04; die Beschreibung von 0.6.2 bleibt historisch richtig. Der [Backlog](BACKLOG.md) unterscheidet die laufenden Aufträge von den weiterhin zurückgestellten Ausbauwünschen.
