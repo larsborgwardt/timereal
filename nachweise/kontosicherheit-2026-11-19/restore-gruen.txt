@@ -1,0 +1,1 @@
+Native MFA-Probe: Installation, Dateirechte, tägliche Sicherung und Authenticator-Anmeldung aus rückgesicherter Datenbank bestanden.

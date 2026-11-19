@@ -9,7 +9,22 @@ node=/opt/timereal-node/bin/node
 for datei in "$release"/betrieb/verwaltung/*.mjs; do "$node" --check "$datei"; done
 version=$("$node" -p 'JSON.parse(require("node:fs").readFileSync(process.argv[1])).version' "$release/release.json")
 [[ $version =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo 'Ungültige Releaseversion.' >&2; exit 1; }
-hash=$(cd "$release/betrieb" && sha256sum update.sh proxy-einrichten.sh verwaltung-einrichten.sh timereal-betrieb.service verwaltung/*.mjs | sha256sum | cut -d' ' -f1)
+# Auch ältere Betriebsdienste rufen diesen Einstieg aus dem neuen Release auf.
+# Deren Updateskript kennt den MFA-Schlüssel noch nicht; die bereits gestartete
+# Anwendung muss ihn nach der erstmaligen Einrichtung neu einlesen.
+schluessel_neu=false
+[[ -e /etc/timereal/mfa.key ]] || schluessel_neu=true
+bash "$release/betrieb/mfa-schluessel.sh" anlegen
+if [[ $schluessel_neu == true ]]; then
+  systemctl restart timereal.service
+  gesund=false
+  for _ in {1..30}; do
+    if curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3040/health >/dev/null 2>&1; then gesund=true; break; fi
+    sleep 1
+  done
+  [[ $gesund == true ]] || { echo 'Anwendung startet nach der Schlüsseleinrichtung nicht.' >&2; exit 1; }
+fi
+hash=$(cd "$release/betrieb" && sha256sum update.sh proxy-einrichten.sh verwaltung-einrichten.sh mfa-schluessel.* timereal-betrieb.service verwaltung/*.mjs | sha256sum | cut -d' ' -f1)
 target="/opt/timereal-betrieb/$version-$hash"
 install -d -m 755 /opt/timereal-betrieb
 if [[ ! -d $target ]]; then

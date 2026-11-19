@@ -43,6 +43,7 @@ export function kontenOberflaeche({
   function aktualisieren(neu) {
     if (profil?.id !== neu.id) rollenentwuerfe.clear();
     profil = neu;
+    if (emailLink && !$("#emailfenster").open) $("#emailfenster").showModal();
     $("#admin-nav").hidden =
       istErweiterung || !(profil.admin || profil.rolle === "betrieb");
     return profil;
@@ -129,9 +130,18 @@ export function kontenOberflaeche({
           .join("") || "<p>Noch keine Einladungen.</p>";
     }
     if (seite === "einstellungen") {
-      if (!$("#profilform").dataset.geaendert)
-        $("#profilform").elements.email.value = profil.email ?? "";
-      $("#kontoname").textContent = profil.login;
+      if (!$("#profilform").dataset.geaendert) {
+        $("#profilform").elements.email.value =
+          profil.emailAusstehend ?? profil.email ?? "";
+        $("#profilform").elements.name.value = profil.name ?? "";
+      }
+      $("#profil-ausstehend").textContent = profil.emailAusstehend
+        ? "Bestätigung ausstehend: " + profil.emailAusstehend
+        : "";
+      $("#profil-ausstehend").hidden = !profil.emailAusstehend;
+      $("#kontoname").textContent = profil.name
+        ? profil.name + " · " + profil.login
+        : profil.login;
       if (!$("#grundeinstellungen").dataset.geaendert) {
         $("#grundeinstellungen").elements.nachkommastellen.value = String(
           profil.nachkommastellen,
@@ -204,15 +214,22 @@ export function kontenOberflaeche({
     ev.preventDefault();
     void bediene(async () => {
       const email = ev.target.elements.email.value;
+      const name = ev.target.elements.name.value;
       profil = await request("/profil", "PATCH", {
-        email,
+        ...(email ? { email } : {}),
+        name,
       });
-      const neuerEntwurf = ev.target.elements.email.value !== email;
+      const neuerEntwurf =
+        ev.target.elements.email.value !== email ||
+        ev.target.elements.name.value !== name;
       if (!neuerEntwurf) delete ev.target.dataset.geaendert;
       melden(
-        neuerEntwurf
-          ? "E-Mail-Adresse gespeichert. Deine weiteren Änderungen sind noch nicht gespeichert."
-          : "E-Mail-Adresse gespeichert.",
+        (profil.emailAusstehend
+          ? "Bestätigungslink versendet. Bis zur Bestätigung bleibt die bisherige E-Mail-Adresse gültig."
+          : "Profil gespeichert.") +
+          (neuerEntwurf
+            ? " Deine weiteren Änderungen sind noch nicht gespeichert."
+            : ""),
       );
     });
   };
@@ -249,6 +266,8 @@ export function kontenOberflaeche({
       melden("Passwort geändert. Bitte erneut anmelden.");
     });
   };
+  $("#passwort-oeffnen").onclick = () => $("#passwortfenster").showModal();
+  $("#sitzungen-oeffnen").onclick = () => $("#sitzungsfenster").showModal();
   $("#vergessen").onclick = () => $("#resetfenster").showModal();
   $("#resetform").onsubmit = (ev) => {
     ev.preventDefault();
@@ -262,8 +281,21 @@ export function kontenOberflaeche({
       );
     });
   };
-  let einmallink = null;
+  let einmallink = null,
+    emailLink = null;
+  $("#emailfenster").addEventListener("close", () => {
+    emailLink = null;
+  });
   function einmallinkLaden() {
+    const emailMatch = /^#email=([a-f0-9]{64})$/.exec(location.hash);
+    if (emailMatch) {
+      emailLink = emailMatch[1];
+      history.replaceState(null, "", location.pathname);
+      if (profil) $("#emailfenster").showModal();
+      else
+        melden("Bitte anmelden, um deine neue E-Mail-Adresse zu bestätigen.");
+      return;
+    }
     const match = /^#(einladung|reset)=([a-f0-9]{64})$/.exec(location.hash);
     if (!match) return;
     einmallink = { typ: match[1], token: match[2] };
@@ -276,6 +308,16 @@ export function kontenOberflaeche({
   }
   window.addEventListener("hashchange", einmallinkLaden);
   einmallinkLaden();
+  $("#email-bestaetigen").onclick = () =>
+    void bediene(async () => {
+      if (!emailLink) return;
+      profil = await request("/profil/email-bestaetigen", "POST", {
+        token: emailLink,
+      });
+      emailLink = null;
+      $("#emailfenster").close();
+      melden("E-Mail-Adresse bestätigt.");
+    });
   $("#linkform").onsubmit = (ev) => {
     ev.preventDefault();
     void bediene(async () => {

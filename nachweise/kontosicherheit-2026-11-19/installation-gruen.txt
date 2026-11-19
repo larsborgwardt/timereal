@@ -1,0 +1,339 @@
+
+Timereal installieren
+
+[1/8] Voraussetzungen und Browser-Adresse prüfen
+Geplante Browser-Adresse: https://127.0.0.1:443
+HTTPS: Port 443 (TCP). Port 3040 ist nur für den internen Anwendungsdienst.
+
+[2/8] Systempakete installieren
+
+0% [Working]
+
+Hit:1 http://deb.debian.org/debian trixie InRelease
+
+0% [Working]
+
+Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+
+0% [Waiting for headers]
+
+Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+
+0% [3 InRelease 3344 B/43.4 kB 8%]
+0% [3 InRelease 42.8 kB/43.4 kB 99%]
+
+0% [Working]
+0% [Working]
+35% [Working]
+
+Get:4 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [325 kB]
+
+36% [4 Packages 1974 B/325 kB 1%]
+
+98% [Working]
+98% [4 Packages store 0 B]
+
+100% [Working]
+
+Fetched 416 kB in 0s (1490 kB/s)
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 95%
+
+Reading package lists... 95%
+
+Reading package lists... 95%
+
+Reading package lists... 95%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... Done
+
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 0%
+
+Reading package lists... 95%
+
+Reading package lists... 95%
+
+Reading package lists... 95%
+
+Reading package lists... 95%
+
+Reading package lists... 99%
+
+Reading package lists... 99%
+
+Reading package lists... Done
+
+
+Building dependency tree... 0%
+
+Building dependency tree... 0%
+
+Building dependency tree... 50%
+
+Building dependency tree... 50%
+
+Building dependency tree... Done
+
+
+Reading state information... 0%
+
+Reading state information... 0%
+
+Reading state information... Done
+
+Note, selecting 'postgresql' instead of 'postgresql-contrib'
+ca-certificates is already the newest version (20250419+deb13u1).
+curl is already the newest version (8.14.1-2+deb13u7).
+xz-utils is already the newest version (5.8.1-1+deb13u2).
+postgresql is already the newest version (17+278).
+caddy is already the newest version (2.6.2-12+deb13u1).
+0 upgraded, 0 newly installed, 0 to remove and 1 not upgraded.
+
+[3/8] Node.js prüfen und Anwendung bauen
+\|/-\|
+added 99 packages in 1s
+|
+> timereal@0.9.0 build
+> tsc
+
+\
+[4/8] Dienstkonten und Datenbank einrichten
+ pg_advisory_lock
+------------------
+
+(1 row)
+
+CREATE TABLE
+BEGIN
+CREATE EXTENSION
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+COMMIT
+BEGIN
+REVOKE
+CREATE ROLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+CREATE FUNCTION
+ALTER TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+INSERT 0 2
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+ALTER TABLE
+CREATE POLICY
+GRANT
+GRANT
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+GRANT
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+INSERT 0 16
+CREATE TABLE
+CREATE INDEX
+REVOKE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+REVOKE
+INSERT 0 6
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+GRANT
+CREATE TABLE
+REVOKE
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+ pg_advisory_unlock
+--------------------
+ t
+(1 row)
+
+timereal_app
+
+[5/8] HTTPS und tägliche Sicherung einrichten
+2026/11/19 16:19:04.195	INFO	using provided configuration	{"config_file": "/etc/timereal/Caddyfile", "config_adapter": "caddyfile"}
+2026/11/19 16:19:04.195	WARN	Caddyfile input is not formatted; run the 'caddy fmt' command to fix inconsistencies	{"adapter": "caddyfile", "file": "/etc/timereal/Caddyfile", "line": 2}
+2026/11/19 16:19:04.196	INFO	tls.cache.maintenance	started background certificate maintenance	{"cache": "0xc000264d20"}
+2026/11/19 16:19:04.197	WARN	http	automatic HTTP->HTTPS redirects are disabled	{"server_name": "srv0"}
+2026/11/19 16:19:04.198	INFO	tls.cache.maintenance	stopped background certificate maintenance	{"cache": "0xc000264d20"}
+Valid configuration
+
+[6/8] Dienste starten und HTTPS im Container prüfen
+Created symlink '/etc/systemd/system/multi-user.target.wants/timereal-betrieb.service' → '/etc/systemd/system/timereal-betrieb.service'.
+
+
+[7/8] Erstes Administratorkonto prüfen
+
+Konto aktualisiert.
+
+[8/8] Installation abgeschlossen
+Timereal 0.9.0 ist installiert. HTTPS wurde im Container erfolgreich geprüft.
+Browser-Adresse: https://127.0.0.1:443
+HTTPS: Port 443 (TCP). Port 3040 ist nur intern erreichbar und keine Browser-Adresse.
+Vertraue auf deinen Testgeräten der öffentlichen Test-CA aus /root/timereal-test-ca.crt.
+Nächster Schritt: Adresse auf Laptop oder Smartphone öffnen und anmelden.
+Falls die Seite dort nicht lädt: Container-IP und Freigabe von TCP-Port 443 prüfen.
+Tägliche Sicherungen: /var/lib/timereal-backups

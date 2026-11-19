@@ -93,6 +93,10 @@ try {
     .getByRole("button", { name: "Einstellungen", exact: true })
     .click();
   await phone
+    .getByRole("button", { name: "Sitzungen verwalten", exact: true })
+    .click();
+  await phone
+    .locator("#sitzungsfenster")
     .getByRole("heading", { name: "Angemeldete Geräte", exact: true })
     .waitFor();
   await phone
@@ -102,6 +106,7 @@ try {
   assert.ok(
     await phone.evaluate(() => document.body.scrollWidth <= innerWidth),
   );
+  assert.deepEqual(await pruefeAnsicht(phone, "eigene-sitzungen"), []);
   if (output)
     await phone.screenshot({
       path: output + "/einstellungen-mobil.png",

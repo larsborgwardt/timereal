@@ -7,6 +7,8 @@ import { stammdatenRouten } from "./stammdaten-routen.js";
 import { kontenRouten } from "./konten-routen.js";
 import { betriebsRouten } from "./betrieb.js";
 import { auditRouten } from "./audit.js";
+import { mfaRouten, mfaCookie } from "./mfa.js";
+import { randomBytes } from "node:crypto";
 import { profil } from "./konten.js";
 import type { MailConfig } from "./mail.js";
 import { id, version, wort, tag, objekt } from "./http.js";
@@ -58,6 +60,7 @@ export function createApp(
     smtp?: MailConfig;
     updateCheck?: (force?: boolean) => Promise<UpdateStatus>;
     betriebSocket?: string;
+    mfaKey?: Buffer;
   },
 ) {
   const app = Fastify({
@@ -84,7 +87,7 @@ export function createApp(
       .header("Referrer-Policy", "no-referrer")
       .header(
         "Content-Security-Policy",
-        "default-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+        "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
       );
     const cors = extensionCors(req, reply);
     if (cors) return cors;
@@ -169,11 +172,14 @@ export function createApp(
     checkUpdates,
   );
   auditRouten(app, privat);
+  mfaRouten(app, pool, privat, options, cookie);
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
     ["/app.js", "app.js", "text/javascript"],
     ["/version.js", "version.js", "text/javascript"],
     ["/konten.js", "konten.js", "text/javascript"],
+    ["/mfa.js", "mfa.js", "text/javascript"],
+    ["/mfa-anmeldung.js", "mfa-anmeldung.js", "text/javascript"],
     ["/betrieb.js", "betrieb.js", "text/javascript"],
     ["/systemkonsole.js", "systemkonsole.js", "text/javascript"],
     ["/audit.js", "audit.js", "text/javascript"],
@@ -232,10 +238,30 @@ export function createApp(
         await pool.query("select audit_anmeldefehler($1)", [konto?.id ?? null]);
         throw new Fehler(401, "Anmeldung fehlgeschlagen.");
       }
-      const token = await transaktion(pool, (db) =>
-        issueSession(db, konto.id, "web", konto.hash),
-      );
+      const challenge = randomBytes(32).toString("hex");
+      const token = await transaktion(pool, async (db) => {
+        const {
+          rows: [r],
+        } = await db.query("select mfa_anmeldung_start($1,$2,$3) as art", [
+          konto.id,
+          konto.hash,
+          digest(challenge),
+        ]);
+        if (r.art === "gesperrt")
+          throw new Fehler(
+            429,
+            "Zu viele Versuche. Bitte nach zehn Minuten erneut versuchen.",
+          );
+        if (r.art === "mfa") return null;
+        if (r.art !== "passwort")
+          throw new Fehler(401, "Anmeldung fehlgeschlagen.");
+        return issueSession(db, konto.id, "web", konto.hash);
+      });
       loginversuche.delete(key);
+      if (token === null)
+        return reply
+          .header("Set-Cookie", mfaCookie(challenge, options.secure))
+          .send({ zweiterFaktor: true });
       return reply
         .header("Set-Cookie", cookie(token, 14 * 86400))
         .send({ angemeldet: true });

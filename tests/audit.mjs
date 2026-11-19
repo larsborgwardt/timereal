@@ -149,6 +149,10 @@ test("Audit: Rollen, echte Ereignisse, Geheimnisgrenze, Zeitraum und Export", as
   await ok(
     q(a, "PATCH", "/profil", { email: "audit-" + suffix + "@example.test" }),
   );
+  const emailToken = /#email=([a-f0-9]{64})/.exec(
+    mail.nachrichten.at(-1).replace(/=\r\n/g, "").replace(/=3D/g, "="),
+  )[1];
+  await ok(q(a, "POST", "/profil/email-bestaetigen", { token: emailToken }));
   const invite = await ok(
     q(a, "POST", "/verwaltung/einladungen", {
       email: "audit-neu-" + suffix + "@example.test",

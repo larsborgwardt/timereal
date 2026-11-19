@@ -6,7 +6,8 @@ import { resolve } from "node:path";
 import { mkdir, mkdtemp, readFile, writeFile, cp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { createApp } from "../dist/app.js";
-import { passwordHash } from "../dist/session.js";
+import { passwordHash, issueSession } from "../dist/session.js";
+import { totp } from "../dist/mfa-crypto.js";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
@@ -21,10 +22,41 @@ await owner.query(
 const url = new URL(process.env.TEST_DATABASE_URL);
 url.username = "timereal_app";
 url.password = "nur-fuer-diese-wegwerfdatenbank";
-const options = { secure: false };
+const options = { secure: false, mfaKey: randomBytes(32) };
 const app = createApp(new pg.Pool({ connectionString: url.href }), options);
 const addr = await app.listen({ host: "127.0.0.1", port: 0 });
 options.origin = addr;
+const account = (
+  await owner.query(
+    "select id,passwort_hash from konto where login_referenz=$1",
+    [login],
+  )
+).rows[0];
+const initialCookie =
+  "timereal=" +
+  (await issueSession(owner, account.id, "web", account.passwort_hash));
+const setupResponse = await app.inject({
+  method: "POST",
+  url: "/api/v1/mfa/einrichtung",
+  headers: { origin: addr, cookie: initialCookie },
+  payload: { passwort: pass },
+});
+assert.equal(setupResponse.statusCode, 200, setupResponse.body);
+const setup = setupResponse.json();
+const bits = [...setup.secret]
+  .map((c) =>
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".indexOf(c).toString(2).padStart(5, "0"),
+  )
+  .join("");
+const seed = Buffer.from(bits.match(/.{8}/g).map((s) => parseInt(s, 2)));
+const activate = await app.inject({
+  method: "POST",
+  url: "/api/v1/mfa/aktivieren",
+  headers: { origin: addr, cookie: initialCookie },
+  payload: { id: setup.id, code: totp(seed, Math.floor(Date.now() / 30000)) },
+});
+assert.equal(activate.statusCode, 200, activate.body);
+const recovery = activate.json().codes[0];
 // Die native Chrome-Berechtigungsabfrage ist kein Web-DOM. Nur der lokale Testserver
 // wird in einer Wegwerf-Kopie vorab erlaubt; Authentifizierung/API bleiben unverändert.
 const dir = await mkdtemp(resolve(tmpdir(), "timereal-extension-"));
@@ -121,6 +153,7 @@ try {
   });
   await auth.getByRole("button", { name: "Anmelden", exact: true }).click();
   await reachedLogin;
+  await auth.getByRole("status").waitFor();
   if (!(await auth.getByRole("status").isVisible()))
     designErrors.push(
       "Die Anmeldung der Erweiterung braucht einen sichtbaren Ladezustand",
@@ -130,6 +163,29 @@ try {
       "Die überholte Fehlermeldung muss beim erneuten Anmelden verschwinden",
     );
   releaseLogin();
+  await auth.getByRole("heading", { name: "Anmeldung bestätigen" }).waitFor();
+  assert.equal((await auth.request.get(addr + "/api/v1/profil")).status(), 401);
+  assert.equal(
+    (
+      await auth.request.post(addr + "/api/v1/erweiterung/freigabe", {
+        headers: { origin: addr },
+        data: {
+          challenge: "a".repeat(43),
+          state: "b".repeat(32),
+          redirect: "https://" + id + ".chromiumapp.org/timereal",
+        },
+      })
+    ).status(),
+    401,
+  );
+  await auth
+    .getByRole("button", {
+      name: "Wiederherstellungscode verwenden",
+      exact: true,
+    })
+    .click();
+  await auth.locator("#login-faktor-code").fill(recovery);
+  await auth.getByRole("button", { name: "Anmelden", exact: true }).click();
   await auth
     .getByRole("button", { name: "Erweiterung verbinden", exact: true })
     .waitFor();
@@ -361,6 +417,9 @@ try {
   await mobile
     .getByRole("button", { name: "Einstellungen", exact: true })
     .click();
+  await mobile
+    .getByRole("button", { name: "Sitzungen verwalten", exact: true })
+    .click();
   const extSession = mobile
     .locator("#sitzungsliste article")
     .filter({ hasText: "Browsererweiterung" });
@@ -371,6 +430,12 @@ try {
   await popup
     .getByRole("button", { name: "Erweiterung verbinden", exact: true })
     .waitFor();
+  assert.equal(
+    await popup.locator("#anmelden").isVisible(),
+    false,
+    "Erweiterung bleibt nach Widerruf beim eigenen Verbindungsweg",
+  );
+  assert.equal(await popup.locator("#vergessen").isVisible(), false);
   await popup.setViewportSize({ width: 380, height: 650 });
   assert.deepEqual(
     await pruefeAnsicht(popup, "erweiterung-abgemeldet", { widths: [380] }),

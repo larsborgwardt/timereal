@@ -25,6 +25,7 @@ cleanup() {
 }
 trap cleanup EXIT
 if [[ $mode == sichern ]]; then
+  bash "$(dirname "$0")/mfa-schluessel.sh" pruefen
   rm -rf "$stage"
   install -d -m 700 "$stage"
   runuser -u postgres -- pg_dump --format=custom timereal >"$stage/datenbank.dump"
@@ -33,7 +34,7 @@ if [[ $mode == sichern ]]; then
   cp -a /etc/timereal "$stage/konfiguration"
   cp -a /var/lib/timereal-https "$stage/https"
   cp /opt/timereal-current/release.json "$stage/release.json"
-  (cd "$stage" && sha256sum datenbank.dump rollen.sql release.json >SHA256SUMS)
+  (cd "$stage" && sha256sum datenbank.dump rollen.sql release.json konfiguration/mfa.key >SHA256SUMS)
   sync -f "$stage/datenbank.dump"
   sync -f "$stage"
   backup_restic backup --tag timereal --host timereal --one-file-system "$stage"
@@ -49,6 +50,10 @@ else
   database_created=true
   # Stream statt Öffnung des root-privaten Verzeichnisses durch postgres.
   runuser -u postgres -- pg_restore --exit-on-error --dbname "$database" <"$restored/datenbank.dump"
+  schema=$(runuser -u postgres -- psql -X -v ON_ERROR_STOP=1 -At -d "$database" -c 'select max(version) from timereal_migration')
+  if [[ $schema -ge 9 ]]; then
+    bash "$(dirname "$0")/mfa-schluessel.sh" pruefen "$database" "$restored/konfiguration/mfa.key"
+  fi
   runuser -u postgres -- psql -X -v ON_ERROR_STOP=1 -d "$database" -c 'SELECT count(*) AS konten FROM konto; SELECT count(*) AS zeitabschnitte FROM zeitabschnitt;'
   echo 'Externe Sicherung entschlüsselt und in getrennter PostgreSQL-Prüfdatenbank wiederhergestellt. Aktive Datenbank unverändert.'
 fi

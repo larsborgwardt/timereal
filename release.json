@@ -1,8 +1,8 @@
 {
-  "version": "0.8.2",
+  "version": "0.9.0",
   "apiVersion": 1,
   "betriebProtokoll": 1,
-  "schemaVersion": 8,
+  "schemaVersion": 10,
   "minimumSchemaVersion": 2,
   "additiveMigrations": true
 }

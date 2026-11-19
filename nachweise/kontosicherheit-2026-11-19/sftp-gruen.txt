@@ -1,0 +1,38 @@
+no parent snapshot found, will read all files
+
+Files:          32 new,     0 changed,     0 unmodified
+Dirs:           20 new,     0 changed,     0 unmodified
+Added to the repository: 244.986 KiB (39.390 KiB stored)
+
+processed 32 files, 226.643 KiB in 0:00
+snapshot 2c970274 saved
+Verschlüsselte externe Sicherung abgeschlossen.
+using temporary cache in /tmp/restic-check-cache-1535261775
+create exclusive lock for repository
+load indexes
+check all packs
+check snapshots, trees and blobs
+[0:00] 100.00%  1 / 1 snapshots
+read all data
+[0:00] 100.00%  2 / 2 packs
+no errors were found
+restoring snapshot 2c970274 of [/var/lib/timereal-extern/staging] at 2026-11-19 16:19:26.27492665 +0000 UTC by root@timereal to /var/lib/timereal-extern/pruefung.GQDSG0qy
+Summary: Restored 52 files/dirs (226.643 KiB) in 0:00
+verifying files in /var/lib/timereal-extern/pruefung.GQDSG0qy
+finished verifying 32 files in /var/lib/timereal-extern/pruefung.GQDSG0qy (took 1ms)
+datenbank.dump: OK
+rollen.sql: OK
+release.json: OK
+konfiguration/mfa.key: OK
+ konten
+--------
+      2
+(1 row)
+
+ zeitabschnitte
+----------------
+              0
+(1 row)
+
+Externe Sicherung entschlüsselt und in getrennter PostgreSQL-Prüfdatenbank wiederhergestellt. Aktive Datenbank unverändert.
+SFTP/Restic: verschlüsselte Sicherung einschließlich MFA-Schlüssel und echte getrennte PostgreSQL-Rücksicherung bestanden.

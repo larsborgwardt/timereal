@@ -12,7 +12,7 @@ Auftrag von Lars am 19. November 2026: Designprüfung und offene Backlogpunkte u
 | 0.8.2 | Lesbares Audit-Protokoll | Bilder 11 freigegeben (D-RELEASE-005); Administratoransicht, 180-Tage-Lesefenster und begrenzter Export |
 | 0.9.0 | Kontoprofil und Zwei-Faktor-Anmeldung einschließlich Wiederherstellung; Erweiterung mit neuem Anmeldevertrag und weiteren Browserprüfungen | Bilder 13 freigegeben (D-RELEASE-006); Einrichtung, Replay-Schutz, Recovery und Widerruf; real geladene Erweiterung |
 
-0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. Die Systemkonsole wird als eigenes Paket 0.8.0 geliefert; Veröffentlichung und Prüfbelege stehen in `nachweise/0.8.0.md`. Benutzer und Rollen sind in 0.8.1 umgesetzt; Prüfbelege stehen in `nachweise/0.8.1.md`. Audit ist in 0.8.2 umgesetzt; Prüfbelege stehen in `nachweise/0.8.2.md`. Kontosicherheit 0.9.0 bleibt das nächste Paket. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
+0.7.0 ist veröffentlicht; dessen Belege stehen in `nachweise/0.7.0.md`. Das Korrekturpaket 0.7.1 behebt den von Lars gemeldeten Aktionsabstand unter Nachweise. 0.7.2 korrigiert die manuelle Updateprüfung, die zuvor ebenfalls nur den Cache auslas. Die Systemkonsole wird als eigenes Paket 0.8.0 geliefert; Veröffentlichung und Prüfbelege stehen in `nachweise/0.8.0.md`. Benutzer und Rollen sind in 0.8.1 umgesetzt; Prüfbelege stehen in `nachweise/0.8.1.md`. Audit ist in 0.8.2 umgesetzt; Prüfbelege stehen in `nachweise/0.8.2.md`. Kontosicherheit 0.9.0 ist implementiert; der Releasebeleg `nachweise/0.9.0.md` hält die abschließenden Prüfungen fest. Bereits vorhandene Funktionen (Passwortänderung, E-Mail, Sitzungen, Chromium-Timer) werden weiterverwendet. Browser-/Store-Veröffentlichungen mit fremden Entwicklerkonten sind vom lokal lieferbaren Erweiterungspaket zu unterscheiden.
 
 ## Entscheidungsjournal
 
@@ -40,6 +40,10 @@ Lars bestätigt die Auditbilder 11 mit **„Audit-Ansicht freigeben (empfohlen)�
 
 Lars bestätigt die überarbeiteten Bilder 13 (Kontoübersicht, mobile Authenticator-Einrichtung, Wiederherstellungscodes) mit **„Bildentwürfe freigeben (empfohlen)“**. Diese Vorlage ersetzt den bisherigen Kontosicherheitsentwurf. Damit ist die Bildwarteposition aus D-RELEASE-001 für diesen Bereich aufgehoben. Geplantes Folgepaket: 0.9.0 mit angepasster Erweiterungsanmeldung.
 
+### D-RELEASE-007 — Ergänzende Zwei-Faktor-Bilder freigegeben, 19. November 2026
+
+Lars bestätigt mit **„Ergänzende Bilder freigeben (empfohlen)“** die [Anmeldung](mockups/14-anmeldung-390.png), [Wiederherstellungsanmeldung](mockups/14-wiederherstellung-390.png), [Verwaltung](mockups/14-verwaltung-1280.png) und [Ausschaltbestätigung](mockups/14-bestaetigung-390.png). Die Freigabe von Bildern 13 bleibt gültig. Damit ist die ergänzende Bildwarteposition aufgehoben. Die [technische Vorbereitung](KONTOSICHERHEIT.md) beschreibt den Anmeldevertrag, die Sicherung der Schlüssel und die vorgesehenen Prüfungen. Sie ist kein Implementierungsnachweis.
+
 ## Umsetzungsfolge
 
 Fortsetzung am 19. November 2026 auf „ok, dann weiter mit der Systemkonsole und den offenen Punkten im Backlog“: Die nach D-RELEASE-003 freigegebene Konsole erhält ein eigenes Release 0.8.0. Die eingegangenen Freigaben D-RELEASE-004 bis D-RELEASE-006 heben die Bildwartepositionen auf: Rollen folgen in 0.8.1, Audit in 0.8.2 und Profil/Kontosicherheit einschließlich Erweiterungsanmeldung in 0.9.0. Diese Lieferreihenfolge hebt keinen offenen Auftrag auf.
@@ -51,3 +55,7 @@ Verhalten wird durch einen zuerst fehlgeschlagenen Test eingeführt. Ein Release
 ## Grenzen der Designprüfung
 
 `DESIGNPRUEFUNG.md` beschreibt bereits korrigierte Befunde. Die dort genannten fehlenden Messungen sind nicht automatisch Codefehler. Browserengine-Prüfungen werden nach verfügbarer Laufzeit ergänzt; physische Touchgeräte und VoiceOver werden ohne entsprechendes Gerät nicht als geprüft ausgegeben.
+
+### D-RELEASE-008 — v0.9.0 fortsetzen, 19. November 2026
+
+Lars beauftragt mit **„weiter mit v0.9.0“** die Fortsetzung des freigegebenen Pakets. Profil, Faktorverwaltung, vollständige Anmeldung und Chromium-Anmeldung werden zusammen ausgeliefert. Die bestehenden Bildfreigaben D-RELEASE-006/007 bleiben gültig. Sein LXC wird durch diese Veröffentlichung nicht automatisch aktualisiert.

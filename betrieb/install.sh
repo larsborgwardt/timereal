@@ -83,6 +83,7 @@ fi
 runuser -u timereal_app -- psql -X -d timereal -Atqc 'select current_user'
 schritt 5 'HTTPS und tägliche Sicherung einrichten'
 install -d -m 755 /etc/timereal
+bash /opt/timereal/betrieb/mfa-schluessel.sh anlegen
 printf 'PUBLIC_ORIGIN=https://%s\n' "$adresse" > /etc/timereal/dienst.conf
 cat > /etc/timereal/Caddyfile <<EOF
 {

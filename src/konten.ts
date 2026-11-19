@@ -6,16 +6,25 @@ export async function profil(db: PoolClient) {
   const {
     rows: [k],
   } = await db.query(
-    "select id,login_referenz as login,email,ist_admin as admin,rolle,zeitzone,nachkommastellen,pruefminuten from konto where id=aktuelles_konto()",
+    'select id,login_referenz as login,anzeigename as name,email,profil_email_ausstehend() as "emailAusstehend",ist_admin as admin,rolle,zeitzone,nachkommastellen,pruefminuten from konto where id=aktuelles_konto()',
   );
   return k;
 }
-export async function profilMail(db: PoolClient, email: string) {
+export async function profilMail(
+  db: PoolClient,
+  email?: string,
+  name?: string,
+) {
+  const token = randomBytes(32).toString("hex");
   const {
     rows: [r],
-  } = await db.query("select konto_email($1) as ok", [email.toLowerCase()]);
+  } = await db.query("select profil_vormerken($1,$2,$3) as ok", [
+    name ?? null,
+    email?.toLowerCase() ?? null,
+    digest(token),
+  ]);
   if (!r.ok) throw new Fehler(409, "Diese Adresse ist bereits belegt.");
-  return profil(db);
+  return { profil: await profil(db), token };
 }
 export async function einladen(
   db: PoolClient,

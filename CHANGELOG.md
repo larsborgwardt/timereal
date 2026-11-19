@@ -1,5 +1,15 @@
 # Änderungen
 
+## 0.9.0 — 19. November 2026
+
+- Anzeigename und E-Mail-Bestätigung im eigenen Konto; Name auch ohne eingerichteten Mailversand bearbeitbar.
+- Authenticator-Einrichtung mit lokal erzeugtem QR-Code, einmaligen Wiederherstellungscodes und Passwortbestätigung bei Faktoränderungen.
+- Begrenzte Teilanmeldung, Schutz vor wiederverwendeten Codes und atomarer Verbrauch bei parallelen Geräten; Passwortreset behält den Faktor bei.
+- Gemeinsamer zweiter Anmeldeschritt für Web-App und Chromium-Erweiterung; separat widerrufbare Sitzung bleibt erhalten.
+- Dauerhafter Schlüssel außerhalb des Releasebaums, tägliche Sicherung als geschütztes Paket und Schlüsselprüfung bei externer Rücksicherung.
+- Neue Audit-Ereignisse für Faktorverwaltung und Wiederherstellungsverwendung ohne Geheimnisse.
+- Datenbankschema 10, API-Version 1. Server zuerst aktualisieren, anschließend Erweiterung 0.9.0 laden. [Prüfbelege und Grenzen](nachweise/0.9.0.md).
+
 ## 0.8.2 — 19. November 2026
 
 - Audit-Protokoll unter Verwaltung: Konto-, Rollen-, Sperr-, Passwort-, E-Mail-, Einladungs- und Sitzungsereignisse; fehlgeschlagene Anmeldungen ohne Speicherung unbekannter eingegebener Namen.

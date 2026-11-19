@@ -1,0 +1,15 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Installation muss den dauerhaften MFA-Schlüssel anlegen
+    at file:///opt/timereal-releases/0.9.0-12490a7d5f2f0cf94b1f000b3cceaeae4cec432f/tests/mfa-native.mjs:12:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.3

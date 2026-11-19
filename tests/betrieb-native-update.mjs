@@ -6,7 +6,7 @@ import { randomUUID, randomBytes } from "node:crypto";
 import { passwordHash } from "../dist/session.js";
 assert.equal(process.env.TIMEREAL_WEGWERFTEST, "1");
 const tag = process.env.TIMEREAL_TEST_TAG;
-assert.match(tag, /^v0\.7\.[123]$/);
+assert.match(tag, /^v0\.9\.[012]$/);
 const erwartet = process.env.TIMEREAL_TEST_ERGEBNIS ?? "erfolgreich";
 const db = new pg.Client({
   host: "/var/run/postgresql",
@@ -83,7 +83,7 @@ try {
   assert.equal(ende.tag, tag);
   assert.equal(
     (await q("/version")).version,
-    erwartet === "erfolgreich" ? tag.slice(1) : "0.7.1",
+    erwartet === "erfolgreich" ? tag.slice(1) : "0.9.0",
   );
   console.log(
     `Echter Webauftrag ${tag}: ${erwartet}; Version und API nach Neustart geprüft.`,

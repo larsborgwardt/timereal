@@ -2,12 +2,11 @@
 
 Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen Punkte einschließlich Release beauftragt. Die Lieferpakete und Bildentscheidungen stehen im [Releaseplan](RELEASEPLAN.md).
 
-## Nächste Lieferpakete
+## Kontosicherheit und Chromium-Erweiterung in 0.9.0
 
-| Version / Thema | Ziel | Stand und nächster Schritt |
-|---|---|---|
-| 0.9.0 — Eigenes Konto und 2FA | Profil bearbeiten und Zwei-Faktor-Anmeldung mit Wiederherstellung | Passwortwechsel, E-Mail und Sitzungsverwaltung bestehen. Überarbeitete [Kontoübersicht](mockups/13-profil-1280.png), [Einrichtung mobil](mockups/13-authenticator-390.png) und [Wiederherstellungscodes](mockups/13-codes-1280.png) durch D-RELEASE-006 freigegeben. |
-| 0.9.0 — Browsererweiterung | Neuen Anmeldevertrag übernehmen; weitere Browser- und Alltagstests | Chromium-Timer, Notizen und eigene widerrufbare Sitzung bestehen seit 0.5.0. Firefox, Safari/WebKit, Vertriebsweg und Store-Veröffentlichung bleiben gesondert zu qualifizieren. |
+Die freigegebenen Bilder 13/14 sind umgesetzt: Anzeigename, bestätigte E-Mail-Änderung, Authenticator, Wiederherstellungscodes und Faktorverwaltung. Die Chromium-Erweiterung verwendet die neue vollständige Anmeldung und besitzt weiterhin eine separat widerrufbare Sitzung. [Vertrag](KONTOSICHERHEIT.md) · [Prüfbelege](nachweise/0.9.0.md).
+
+Die Erweiterung wird als ZIP zum entpackten Laden veröffentlicht. Firefox-Erweiterung, Safari/WebKit, weiterer Vertriebsweg und Store-Veröffentlichung bleiben gesondert offen; daraus wird keine bereits fertige Unterstützung abgeleitet.
 
 ## Umfang von 0.7.0
 
@@ -15,7 +14,7 @@ Designkorrekturen der vorhandenen Web-App und Chromium-Erweiterung sowie **Verwa
 
 ## Benutzer und Rollen in 0.8.1
 
-Berater, Betrieb und Administrator sowie Rollenwechsel sind implementiert. Der [Rollenvertrag](ROLLEN.md) beschreibt Kontotrennung, Sitzungswiderruf und den Schutz des letzten Administrators; [Prüfbelege](nachweise/0.8.1.md). Kontosicherheit bleibt das nächste Lieferpaket.
+Berater, Betrieb und Administrator sowie Rollenwechsel sind implementiert. Der [Rollenvertrag](ROLLEN.md) beschreibt Kontotrennung, Sitzungswiderruf und den Schutz des letzten Administrators; [Prüfbelege](nachweise/0.8.1.md). Kontosicherheit ist im Paket 0.9.0 umgesetzt.
 
 ## Audit-Protokoll in 0.8.2
 
@@ -31,6 +30,8 @@ Speicherknappheit, ein echter `pg_dump`-Fehler und ein nicht startbarer Vorgäng
 
 | Thema | Abgrenzung / nächster Nachweis |
 |---|---|
+| Systemlogs auf Lars’ v0.8.2 | Gemeldet: „Verbindung unterbrochen“ über die Container-IP. Der ergänzende Fehlertext fehlt; die Ursache auf dieser Instanz ist nicht belegt. Native Journalprüfungen ersetzen diese Diagnose nicht. |
+| Diagnose vorübergehender 503 unter Last | Hauptzweig-CI 44553467620: erster Kapazitätsjob scheiterte beim Arbeitsstand, Wiederholung am unveränderten Commit bestand; Ursache nicht belegt. Fehlerpfad mit geheimnisfreiem Fehlercode und Zeitbezug sowie Ausgabebeleg bei vorzeitigem Lasttestabbruch ergänzen und den nächsten Fehler damit einordnen. [Releasebeleg](nachweise/0.8.2.md). |
 | Proxmox-LXC-Pilot | Neue 0.7.0-Betriebsfunktionen wurden im eigenen Debian-13/systemd-Prüfgast gemessen. Update auf Lars' LXC und externer Domainaufruf erfolgen durch Lars. |
 | Geräte und Hilfstechnik | VoiceOver-Ausgabe, physische Touchgeräte und Safari/WebKit sind nicht geprüft. Firefox 159 ist für den Konsolenablauf geprüft; die übrigen Ansichten und die Firefox-Erweiterung bleiben offen. |
 | Aufbewahrung der Betriebsaufträge | Root-eigene Aufträge und Konfigurationssicherungen bleiben erhalten. Wartungsweg für die endlichen Bestandsgrenzen planen; keine stillschweigende Löschung. |

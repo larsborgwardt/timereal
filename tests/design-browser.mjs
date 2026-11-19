@@ -17,8 +17,8 @@ const pass = randomBytes(20).toString("hex");
 const login = "design-" + randomBytes(8).toString("hex");
 const emailEntwurf = login + "@example.test";
 await owner.query(
-  "insert into konto(login_referenz,passwort_hash,ist_admin) values($1,$2,true)",
-  [login, await passwordHash(pass)],
+  "insert into konto(login_referenz,passwort_hash,ist_admin,email) values($1,$2,true,$3)",
+  [login, await passwordHash(pass), "vorhanden-" + emailEntwurf],
 );
 const url = new URL(process.env.TEST_DATABASE_URL);
 url.username = "timereal_app";
@@ -179,9 +179,9 @@ try {
     "Ohne Mailkonfiguration bleibt Einladen gesperrt",
   );
   await navigate("Einstellungen");
-  await page.locator("#sitzungsliste article").waitFor();
+  await page.locator("#sitzungsliste article").waitFor({ state: "attached" });
   await audit("einstellungen");
-  const email = page.locator("#profilform input");
+  const email = page.locator("#profilform input[name=name]");
   await email.fill(emailEntwurf);
   const refreshedSessions = page.waitForResponse((r) =>
     r.url().endsWith("/api/v1/sitzungen"),
@@ -239,7 +239,7 @@ try {
     if (route.request().method() === "PATCH") await heldProfile;
     await route.continue();
   });
-  await button("Adresse speichern").click();
+  await button("Profil speichern").click();
   await page.getByText("Wird verarbeitet…", { exact: true }).waitFor();
   const neuerEntwurf = "weiter-" + emailEntwurf;
   await email.fill(neuerEntwurf);
@@ -257,7 +257,7 @@ try {
     "Profilmeldung kennzeichnet den neueren ungespeicherten Entwurf",
   );
   check(
-    (await api("/profil")).email === emailEntwurf,
+    (await api("/profil")).name === emailEntwurf,
     "Profilentwurf wird wirklich gespeichert",
   );
   await navigate("Heute");

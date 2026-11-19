@@ -34,4 +34,12 @@ SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=8) AS audit \gset
 \if :audit
 \ir migrationen/008-audit.sql
 \endif
+SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=9) AS mfa \gset
+\if :mfa
+\ir migrationen/009-mfa.sql
+\endif
+SELECT NOT EXISTS(SELECT FROM timereal_migration WHERE version=10) AS profil \gset
+\if :profil
+\ir migrationen/010-profil.sql
+\endif
 SELECT pg_advisory_unlock(675039138012);
