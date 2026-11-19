@@ -1,5 +1,11 @@
 # Änderungen
 
+## 0.7.1 — 19. November 2026
+
+- „Filter zurücksetzen“ und „Zeit nachtragen“ unter Nachweise stehen mit Abstand in einer gemeinsamen Aktionsgruppe. Auf schmalen Bildschirmen brechen sie mit Abstand um.
+- Die Browserprüfung kontrolliert zusätzlich den Abstand benachbarter Aktionsbuttons, auch bei verdoppelter Schrift und in der Erweiterung. Navigationsregister sind gesondert behandelt.
+- API-Version 1, Datenbankschema 6 und Betriebsprotokoll 1 bleiben unverändert; Update von 0.7.0 über Verwaltung → Updates.
+
 ## 0.7.0 — 19. November 2026
 
 - Apple-Design-Prüfung der bestehenden Web-App und Chromium-Erweiterung mit dauerhaft mitlaufenden Browserproben.

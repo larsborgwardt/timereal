@@ -1,6 +1,6 @@
 # Apple-Design-Prüfung von Timereal
 
-Auftrag von Lars am 19. November 2026: den Apple-Design-Skill auch für die komplette App anwenden. Die bestehende Web-App und Chromium-Erweiterung wurden im Browser geprüft und die unten genannten Befunde korrigiert. Die Korrekturen gehören zu 0.7.0. Updates und Domainzugriff sind nach ihrer Bildfreigabe implementiert und zusätzlich geprüft; ältere freigegebene Bilder bleiben für ihre jeweiligen Abläufe maßgeblich. Die neuen Rollen-, Protokoll- und Kontosicherheitsansichten für spätere Pakete warten weiterhin auf Bildfreigabe.
+Auftrag von Lars am 19. November 2026: den Apple-Design-Skill auch für die komplette App anwenden. Die bestehende Web-App und Chromium-Erweiterung wurden im Browser geprüft und die unten genannten Befunde korrigiert. Die Korrekturen gehören zu 0.7.0. Updates und Domainzugriff sind nach ihrer Bildfreigabe implementiert und zusätzlich geprüft; ältere freigegebene Bilder bleiben für ihre jeweiligen Abläufe maßgeblich. Die neuen Rollen-, Audit- und Kontosicherheitsansichten für spätere Pakete warten weiterhin auf Bildfreigabe. Der Konsolenentwurf ist freigegeben; die Implementierung steht noch aus.
 
 ## Methode und Abgrenzung
 
@@ -10,7 +10,7 @@ Die Bestandsaufnahme unterscheidet Quellbefund, im Browser erreichten Zustand un
 
 ## Ergebnis und Prüfumfang
 
-Bewertung der geprüften Bestandsoberfläche: **gut**. Timereal bleibt eine ruhige Arbeitsanwendung mit lesbarer Systemschrift, klaren Timeraktionen und zurückhaltender Farbe. Die auffällige Timeranzeige dient der eigentlichen Arbeit; dekorative Zusätze würden dabei nicht helfen. Die getrennten Karten für laufende Arbeit, Buchungsziel und Tagesverlauf bleiben erhalten. Das ist eine eigene Gestaltungsbewertung am gerenderten Bild, kein automatischer Konformitätsnachweis.
+Die bisherige Prüfung bestätigte Lesbarkeit, Umbruch und Erreichbarkeit der unten benannten Zustände. Das ursprüngliche Gesamturteil „gut“ war zu pauschal: Lars fand anschließend unter Nachweise direkt aneinanderstoßende Aktionsbuttons. Deren Abstand war weder in der Geometrieprobe enthalten noch in der Sichtprüfung ausreichend beurteilt. Die Ergänzung zu 0.7.1 unten hält diese Prüflücke fest. Timereal behält Systemschrift, zurückhaltende Farbe und die getrennten Karten für laufende Arbeit, Buchungsziel und Tagesverlauf.
 
 Die folgende Matrix unterscheidet Geometrie-/Semantikproben von Funktionsproben. `tests/hilfe/design.mjs` misst die erreichten Ansichten bei 320, 390 und 1280 CSS-Pixeln und normaler bzw. verdoppelter Schrift; das Erweiterungspopup bei seiner Breite von 380 Pixeln. Die Footerprobe verwendet zusätzlich 1120 Pixel. Tabellen dürfen in ihrem eigenen Bereich horizontal scrollen. Das ist eine Prüfung vergrößerter Schrift, kein Test jeder Browser-Zoomstufe.
 
@@ -79,4 +79,12 @@ Die [Updateansicht](nachweise/betrieb-2026-11-19/updates-desktop.png) und der [D
 
 Zusätzliche Korrekturen nach roten Proben: Verbindungsfehler verschwindet nach erfolgreicher Statusaktualisierung; Auftrag nennt Ausgangs-/Zielversion und das veranlassende Konto; Betriebsaktionen werden in der Erweiterung nicht angeboten. Hintergrundabfragen ändern Texte nur bei geändertem Inhalt und ersetzen keine Formulareingaben. Die Betriebsansichten wurden mit normaler und verdoppelter Schrift geprüft. Das bleibt eine Selbstprüfung und kein unabhängiges Audit.
 
-Der überarbeitete Konsolenentwurf in `mockups/11-konten-und-protokolle.html` wurde bei 320, 390 und 1120 Pixeln mit normaler und verdoppelter Schrift geprüft. Zu schmal gedrückte Aktionsbuttons wurden korrigiert. Die Bilder 12 zeigen diesen Entwurf; sie sind noch kein implementierter Systemlog und warten auf Lars' Freigabe.
+Der überarbeitete Konsolenentwurf in `mockups/11-konten-und-protokolle.html` wurde bei 320, 390 und 1120 Pixeln mit normaler und verdoppelter Schrift geprüft. Zu schmal gedrückte Aktionsbuttons wurden korrigiert. Die Bilder 12 zeigen diesen Entwurf; Lars hat sie mit D-RELEASE-003 freigegeben. Sie sind noch kein implementierter Systemlog.
+
+## Nachprüfung der Aktionsabstände für 0.7.1
+
+Lars meldete am 19. November 2026 den fehlenden Abstand zwischen „Filter zurücksetzen“ und „Zeit nachtragen“ und wies darauf hin, dass die Designprüfung ihn hätte finden müssen. Das trifft zu: `accessibility.md › Mobility` bewertet den Abstand zwischen Bedienelementen ebenso wichtig wie deren Größe; `layout.md › Visual hierarchy` verlangt erkennbare Gruppierung.
+
+Die beiden Buttons erhalten die vorhandene Aktionsgruppe mit 16 CSS-Pixeln Abstand und flexiblem Zeilenumbruch. Die zusätzliche Browserprobe misst sichtbare Aktionsbuttons innerhalb desselben Elterncontainers in den erreichten Ansichten. Sie meldet Abstände unter 8 CSS-Pixeln; das ist ein gewählter Projektprüfwert, kein behaupteter Apple-Grenzwert. Navigation und Register sind ausgenommen, weil sie eine zusammenhängende Auswahl bilden können. Beziehungen über Containergrenzen, die visuelle Gruppierung und die Angemessenheit größerer Abstände bleiben Gegenstand der Sichtprüfung.
+
+Der unveränderte Produktstand 0.7.0 scheiterte mit der ergänzten Probe für Übernahme und Historie bei 320, 390 und 1280 Pixeln mit normaler und verdoppelter Schrift. Die betroffenen Buttons waren in der Aufnahme sichtbar aneinandergefügt. Der Releasebeleg zu 0.7.1 dokumentiert den anschließenden Lauf und die geprüften Bilder. Der frühere grüne Testlauf wird nicht nachträglich als Abstandsprüfung ausgegeben.
