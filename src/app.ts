@@ -5,16 +5,17 @@ import {
 } from "./erweiterung.js";
 import { stammdatenRouten } from "./stammdaten-routen.js";
 import { kontenRouten } from "./konten-routen.js";
+import { profil } from "./konten.js";
 import type { MailConfig } from "./mail.js";
 import { id, version, wort, tag, objekt } from "./http.js";
 import Fastify, { type FastifyRequest } from "fastify";
 import type { Pool, PoolClient } from "pg";
 import { readFile } from "node:fs/promises";
-import { Fehler, transaktion } from "./db.js";
+import { Fehler, transaktion, voruebergehendNichtVerfuegbar } from "./db.js";
 import { bindSession, digest, issueSession, verify } from "./session.js";
 import { release } from "./version.js";
 import { ausfuehren, timer, type Auftrag } from "./timer.js";
-import { anlegen, type NeuesZiel } from "./ziele.js";
+import { anlegen, kundenLesen, zieleLesen, type NeuesZiel } from "./ziele.js";
 import {
   nachtragen,
   teilen,
@@ -90,6 +91,11 @@ export function createApp(
     (err: Error & { statusCode?: number; code?: string }, req, reply) => {
       if (err instanceof Fehler)
         return reply.code(err.status).send({ fehler: err.message });
+      if (voruebergehendNichtVerfuegbar(err))
+        return reply.code(503).header("Retry-After", "1").send({
+          fehler:
+            "Der Dienst ist vorübergehend ausgelastet. Bitte den aktuellen Stand laden und erneut versuchen.",
+        });
       if (err.code === "42501")
         return reply
           .code(403)
@@ -208,6 +214,14 @@ export function createApp(
     return reply.header("Set-Cookie", cookie("", 0)).send({ abgemeldet: true });
   });
   app.get("/api/v1/timer", (req) => privat(req, timer));
+  app.get("/api/v1/arbeitsstand", (req) =>
+    privat(req, async (db) => ({
+      timer: await timer(db),
+      ziele: await zieleLesen(db),
+      profil: await profil(db),
+      kunden: await kundenLesen(db),
+    })),
+  );
   for (const action of ["start", "wechsel", "stopp", "pause", "fortsetzen"]) {
     app.post<{ Body: Auftrag }>(
       "/api/v1/timer/" + action,
@@ -231,16 +245,7 @@ export function createApp(
         }),
     );
   }
-  app.get("/api/v1/ziele", (req) =>
-    privat(
-      req,
-      async (db) =>
-        (
-          await db.query(`select z.id,z.kunde_id,z.art,z.bezeichnung,z.projekt_id,z.abrechenbar,z.fassung,k.name as kunde
-      from buchungsziel z join kunde k on (k.konto_id,k.id)=(z.konto_id,z.kunde_id) order by k.name,z.bezeichnung,z.id`)
-        ).rows,
-    ),
-  );
+  app.get("/api/v1/ziele", (req) => privat(req, zieleLesen));
   app.post<{ Body: NeuesZiel }>(
     "/api/v1/ziele",
     { schema: { body: zielSchema } },

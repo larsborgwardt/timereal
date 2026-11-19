@@ -285,17 +285,12 @@ function zeigeEintraege(ziel = "#eintraege", alle = false) {
 }
 async function laden() {
   const nr = ++refreshNr;
-  const [stand, liste, profil, kundenliste] = await Promise.all([
-    // Profil wird über dieselbe geprüfte Sitzung gelesen.
-    request("/timer"),
-    request("/ziele"),
-    konten.aktualisieren(),
-    request("/kunden"),
-  ]);
+  const snapshot = await request("/arbeitsstand");
   if (nr !== refreshNr) return;
-  state = stand;
-  ziele = liste;
-  kunden = kundenliste;
+  konten.aktualisieren(snapshot.profil);
+  state = snapshot.timer;
+  ziele = snapshot.ziele;
+  kunden = snapshot.kunden;
   if (seite === "login") seite = "heute";
   panels();
   if (seite === "heute") {

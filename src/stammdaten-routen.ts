@@ -2,15 +2,9 @@ import type { FastifyInstance } from "fastify";
 import { id, version, tag, wort, objekt, type Privat } from "./http.js";
 import { Fehler } from "./db.js";
 import { woche } from "./uebersicht.js";
+import { kundenLesen } from "./ziele.js";
 export function stammdatenRouten(app: FastifyInstance, privat: Privat) {
-  app.get("/api/v1/kunden", (req) =>
-    privat(
-      req,
-      async (db) =>
-        (await db.query("select id,name,fassung from kunde order by name,id"))
-          .rows,
-    ),
-  );
+  app.get("/api/v1/kunden", (req) => privat(req, kundenLesen));
   app.patch<{
     Params: { id: string };
     Body: { name: string; fassung: string };

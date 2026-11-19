@@ -47,16 +47,16 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.5.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.6.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.5.0:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.5.0 &&
-bash /root/timereal-update.sh v0.5.0
+git -C /opt/timereal show v0.6.0:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.6.0 &&
+bash /root/timereal-update.sh v0.6.0
 ```
 
-Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Die App-Version lässt sich über `/api/v1/version` prüfen.
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.6.0. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
 
 Für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg; neue Tags vorher wieder mit `git fetch --tags origin` abholen. Der Updateweg verwendet `/opt/timereal` nur als Git-Quelle, `/opt/timereal-releases` für gebaute Stände und `/opt/timereal-current` als aktiven Zeiger. `git pull` oder ein erneuter Aufruf von `install.sh` ist auf einer versionierten Installation kein Updateweg.
 
@@ -132,3 +132,13 @@ bash /opt/timereal-current/betrieb/extern-sichern.sh pruefen latest
 Der Timer `timereal-extern.timer` läuft täglich ab 03:30 Uhr mit bis zu 15 Minuten Streuung und holt verpasste Läufe nach. Fehler stehen in `journalctl -u timereal-extern.service`; `systemctl list-timers timereal-extern.timer` zeigt den nächsten Lauf. Ein gleichzeitig laufendes Update verhindert die Sicherung mit einer sichtbaren Fehlermeldung; sie kann danach manuell wiederholt werden. Externe Snapshots werden nicht automatisch gelöscht. Lege passend zum verfügbaren Speicher eine Aufbewahrung mit Restic fest; verwende dafür dessen `forget --dry-run`, bevor du etwas entfernst.
 
 Bei Verlust des Containers: installiere denselben veröffentlichten Stand in einem Ersatzcontainer, richte SSH und Restic mit dem extern aufbewahrten Passwort ein und restauriere den gewünschten Snapshot mit `restic restore ... --target /root/wiederherstellung`. Der Snapshotpfad ist `/var/lib/timereal-extern/staging`. Prüfe zuerst mit `pruefen`. Stoppe vor einer bewussten Übernahme den Anwendungs- und HTTPS-Dienst; übernimm Datenbank und Konfiguration erst nach Sicherung des Ersatzbestands. `rollen.sql` enthält auch Rolleneigenschaften und gehört nur nach Prüfung in einen frischen PostgreSQL-Cluster. Restaurierte Sitzungen müssen vor der Wiederfreigabe widerrufen werden. SSH-Schlüssel und das Container-Betriebssystem sind nicht Teil dieser Anwendungssicherung.
+
+## Kapazität ab 0.6.0
+
+Für 100 gleichzeitig aktive Berater: unprivilegierter Debian-13-LXC mit **4 vCPU, 4 GiB RAM und 32 GiB SSD-Speicher**. Die zusätzliche Reserve gegenüber dem [begrenzten Lasttest](../KAPAZITAET.md) ist für Betriebssystem, HTTPS, Sicherungen und Lastschwankungen vorgesehen. Reale Datenträger und konkurrierende Gäste beeinflussen die Antwortzeit; ein zwei Minuten langer Lasttest ist kein Dauerbetriebsnachweis.
+
+Der Node-Dienst verwendet standardmäßig höchstens zwölf Datenbankverbindungen. `TIMEREAL_DB_POOL_MAX=12` kann in `/etc/timereal/dienst.conf` gesetzt werden; erlaubt sind ganze Zahlen von 2 bis 32. Für die geprüfte Konfiguration bleibt der Standard unverändert. Nach einer bewussten Änderung ist `systemctl restart timereal` erforderlich. Mehr Verbindungen sind nicht automatisch schneller.
+
+Die Anwendung begrenzt den Verbindungsaufbau beziehungsweise das Warten im Pool auf drei Sekunden, Sperrwartezeiten auf eine Sekunde und einzelne SQL-Anweisungen auf fünf Sekunden. Eine inaktive offene Transaktion endet nach zehn Sekunden. Bei vorübergehender Überlast erhält der Nutzer eine Fehlermeldung und lädt den aktuellen Stand, bevor er erneut handelt. Notizen und Timeraufträge werden nicht still im Hintergrund nachgeholt.
+
+Das Update legt zusätzliche Indizes an. Bei einem großen Altbestand kann die Phase mit angehaltenem Dienst länger dauern. Vorher Speicher für Datenbank, Indexaufbau und Update-Dump bereithalten; externe Sicherungen getrennt aufbewahren.

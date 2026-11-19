@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.6.0 — 19. November 2026
+
+- Kapazitätsauslegung für 100 gleichzeitig aktive Berater mit gewachsenem persönlichem Zeitbestand.
+- Gemeinsame Arbeitsstand-Anfrage für Timer, Ziele, Kunden und Profil reduziert die regelmäßigen Serveranfragen von Web-App und Erweiterung.
+- Zusätzliche PostgreSQL-Indizes und gezielte Zeitraumabfragen unter aktiver Kontotrennung; unveränderte Berechnung bei Mitternacht und Zeitumstellung.
+- Begrenzte Wartezeiten für Pool, Sperren und SQL; verständliche 503-Antwort bei vorübergehender Überlast und Erholung nach Verbindungsabbruch.
+- Wiederholbarer HTTP-Lasttest mit Datenprüfung und Migration von Schema 5 auf 6; GitHub führt ihn als eigene Prüfung aus.
+
 ## 0.5.0 — 19. November 2026
 
 - Chromium-Erweiterung mit gemeinsamem Timer und Notizfeld, vollständiger Ansicht und separat widerrufbarer Sitzung.

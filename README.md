@@ -4,13 +4,13 @@ Persönliche Zeiterfassung für die Arbeit mit mehreren Kunden. Ein Wechsel been
 
 ## Im eigenen LXC testen
 
-Lege einen **unprivilegierten Debian-13-LXC** mit eigenem Hostnamen und erreichbarer IPv4-Adresse an. Für den Pilot sind 2 vCPU, 2 GiB RAM und 8 GiB Speicher als Startwerte vorgesehen. Internetzugang wird für die Paketinstallation benötigt. Anwendung, PostgreSQL und HTTPS laufen als native Dienste. Docker ist für den LXC entbehrlich.
+Lege einen **unprivilegierten Debian-13-LXC** mit eigenem Hostnamen und erreichbarer IPv4-Adresse an. Für den persönlichen Pilot sind 2 vCPU, 2 GiB RAM und 8 GiB Speicher als Startwerte vorgesehen. Für 100 gleichzeitig aktive Nutzer plane **4 vCPU, 4 GiB RAM und 32 GiB SSD-Speicher** ein; Messprofil und Grenzen stehen im [Kapazitätsplan](KAPAZITAET.md). Internetzugang wird für die Paketinstallation benötigt. Anwendung, PostgreSQL und HTTPS laufen als native Dienste. Docker ist für den LXC entbehrlich.
 
 Führe in der **Root-Konsole des neuen Containers** aus:
 
 ```bash
 apt-get update && apt-get install -y git ca-certificates &&
-git clone --branch v0.5.0 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
+git clone --branch v0.6.0 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
 bash /opt/timereal/betrieb/install.sh
 ```
 
@@ -18,7 +18,7 @@ Das Skript fragt den Anmeldenamen und das Passwort für dein erstes Konto ab und
 
 Bestehende Installationen aktualisierst du über den [versionierten Updateweg](betrieb/README.md#versioniert-aktualisieren-ab-02), einschließlich Sicherung. Verwende dafür nicht erneut den Installer. Dienststatus und Startfehler zeigt `journalctl -u timereal -u timereal-https -b`.
 
-Version **0.5.0** enthält Verwaltung und Einladungen, Tageskorrekturen, Wochenübersicht, Einstellungen und eine [Browsererweiterung für Chrome/Edge](erweiterung/README.md). Der direkte Updateweg vom ursprünglichen Pilot benötigt keine Installation der Zwischenversionen. Öffentlichen HTTPS-Zugang, SMTP und externe Sicherungen richtest du mit deinen eigenen Zugangsdaten nach der [Betriebsanleitung](betrieb/README.md) ein.
+Version **0.6.0** enthält Verwaltung und Einladungen, Tageskorrekturen, Wochenübersicht, Einstellungen und eine [Browsererweiterung für Chrome/Edge](erweiterung/README.md). Der direkte Updateweg vom ursprünglichen Pilot benötigt keine Installation der Zwischenversionen. Öffentlichen HTTPS-Zugang, SMTP und externe Sicherungen richtest du mit deinen eigenen Zugangsdaten nach der [Betriebsanleitung](betrieb/README.md) ein.
 
 ## Ein Vormittag zum Ausprobieren
 
@@ -31,6 +31,7 @@ Version **0.5.0** enthält Verwaltung und Einladungen, Tageskorrekturen, Wochen�
 
 - [Architektur und Ablauf des Kundenwechsels](ARCHITEKTUR.md)
 - [Datenmodell mit Beziehungsdiagramm](DATENMODELL.md)
+- [Kapazität für 100 gleichzeitig aktive Nutzer](KAPAZITAET.md)
 - [Konzept und Bildentwürfe](KONZEPT.md)
 - [Verwaltung und Sicherung im Testcontainer](betrieb/README.md)
 

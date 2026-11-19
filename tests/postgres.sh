@@ -16,5 +16,6 @@ docker exec "$container" psql -X -U postgres -f /tmp/datenmodell/entwurf.sql
 npm run build
 npm run test:db
 node --test tests/konten.mjs tests/ausbau.mjs tests/erweiterung.mjs
+node --test tests/kapazitaet.mjs
 node --test tests/version.test.mjs tests/update.test.mjs tests/mail-cli.test.mjs tests/zeit.test.mjs tests/erweiterung-client.test.mjs tests/betrieb.test.mjs
 if [[ ${BROWSER_TEST:-0} == 1 ]]; then node tests/browser.mjs; node tests/konten-browser.mjs; node tests/arbeitsablauf-browser.mjs; node scripts/erweiterung-bauen.mjs; node tests/erweiterung-browser.mjs; fi

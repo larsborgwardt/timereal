@@ -1,9 +1,9 @@
 {
   "name": "timereal",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
-  "description": "Persönliche Zeiterfassung mit gemeinsamem Timer",
+  "description": "Pers\u00f6nliche Zeiterfassung mit gemeinsamem Timer",
   "engines": {
     "node": ">=24"
   },

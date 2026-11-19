@@ -82,3 +82,11 @@ Ab Version 0.5.0 verwendet das Chromium-Popup dieselben HTML-/JavaScript-Module 
 Die Erweiterung liest keine Inhalte anderer Tabs. Nach einer ausgebliebenen Antwort sperrt sie weitere Schreibaufrufe, bis der Benutzer den Serverstand neu geladen hat. Die nächste Timeraktion wird bestätigt; eine frühere Anfrage wird nicht automatisch nachgeholt. Dieser Zustand bleibt beim Schließen des Popups erhalten. Der Server verwendet weiterhin Versionsprüfung und Auftragsschlüssel für konkurrierende Geräte und Wiederholungen.
 
 Die Betriebsskripte liegen außerhalb der HTTP-Anwendung und benötigen root. Öffentliches HTTPS verwendet Caddy, eine externe Anwendungssicherung Restic über SFTP. Die Einrichtung gehört dem Betreiber; Zugangsdaten werden verdeckt eingelesen und nicht im Git-Bestand abgelegt. Einzelheiten und Grenzen stehen in der [Betriebsanleitung](betrieb/README.md).
+
+## Gleichzeitige Nutzer und begrenzte Ressourcen
+
+`GET /api/v1/arbeitsstand` liefert Timer, persönliche Ziele, Profil und Kunden innerhalb einer geprüften Kontotransaktion. Die Web-App und Erweiterung verwenden diesen gemeinsamen Abruf statt separater paralleler Anfragen für diese Daten. Die bisherigen Leseendpunkte bleiben für bestehende Clients verfügbar. Die gemeinsame Antwort enthält keine Passworthashes oder Sitzungsschlüssel.
+
+Die Kapazitätsplanung für Version 0.6 steht in [KAPAZITAET.md](KAPAZITAET.md). Der Produktionspool nutzt standardmäßig zwölf PostgreSQL-Verbindungen, unabhängig von der Zahl angemeldeter Browser. `TIMEREAL_DB_POOL_MAX` lässt Werte von 2 bis 32 zu; ungültige Konfiguration verhindert den Start. Poolwartezeit (3 s), SQL-Laufzeit (5 s), Sperrwartezeit (1 s) und Leerlauf in einer offenen Transaktion (10 s) sind begrenzt. Diese Vorgaben gelten für die Anwendungsverbindungen; Migration und Sicherung verwenden eigene Verbindungen.
+
+Bei einem solchen Engpass meldet die API HTTP 503 mit `Retry-After: 1`. Das ist keine Bestätigung einer Buchung. Der Nutzer lädt den aktuellen Zustand, bevor er erneut handelt; die bestehenden Auftrags- und Versionsprüfungen bleiben maßgeblich. Nach einem fehlgeschlagenen Rollback wird die Verbindung verworfen. Ein Fehler an einer unbenutzten Poolverbindung wird ohne Zugangsdaten protokolliert und beendet nicht den gesamten Node-Prozess.

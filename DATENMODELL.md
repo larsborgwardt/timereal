@@ -59,6 +59,14 @@ erDiagram
 
 Die [Integrationstests](tests/integration.mjs) prüfen diese Regeln mit echten Datenbankrollen und getrennten Verbindungen. Der [Browsertest](tests/browser.mjs) startet zwei getrennte Browsersitzungen für den Gerätewechsel.
 
+## Mehrbenutzerbetrieb und Kapazität
+
+`konto` bezeichnet einen eigenständigen Nutzer, keine einzelne Browserinstanz. Mehrere Nutzer werden seit dem Grundmodell berücksichtigt. Dieselbe Kundenbezeichnung darf in verschiedenen Konten vorkommen; eine gemeinsame Bearbeitung von Kunden oder Nachweisen durch ein Beraterteam ist damit nicht verbunden. Ein Administrator kann Zugänge verwalten, erhält dadurch aber keinen Zugriff auf deren Arbeitszeiten.
+
+Die Planung für 100 gleichzeitig aktive Nutzer steht in [KAPAZITAET.md](KAPAZITAET.md). Der Lastlauf verwendet persönliche Sitzungen und die eingeschränkte Dienstrolle. Er prüft sowohl parallele Arbeit verschiedener Konten als auch die erneute Übermittlung desselben Timerauftrags. Eine Erhöhung der Nutzerzahl setzt die RLS- und Fremdschlüsselregeln nicht außer Kraft.
+
+Migration `006-kapazitaet.sql` ergänzt Zugriffspfade für den laufenden Timer, das Ende abgeschlossener Abschnitte und Null-Minuten-Abschnitte. Der Timerindex sichert zusätzlich ausdrücklich einen offenen Abschnitt je Konto. Das Datenmodell erhält keine neue Nutzergrenze und keine fremden Freigaben. Bestehende Buchungen und Übertragungsstände werden durch diese Indexmigration nicht geändert. Der Updater führt sie bei angehaltenem Dienst aus; die benötigte Zeit wächst mit dem Datenbestand.
+
 ## Kontozugänge ab 0.3.0
 
 Migration 003 ergänzt die optionale eindeutige Konto-E-Mail und öffentliche Sitzungs-IDs, während Sitzungsschlüssel als Hash gespeichert bleiben. `kontolink` enthält Einladungen und Passwortzurücksetzungen mit Hash, Ablauf, Verbrauch und Widerruf. Diese Tabelle ist für die Anwendungsrolle nur über begrenzte Funktionen erreichbar. Verwaltungsfunktionen prüfen die aktive Administratorrolle; die bestehenden Zeittabellen behalten ihre Kontotrennung. Die Sitzungsanlage verwendet eine explizite Spaltenliste, damit die vorherige Anwendung nach der additiven Migration weiterlaufen kann.

@@ -1,0 +1,92 @@
+{
+  "zeit": "2026-11-19T07:45:28.528Z",
+  "release": {
+    "version": "0.6.0",
+    "apiVersion": 1,
+    "schemaVersion": 6,
+    "minimumSchemaVersion": 2,
+    "additiveMigrations": true
+  },
+  "nutzer": 100,
+  "abschnitteVorher": 500000,
+  "zyklen": 12,
+  "messSekunden": 120,
+  "gesamtSekunden": 126,
+  "requests": 4300,
+  "latency": {
+    "anmeldung": {
+      "anzahl": 100,
+      "p50": 2417,
+      "p95": 4220,
+      "p99": 4329,
+      "max": 4333
+    },
+    "lesen": {
+      "anzahl": 2400,
+      "p50": 170,
+      "p95": 382,
+      "p99": 442,
+      "max": 527
+    },
+    "schreiben": {
+      "anzahl": 1800,
+      "p50": 199,
+      "p95": 483,
+      "p99": 538,
+      "max": 595
+    }
+  },
+  "errors": [],
+  "peakDb": 12,
+  "endpunkte": {
+    "POST /anmeldung": {
+      "anzahl": 100,
+      "p95": 4220
+    },
+    "POST /timer/start": {
+      "anzahl": 100,
+      "p95": 199
+    },
+    "GET /arbeitsstand": {
+      "anzahl": 1200,
+      "p95": 307
+    },
+    "GET /historie": {
+      "anzahl": 600,
+      "p95": 402
+    },
+    "POST /timer/wechsel": {
+      "anzahl": 1300,
+      "p95": 498
+    },
+    "GET /woche": {
+      "anzahl": 600,
+      "p95": 412
+    },
+    "PATCH /abschnitte/:id/notiz": {
+      "anzahl": 100,
+      "p95": 131
+    },
+    "POST /timer/pause": {
+      "anzahl": 100,
+      "p95": 271
+    },
+    "POST /timer/fortsetzen": {
+      "anzahl": 100,
+      "p95": 282
+    },
+    "POST /timer/stopp": {
+      "anzahl": 100,
+      "p95": 278
+    }
+  },
+  "datenbankBytes": "209319615",
+  "node": "v24.22.3",
+  "ressourcen": {
+    "api": "1 CPU / 512 MiB, Node 24 Alpine",
+    "datenbank": "2 CPU / 1536 MiB, PostgreSQL",
+    "netz": "HTTP über Loopback, ohne Reverseproxy/TLS"
+  },
+  "postgres": "PostgreSQL 18.7 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "pass": true
+}

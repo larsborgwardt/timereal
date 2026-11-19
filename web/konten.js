@@ -24,8 +24,8 @@ export function kontenOberflaeche({
     '">' +
     text +
     "</button>";
-  async function aktualisieren() {
-    profil = await request("/profil");
+  function aktualisieren(neu) {
+    profil = neu;
     $("#admin-nav").hidden = !profil.admin;
     return profil;
   }
