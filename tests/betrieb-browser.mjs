@@ -6,6 +6,7 @@ import { mkdtemp, rm, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createApp } from "../dist/app.js";
+import { updateChecker } from "../dist/updates.js";
 import { passwordHash } from "../dist/session.js";
 import { dienstStarten } from "../betrieb/verwaltung/dienst.mjs";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
@@ -61,19 +62,27 @@ const dienst = await dienstStarten({
 const dburl = new URL(process.env.TEST_DATABASE_URL);
 dburl.username = "timereal_app";
 dburl.password = "nur-fuer-diese-wegwerfdatenbank";
+let releaseTag = "v0.6.2",
+  releaseAbrufe = 0;
+let pruefungFreigeben;
+const pruefungWartet = new Promise((resolve) => (pruefungFreigeben = resolve));
+const updateCheck = updateChecker({
+  version: "0.6.2",
+  enabled: true,
+  fetch: async () => {
+    releaseAbrufe++;
+    if (releaseAbrufe > 1) await pruefungWartet;
+    return Response.json({
+      tag_name: releaseTag,
+      draft: false,
+      prerelease: false,
+    });
+  },
+});
 const app = createApp(new pg.Pool({ connectionString: dburl.href }), {
   secure: false,
   betriebSocket: socketPath,
-  updateCheck: async () => ({
-    status: "ok",
-    currentVersion: "0.6.2",
-    latestVersion: "99.0.0",
-    updateAvailable: true,
-    checkedAt: new Date().toISOString(),
-    repositoryUrl: "https://github.com/larsborgwardt/timereal",
-    releaseUrl:
-      "https://github.com/larsborgwardt/timereal/releases/tag/v99.0.0",
-  }),
+  updateCheck,
 });
 const addr = await app.listen({ host: "127.0.0.1", port: 0 });
 const browser = await chromium.launch({
@@ -94,6 +103,60 @@ try {
   await page
     .getByRole("button", { name: "Update vorbereiten", exact: true })
     .waitFor();
+  await page
+    .getByText("Kein neueres stabiles Release gemeldet.", { exact: true })
+    .waitFor();
+  assert.equal(releaseAbrufe, 1);
+  releaseTag = "v99.0.0";
+  // Ein bereits laufender Statusabruf darf den manuellen Klick weder verschlucken
+  // noch dessen frisches Ergebnis später mit einem alten Cachewert überschreiben.
+  let freigeben, empfangen;
+  const wartet = new Promise((resolve) => (freigeben = resolve));
+  const angefragt = new Promise((resolve) => (empfangen = resolve));
+  await page.route(
+    "**/verwaltung/betrieb/status",
+    async (route) => {
+      const response = await route.fetch();
+      empfangen();
+      await wartet;
+      await route.fulfill({ response });
+    },
+    { times: 1 },
+  );
+  await angefragt;
+  await page
+    .getByRole("button", { name: "Status aktualisieren", exact: true })
+    .click();
+  await page
+    .getByText("Neue Version wird geprüft …", { exact: true })
+    .waitFor();
+  assert.equal(await page.locator("#betrieb-aktualisieren").isDisabled(), true);
+  assert.equal(
+    await page.locator("#betrieb-aktualisieren").getAttribute("aria-busy"),
+    "true",
+  );
+  pruefungFreigeben();
+  await page
+    .locator("#betrieb-neu")
+    .getByText("v99.0.0", { exact: true })
+    .waitFor();
+  freigeben();
+  await page
+    .locator("#update-link")
+    .getByText("Update verfügbar: v99.0.0 ↗", { exact: true })
+    .waitFor();
+  assert.equal(releaseAbrufe, 2);
+  assert.equal(
+    await page.locator("#betrieb-aktualisieren").getAttribute("aria-busy"),
+    "false",
+  );
+  await page
+    .getByRole("button", { name: "Status aktualisieren", exact: true })
+    .click();
+  await page
+    .getByText(/Bitte warte .* Sekunden bis zur nächsten Versionsprüfung/)
+    .waitFor();
+  assert.equal(releaseAbrufe, 2);
   let verloren = false;
   await page.route(
     "**/verwaltung/betrieb/updates/vorbereiten",

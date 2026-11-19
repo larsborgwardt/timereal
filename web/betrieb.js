@@ -38,6 +38,7 @@ export function betriebsOberflaeche({
     stand = null,
     update = null,
     beschaeftigt = false,
+    prueft = false,
     laedt = false,
     generation = 0,
     transportFehler = false,
@@ -71,6 +72,8 @@ export function betriebsOberflaeche({
       else b.removeAttribute("aria-current");
     });
     const aktiv = stand?.auftraege.some((j) => laufend.has(j.zustand));
+    sperren("aktualisieren", prueft);
+    $("#betrieb-aktualisieren").setAttribute("aria-busy", String(prueft));
     text("version", stand?.version ? "v" + stand.version : "–");
     text("neu", update?.latestVersion ? "v" + update.latestVersion : "–");
     text(
@@ -100,6 +103,7 @@ export function betriebsOberflaeche({
     sperren(
       "vorbereiten",
       beschaeftigt ||
+        prueft ||
         !stand ||
         aktiv ||
         !update?.updateAvailable ||
@@ -168,7 +172,8 @@ export function betriebsOberflaeche({
     $("#betrieb-fehler").hidden = !e;
   }
   async function laden() {
-    if (bereich === "berater" || $("#verwaltung").hidden || laedt) return;
+    if (bereich === "berater" || $("#verwaltung").hidden || laedt || prueft)
+      return;
     const vorher = generation;
     laedt = true;
     try {
@@ -180,6 +185,7 @@ export function betriebsOberflaeche({
       stand = s;
       update = u;
       await verbindungGeprueft();
+      if (vorher !== generation) return;
       if (transportFehler) {
         fehler(null);
         transportFehler = false;
@@ -196,6 +202,39 @@ export function betriebsOberflaeche({
       );
     } finally {
       laedt = false;
+    }
+  }
+  async function aktualisieren() {
+    if (bereich !== "updates") return laden();
+    if (prueft) return;
+    const vorher = ++generation;
+    prueft = true;
+    fehler(null);
+    transportFehler = false;
+    text("status", "Neue Version wird geprüft …");
+    anzeigen();
+    try {
+      const u = await request(prefix + "/updates/pruefen", "POST", {});
+      if (vorher !== generation) return;
+      update = u;
+      text(
+        "status",
+        u.status === "ok"
+          ? "Versionsprüfung abgeschlossen."
+          : u.status === "disabled"
+            ? "Versionsprüfung ist abgeschaltet."
+            : "Versionsprüfung fehlgeschlagen. Bitte später erneut versuchen.",
+      );
+      document.dispatchEvent(new Event("timereal-update-geprueft"));
+    } catch (e) {
+      if (vorher !== generation) return;
+      text("status", "Versionsprüfung nicht durchgeführt.");
+      fehler(e);
+    } finally {
+      if (vorher === generation) {
+        prueft = false;
+        anzeigen();
+      }
     }
   }
   async function senden(pfad, daten = {}) {
@@ -248,7 +287,7 @@ export function betriebsOberflaeche({
       void laden();
     }),
   );
-  $("#betrieb-aktualisieren").onclick = () => void laden();
+  $("#betrieb-aktualisieren").onclick = () => void aktualisieren();
   $("#betrieb-vorbereiten").onclick = () =>
     void senden("/updates/vorbereiten", { tag: "v" + update.latestVersion });
   $("#betrieb-domainpruefen").onsubmit = (ev) => {
@@ -288,6 +327,7 @@ export function betriebsOberflaeche({
     },
     zuruecksetzen() {
       generation++;
+      prueft = false;
       stand = update = null;
       bereich = "berater";
       for (const id of ["domainpruefen", "installieren", "uebernehmen"])

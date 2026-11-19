@@ -82,6 +82,72 @@ test("Netzfehler behalten den letzten Erfolg, behaupten aber keinen frischen Sta
   await read();
   assert.equal(calls, 3);
 });
+test("Manuelle Prüfung erneuert den gemeinsamen Cache vor Ablauf der sechs Stunden", async () => {
+  let tag = "v0.7.0",
+    calls = 0,
+    now = 0;
+  const read = checker(
+    async () => {
+      calls++;
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      return response(payload(tag));
+    },
+    { version: "0.7.0", now: () => now },
+  );
+  const old = await read();
+  tag = "v0.7.1";
+  now = 60000;
+  assert.deepEqual(await read(), old);
+  const results = await Promise.all(
+    Array.from({ length: 10 }, () => read(true)),
+  );
+  assert.equal(calls, 2, "Gleichzeitige manuelle Prüfungen teilen einen Abruf");
+  for (const r of results) {
+    assert.equal(r.latestVersion, "0.7.1");
+    assert.equal(r.updateAvailable, true);
+    assert.equal(r.checkedAt, new Date(now).toISOString());
+  }
+  assert.deepEqual(
+    await read(),
+    results[0],
+    "Öffentliche Abfrage übernimmt den neuen Stand",
+  );
+  assert.equal(calls, 2);
+});
+test("Manuell lässt sich auch ein Fehlercache erneut prüfen; deaktiviert bleibt deaktiviert", async () => {
+  let offline = true,
+    calls = 0;
+  const read = checker(async () => {
+    calls++;
+    if (offline) throw new Error("offline");
+    return response(payload());
+  });
+  assert.equal((await read()).status, "unavailable");
+  offline = false;
+  assert.equal((await read()).status, "unavailable");
+  assert.equal((await read(true)).status, "ok");
+  assert.equal(calls, 2);
+  const disabled = checker(async () => assert.fail("Kein Abruf erlaubt"), {
+    enabled: false,
+  });
+  assert.equal((await disabled(true)).status, "disabled");
+});
+test("Fehlgeschlagene manuelle Prüfung erneuert weder Versionsstand noch Erfolgszeitpunkt", async () => {
+  let offline = false,
+    now = 0;
+  const read = checker(
+    async () => {
+      if (offline) throw new Error("offline");
+      return response(payload());
+    },
+    { now: () => now },
+  );
+  const first = await read();
+  offline = true;
+  now = 60000;
+  assert.deepEqual(await read(true), { ...first, status: "unavailable" });
+  assert.deepEqual(await read(), { ...first, status: "unavailable" });
+});
 test("Fehler, unzulässige Release-Daten und übergroße Antworten sind kein aktueller Stand", async () => {
   for (const get of [
     async () => new Response("", { status: 429 }),

@@ -1,0 +1,24 @@
+✔ Laptop, Handy, Wiederholung und persönliche Kontogrenze (437.231385ms)
+✔ Eine Pause bleibt auf dem anderen Gerät erhalten und endet durch Fortsetzen oder Stopp (208.753624ms)
+✔ Bereits übertragene Stunde in 20 / 12 / 28 Minuten teilen und externes Storno bestätigen (241.886242ms)
+✔ Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Rollback (45.615293ms)
+✔ Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung (139.778083ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1288.622379
+✔ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (476.411891ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 689.95369
+Betriebsoberfläche: verlorene Antwort ohne Doppelauftrag, Neuladen, Passwortprüfung, Domainentwurf und responsive Ansichten bestanden.
+API_EXIT=0 BROWSER_EXIT=0

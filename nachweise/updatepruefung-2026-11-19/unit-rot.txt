@@ -1,0 +1,55 @@
+✔ Vergleicht stabile Versionen numerisch und erzeugt nur eigene Release-Links (5.31321ms)
+✔ 100 gleichzeitige Abfragen teilen einen Abruf und dessen Cache (22.501997ms)
+✔ Netzfehler behalten den letzten Erfolg, behaupten aber keinen frischen Stand (1.233809ms)
+✖ Manuelle Prüfung erneuert den gemeinsamen Cache vor Ablauf der sechs Stunden (13.332957ms)
+✖ Manuell lässt sich auch ein Fehlercache erneut prüfen; deaktiviert bleibt deaktiviert (2.212828ms)
+✔ Fehler, unzulässige Release-Daten und übergroße Antworten sind kein aktueller Stand (2.474951ms)
+✔ Deaktiviert führt die Prüfung keinen Abruf aus; Konfiguration ist eindeutig (0.643684ms)
+✔ Die öffentliche Updateauskunft benötigt keine Datenbankverbindung (209.570629ms)
+✔ Ein echter HTTP-Server bestätigt Timeout auch während des Antwortkörpers (94.463227ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 7
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 618.275561
+
+✖ failing tests:
+
+test at tests/updates.test.mjs:85:1
+✖ Manuelle Prüfung erneuert den gemeinsamen Cache vor Ablauf der sechs Stunden (13.332957ms)
+  AssertionError [ERR_ASSERTION]: Gleichzeitige manuelle Prüfungen teilen einen Abruf
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/updates.test.mjs:97:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/updates.test.mjs:106:1
+✖ Manuell lässt sich auch ein Fehlercache erneut prüfen; deaktiviert bleibt deaktiviert (2.212828ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'unavailable'
+  - 'ok'
+  
+      at TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/updates.test.mjs:116:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'unavailable',
+    expected: 'ok',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

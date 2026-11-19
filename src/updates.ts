@@ -62,7 +62,7 @@ export function updateChecker(options: {
   fetch?: typeof fetch;
   now?: () => number;
   timeoutMs?: number;
-}): () => Promise<UpdateStatus> {
+}): (force?: boolean) => Promise<UpdateStatus> {
   const current = versionParts(options.version).map(BigInt);
   const request = options.fetch ?? fetch;
   const now = options.now ?? Date.now;
@@ -111,8 +111,8 @@ export function updateChecker(options: {
     }
     return { ...cached };
   }
-  return async () => {
-    if (!options.enabled || now() < expires) return { ...cached };
+  return async (force = false) => {
+    if (!options.enabled || (!force && now() < expires)) return { ...cached };
     pending ??= check().finally(() => {
       pending = undefined;
     });

@@ -48,7 +48,7 @@ Die Daten liegen in deiner PostgreSQL-Datenbank. Stundennachweise lassen sich f�
 
 <img src="docs/images/browsererweiterung.png" width="380" alt="Timereal-Erweiterung mit laufendem Timer, Pause, Stopp und Kundenwechsel">
 
-Die Bilder stammen aus der echten Anwendung mit Testkonten. Die [Erweiterungsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.7.1/erweiterung/README.md) beschreibt Installation und Anmeldung.
+Die Bilder stammen aus der echten Anwendung mit Testkonten. Die [Erweiterungsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.7.2/erweiterung/README.md) beschreibt Installation und Anmeldung.
 
 </details>
 
@@ -61,13 +61,13 @@ Der Installationsweg ist für einen **eigenen unprivilegierten Debian-13-LXC mit
 | Persönlicher Pilot | 2 vCPU · 2 GiB RAM · 8 GiB Speicher |
 | Planung für 100 gleichzeitig aktive Nutzer | 4 vCPU · 4 GiB RAM · 32 GiB SSD |
 
-Der [Kapazitätsnachweis](https://github.com/larsborgwardt/timereal/blob/v0.7.1/KAPAZITAET.md) beschreibt Lastprofil, Messergebnisse und Grenzen. Die Werte sind keine Garantie für jede Hardware oder Datenmenge.
+Der [Kapazitätsnachweis](https://github.com/larsborgwardt/timereal/blob/v0.7.2/KAPAZITAET.md) beschreibt Lastprofil, Messergebnisse und Grenzen. Die Werte sind keine Garantie für jede Hardware oder Datenmenge.
 
 In der **Root-Konsole eines neuen Containers**:
 
 ```bash
 apt-get update && apt-get install -y git ca-certificates &&
-git clone --branch v0.7.1 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
+git clone --branch v0.7.2 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
 bash /opt/timereal/betrieb/install.sh
 ```
 
@@ -77,7 +77,7 @@ Der Installer richtet die Dienste ein, fragt das erste Konto ab und zeigt die Br
 - **3040:** interner Anwendungsdienst auf Loopback, kein öffentlicher Zugang.
 - **Lokales HTTPS:** Der Pilot verwendet eine eigene Zertifizierungsstelle. Übertrage nur das öffentliche Zertifikat `/root/timereal-test-ca.crt` über deinen vertrauten Containerzugang auf die Testgeräte und vertraue ihm dort für Websites. Auf dem iPhone zusätzlich das volle Vertrauen für das CA-Profil aktivieren.
 
-SMTP, externe Sicherungen und weitere Installationshinweise stehen in der [Betriebsanleitung für 0.7.1](https://github.com/larsborgwardt/timereal/blob/v0.7.1/betrieb/README.md). Für eine vorhandene Installation verwende den Updateweg.
+SMTP, externe Sicherungen und weitere Installationshinweise stehen in der [Betriebsanleitung für 0.7.2](https://github.com/larsborgwardt/timereal/blob/v0.7.2/betrieb/README.md). Für eine vorhandene Installation verwende den Updateweg.
 
 ## Updates
 
@@ -85,18 +85,18 @@ Die Oberfläche zeigt die installierte Version und weist auf neue stabile Releas
 
 **Einmaliger Umstieg:** Ein älterer Container benötigt zunächst das folgende Konsolenupdate, um den getrennten Betriebsdienst einzurichten.
 
-Als root auf die veröffentlichte Version **0.7.1** aktualisieren:
+Als root auf die veröffentlichte Version **0.7.2** aktualisieren:
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.7.1:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.7.1 &&
-bash /root/timereal-update.sh v0.7.1
+git -C /opt/timereal show v0.7.2:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.7.2 &&
+bash /root/timereal-update.sh v0.7.2
 ```
 
 Der Prüfmodus kontrolliert den Ausgangsstand. Das Update baut ein getrenntes Release und erstellt vor einer Datenbankänderung eine geprüfte Sicherung. Schlägt der neue Anwendungsstart fehl, versucht der Updater den vorherigen Anwendungsstand wieder zu starten. Eine alte Datenbanksicherung wird dabei nicht automatisch zurückgespielt.
 
-[Release und Änderungsnotizen](https://github.com/larsborgwardt/timereal/releases/latest) · [Updatevertrag und Wiederherstellung](https://github.com/larsborgwardt/timereal/blob/v0.7.1/betrieb/README.md)
+[Release und Änderungsnotizen](https://github.com/larsborgwardt/timereal/releases/latest) · [Updatevertrag und Wiederherstellung](https://github.com/larsborgwardt/timereal/blob/v0.7.2/betrieb/README.md)
 
 ## Eigene Domain
 
@@ -106,7 +106,7 @@ Der vorgeschaltete Proxy leitet auf **`https://CONTAINER_IP:443`** weiter und ü
 
 Nach der Übernahme die neue Adresse öffnen, erneut anmelden und innerhalb von **drei Minuten Zugriff bestätigen**. Ohne Bestätigung stellt Timereal die bisherige Konfiguration wieder her, auch bei geschlossenem Browser. Unterstützt wird die vom Installer erzeugte interne HTTPS-Vorlage mit IPv4-Adresse; eigene Caddy-Konfigurationen werden nicht überschrieben. Prüfe die öffentliche Domain auch von außerhalb deines lokalen Netzes.
 
-[Reverse Proxy, Konsolenweg und direkter HTTPS-Betrieb](https://github.com/larsborgwardt/timereal/blob/v0.7.1/betrieb/README.md)
+[Reverse Proxy, Konsolenweg und direkter HTTPS-Betrieb](https://github.com/larsborgwardt/timereal/blob/v0.7.2/betrieb/README.md)
 
 ## Einen Arbeitstag ausprobieren
 
@@ -118,27 +118,27 @@ Nach der Übernahme die neue Adresse öffnen, erneut anmelden und innerhalb von 
 
 ## Geplant
 
-Die nächsten Pakete ergänzen differenzierte Rollen, Audit-Protokolle, eine Systemkonsole mit Liveausgabe und Filtern, Profilerweiterung und Zwei-Faktor-Anmeldung sowie den weiteren Ausbau der Browsererweiterung. Diese neuen Ansichten sind noch nicht Teil von 0.7.1. Der [aktuelle Backlog](BACKLOG.md) und der [Releaseplan](RELEASEPLAN.md) führen Umfang und Bildfreigaben.
+Die nächsten Pakete ergänzen differenzierte Rollen, Audit-Protokolle, eine Systemkonsole mit Liveausgabe und Filtern, Profilerweiterung und Zwei-Faktor-Anmeldung sowie den weiteren Ausbau der Browsererweiterung. Diese neuen Ansichten sind noch nicht Teil von 0.7.2. Der [aktuelle Backlog](BACKLOG.md) und der [Releaseplan](RELEASEPLAN.md) führen Umfang und Bildfreigaben.
 
 ## Dokumentation
 
-Die folgenden Links zeigen den Stand des veröffentlichten Releases **0.7.1**:
+Die folgenden Links zeigen den Stand des veröffentlichten Releases **0.7.2**:
 
 | Thema | Einstieg |
 |---|---|
-| Installation, HTTPS, SMTP, Sicherung und Updates | [Betriebsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.7.1/betrieb/README.md) |
-| Versionen und Änderungen | [Changelog](https://github.com/larsborgwardt/timereal/blob/v0.7.1/CHANGELOG.md) |
-| Architektur und Kundenwechsel | [Architektur](https://github.com/larsborgwardt/timereal/blob/v0.7.1/ARCHITEKTUR.md) |
-| Datenbank | [Datenmodell](https://github.com/larsborgwardt/timereal/blob/v0.7.1/DATENMODELL.md) |
-| Browsererweiterung | [Chrome/Edge einrichten](https://github.com/larsborgwardt/timereal/blob/v0.7.1/erweiterung/README.md) |
-| Betrieb mit mehreren Nutzern | [Kapazitätsplanung](https://github.com/larsborgwardt/timereal/blob/v0.7.1/KAPAZITAET.md) |
+| Installation, HTTPS, SMTP, Sicherung und Updates | [Betriebsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.7.2/betrieb/README.md) |
+| Versionen und Änderungen | [Changelog](https://github.com/larsborgwardt/timereal/blob/v0.7.2/CHANGELOG.md) |
+| Architektur und Kundenwechsel | [Architektur](https://github.com/larsborgwardt/timereal/blob/v0.7.2/ARCHITEKTUR.md) |
+| Datenbank | [Datenmodell](https://github.com/larsborgwardt/timereal/blob/v0.7.2/DATENMODELL.md) |
+| Browsererweiterung | [Chrome/Edge einrichten](https://github.com/larsborgwardt/timereal/blob/v0.7.2/erweiterung/README.md) |
+| Betrieb mit mehreren Nutzern | [Kapazitätsplanung](https://github.com/larsborgwardt/timereal/blob/v0.7.2/KAPAZITAET.md) |
 
 ## Entwicklung und Mitmachen
 
 Für einen reproduzierbaren Einstieg das Release auschecken; laufende Änderungen sind in den [Pull Requests](https://github.com/larsborgwardt/timereal/pulls) sichtbar. Benötigt werden **Node.js 24** und **Docker** für die isolierte PostgreSQL-Testinstanz.
 
 ```bash
-git clone --branch v0.7.1 https://github.com/larsborgwardt/timereal.git
+git clone --branch v0.7.2 https://github.com/larsborgwardt/timereal.git
 cd timereal
 npm ci
 npm run build

@@ -1,5 +1,12 @@
 # Änderungen
 
+## 0.7.2 — 19. November 2026
+
+- „Status aktualisieren“ unter Verwaltung → Updates prüft sofort bei GitHub auf ein neueres stabiles Release. Der bisherige Knopf lieferte bis zu sechs Stunden lang nur den zwischengespeicherten Stand.
+- Footer und Verwaltung übernehmen das neue Prüfergebnis. Eine bereits laufende Hintergrundabfrage überschreibt es nicht; während der Prüfung ist deren Fortschritt erkennbar.
+- Manuelle Prüfungen sind Administrator-Websitzungen vorbehalten und auf einen Versuch je Minute pro Serverprozess begrenzt. Netzfehler und deaktivierte Prüfungen bleiben erkennbar.
+- API-Version 1, Datenbankschema 6 und Betriebsprotokoll 1 bleiben unverändert. Bei 0.7.0/0.7.1 leert ein einmaliger Dienstneustart den bisherigen Cache, damit das Update sofort angeboten wird.
+
 ## 0.7.1 — 19. November 2026
 
 - „Filter zurücksetzen“ und „Zeit nachtragen“ unter Nachweise stehen mit Abstand in einer gemeinsamen Aktionsgruppe. Auf schmalen Bildschirmen brechen sie mit Abstand um.

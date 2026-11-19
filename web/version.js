@@ -3,6 +3,7 @@ const status = document.querySelector("#update-status");
 const link = document.querySelector("#update-link");
 const detail = document.querySelector("#update-detail");
 let running = false;
+let requested = false;
 
 async function read(path) {
   const response = await fetch("/api/v1/" + path, {
@@ -15,7 +16,11 @@ async function read(path) {
 }
 
 async function refresh() {
-  if (running || document.hidden) return;
+  if (document.hidden) return;
+  if (running) {
+    requested = true;
+    return;
+  }
   running = true;
   try {
     try {
@@ -63,8 +68,13 @@ async function refresh() {
     }
   } finally {
     running = false;
+    if (requested) {
+      requested = false;
+      void refresh();
+    }
   }
 }
 void refresh();
 setInterval(() => void refresh(), 60 * 60 * 1000);
 document.addEventListener("visibilitychange", () => void refresh());
+document.addEventListener("timereal-update-geprueft", () => void refresh());
