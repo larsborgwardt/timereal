@@ -76,10 +76,55 @@ export function kontenRouten(
     return options.origin;
   }
   app.get("/api/v1/profil", (req) => privat(req, profil));
-  app.patch<{ Body: { email: string } }>(
+  app.patch<{ Body: { email?: string; name?: string } }>(
     "/api/v1/profil",
-    { schema: { body: objekt({ email }, ["email"]) } },
-    (req) => privat(req, (db) => profilMail(db, req.body.email)),
+    {
+      schema: {
+        body: objekt({ email, name: { type: "string", maxLength: 120 } }, []),
+      },
+    },
+    async (req) => {
+      const result = await privat(req, async (db) => {
+        const own = await profil(db);
+        if (
+          req.body.email !== undefined &&
+          own.email !== req.body.email.toLowerCase() &&
+          !mail.konfiguriert
+        )
+          throw new Fehler(
+            503,
+            "Für die Bestätigung einer neuen E-Mail-Adresse muss der Mailversand eingerichtet sein.",
+          );
+        return profilMail(db, req.body.email, req.body.name);
+      });
+      if (req.body.email !== undefined && result.profil.emailAusstehend)
+        await mail.senden(
+          result.profil.emailAusstehend,
+          "email",
+          origin() + "/#email=" + result.token,
+        );
+      return result.profil;
+    },
+  );
+  app.post<{ Body: { token: string } }>(
+    "/api/v1/profil/email-bestaetigen",
+    {
+      schema: { body: objekt({ token }, ["token"]) },
+    },
+    (req) =>
+      privat(req, async (db) => {
+        const {
+          rows: [r],
+        } = await db.query("select profil_email_bestaetigen($1) as ok", [
+          digest(req.body.token),
+        ]);
+        if (!r.ok)
+          throw new Fehler(
+            410,
+            "Der Bestätigungslink ist abgelaufen, ersetzt oder gehört zu einem anderen Konto.",
+          );
+        return profil(db);
+      }),
   );
   app.get("/api/v1/verwaltung/konten", (req) =>
     verwaltung(

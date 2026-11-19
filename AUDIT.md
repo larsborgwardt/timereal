@@ -23,3 +23,7 @@ Nicht Teil dieses Protokolls sind Betriebsaufträge und deren Prozessausgabe; si
 ## Messungen
 
 Echtes PostgreSQL mit Anwendungsrolle: Rollenmatrix, direkte Rechte, Transaktionsrücknahme, unveränderte Werte, Geheimnis-Ausschluss, 180-Tage-Grenze, Datums-/Suchvalidierung, Pagination und Exportgrenze. Browser: tatsächliche Rolle ändern, Ereignis suchen, weiterladen, exportieren; schmale Ansichten, vergrößerte Schrift, Tastatur, leerer Zustand und Fehler. Keine erfundenen historischen Einträge bei der Migration.
+
+## Zusätzliche Ereignisse ab 0.9.0
+
+Migration 009 benennt begonnene Einrichtung, Aktivierung, Ausschalten, Codeerneuerung, Wiederherstellungscode-Verwendung und fehlgeschlagenen zweiten Nachweis. Ein falsches Passwort bei der Faktorverwaltung zählt ebenfalls als gescheiterter Nachweis. Abgewiesene syntaktisch ungültige Anfragen erzeugen keinen solchen Datenbankeintrag. Geheime Werte werden den Auditfunktionen nicht übergeben. Die E-Mail-Änderung wird erst bei bestätigter Übernahme als Änderung erfasst.

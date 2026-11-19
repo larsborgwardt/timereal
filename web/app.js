@@ -2,6 +2,8 @@ import * as transport from "./transport.js";
 import { arbeitsablaufOberflaeche } from "./arbeitsablauf.js";
 import { kontenOberflaeche } from "./konten.js";
 import { betriebsOberflaeche } from "./betrieb.js";
+import { faktorAnmeldung } from "./mfa-anmeldung.js";
+import { kontoSicherheit } from "./mfa.js";
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) =>
   String(value ?? "").replace(
@@ -88,7 +90,14 @@ async function request(pfad, methode = "GET", body, key) {
   const response = await transport.senden(pfad, methode, body, key);
   const data = await response.json();
   if (!response.ok) {
-    if (response.status === 401) zeigeLogin();
+    if (
+      response.status === 401 &&
+      !(
+        methode !== "GET" &&
+        (pfad.startsWith("/mfa/") || pfad === "/anmeldung/faktor")
+      )
+    )
+      zeigeLogin();
     const error = new Error(data.fehler || "Aktion fehlgeschlagen.");
     error.status = response.status;
     throw error;
@@ -96,6 +105,9 @@ async function request(pfad, methode = "GET", body, key) {
   return data;
 }
 function zeigeLogin() {
+  faktorLogin.loeschen();
+  sicherheit.loeschen();
+  $("#anmelden").hidden = $("#vergessen").hidden = transport.istErweiterung;
   betrieb.zuruecksetzen();
   ++refreshNr;
   seite = "login";
@@ -367,6 +379,7 @@ async function laden() {
   }
   if (["verwaltung", "einstellungen"].includes(seite)) {
     await konten.laden(seite);
+    if (seite === "einstellungen") await sicherheit.laden();
     if (seite === "verwaltung") await betrieb.laden();
     fokusZurueck();
     return;
@@ -574,11 +587,16 @@ $("#anmelden").onsubmit = (ev) => {
   ev.preventDefault();
   void bediene(async () => {
     const f = ev.target.elements;
-    await request("/anmeldung", "POST", {
+    const result = await request("/anmeldung", "POST", {
       login: f.login.value,
       passwort: f.passwort.value,
     });
     f.passwort.value = "";
+    if (result.zweiterFaktor) {
+      $("#anmelden").hidden = $("#vergessen").hidden = true;
+      faktorLogin.zeigen(f.login.value);
+      return;
+    }
     seite = "heute";
   });
 };
@@ -660,6 +678,24 @@ const konten = kontenOberflaeche({
   melden,
   abmelden: zeigeLogin,
   istErweiterung: transport.istErweiterung,
+});
+const sicherheit = kontoSicherheit({
+  $,
+  request,
+  aktualisieren: laden,
+  istErweiterung: transport.istErweiterung,
+});
+const faktorLogin = faktorAnmeldung({
+  host: $("#faktor-anmeldung"),
+  request,
+  erfolgreich: async () => {
+    seite = "heute";
+    await laden();
+  },
+  zurueck: () => {
+    $("#anmelden").hidden = $("#vergessen").hidden = false;
+    $("#anmelden input").focus();
+  },
 });
 const betrieb = betriebsOberflaeche({
   $,

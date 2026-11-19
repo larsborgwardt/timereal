@@ -1,0 +1,367 @@
+
+> timereal@0.9.0 test
+> bash tests/postgres.sh
+
+ pg_advisory_lock 
+------------------
+ 
+(1 row)
+
+CREATE TABLE
+BEGIN
+CREATE EXTENSION
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+COMMIT
+BEGIN
+REVOKE
+CREATE ROLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+CREATE FUNCTION
+ALTER TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+INSERT 0 2
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+ALTER TABLE
+CREATE POLICY
+GRANT
+GRANT
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+ALTER TABLE
+CREATE POLICY
+GRANT
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+ALTER TABLE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+INSERT 0 16
+CREATE TABLE
+CREATE INDEX
+REVOKE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+REVOKE
+INSERT 0 6
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+BEGIN
+ALTER TABLE
+GRANT
+CREATE TABLE
+REVOKE
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+REVOKE
+GRANT
+INSERT 0 1
+COMMIT
+ pg_advisory_unlock 
+--------------------
+ t
+(1 row)
+
+
+> timereal@0.9.0 build
+> tsc
+
+✔ Rollen trennen Verwaltung, widerrufen Sitzungen und schützen den letzten Administrator auch bei Konkurrenz (361.405476ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 495.815866
+✔ Audit erhält lange Loginreferenzen bestehender Konten unverändert (21.062557ms)
+✔ Audit: Rollen, echte Ereignisse, Geheimnisgrenze, Zeitraum und Export (644.811427ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 802.255747
+
+> timereal@0.9.0 test:db
+> node --test tests/integration.mjs
+
+✔ Laptop, Handy, Wiederholung und persönliche Kontogrenze (208.573648ms)
+✔ Eine Pause bleibt auf dem anderen Gerät erhalten und endet durch Fortsetzen oder Stopp (102.418887ms)
+✔ Bereits übertragene Stunde in 20 / 12 / 28 Minuten teilen und externes Storno bestätigen (110.661103ms)
+✔ Datenbankrolle und wiederverwendete Verbindung trennen Konten auch nach Rollback (24.198248ms)
+✔ Kontosperre beendet eine laufende Arbeit und widerruft Web- und Erweiterungssitzung (72.144238ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 647.392519
+✔ Kundenpflege, Einstellungen und Woche rechnen echte Minuten über Tages- und Sommerzeitgrenzen (390.271023ms)
+✔ Erweiterung: PKCE, Einmalcode, Rücksprungziel, CORS und eigener Sitzungswiderruf (335.198353ms)
+✔ Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und Sperre (835.382581ms)
+✔ 2FA: Kontogrenze, Einrichtung, Teilanmeldung, Replay, Recovery und Widerruf (1687.542575ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1862.918981
+✔ Betriebs-API lässt nur aktive Admin-Websitzungen und bestätigte Schreibaufträge durch (293.350047ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 426.962826
+Datenbankverbindung beendet 57P01
+✔ Der Produktionspool begrenzt SQL, Sperren und Verbindungswartezeit (85.064849ms)
+✔ Eine Kontosperre wartet begrenzt; danach bleibt der Pool benutzbar (236.932859ms)
+✔ Ein belegter Verbindungspool antwortet vorübergehend nicht verfügbar und erholt sich (159.915297ms)
+✔ SQL-Abbruch rollt eine bereits vorgenommene Änderung zurück (144.230551ms)
+✔ Ein fehlgeschlagener Rollback verwirft die Verbindung und erhält den ursprünglichen Fehler (0.685685ms)
+✔ Die optimierten Zeitraumzugriffe erhalten Null-Minuten- und Mitternachtsgrenzen (74.813632ms)
+✔ Ein gemeinsamer Arbeitsstand liefert Timer und Stammdaten ausschließlich aus dem eigenen Konto (64.594314ms)
+✔ Das Anmeldelimit zählt Großschreibungsvarianten desselben Kontos gemeinsam (431.767902ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1342.378573
+{"smtp":{"schnell":{"status":200,"exit":0,"idleAbbruch":false,"unbehandeltesErrorEvent":false},"langsam":{"status":200,"exit":0,"idleAbbruch":false,"unbehandeltesErrorEvent":false},"nachrichten":2,"verzoegerteBestaetigungen":1,"langsamerLinkInDb":1}}
+{"annahmeHinterProxy":[200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]}
+✔ Proxy-Patch: Hilfe und ungültige Domain/IP vor Systemzugriffen (73.652992ms)
+✔ Öffentliches HTTPS: Hilfe und strikte Domain-Eingabe vor Systemzugriffen (61.231952ms)
+✔ Externe Sicherung braucht einen ausdrücklich gewählten Vorgang (98.114683ms)
+✔ Sicherungsziel erlaubt ausschließlich SFTP mit absolutem Pfad (119.538362ms)
+✔ Beim Serverwechsel bleiben keine Berechtigungen für vorherige Server übrig (1.527974ms)
+✔ Die Erweiterung verbindet nur HTTPS-Origins oder lokales Loopback und entfernt keine versteckten URL-Bestandteile (0.741411ms)
+✔ Mailkonfiguration prüft echtes SMTP vor dem Schreiben und gibt keine Zugangsdaten aus (375.569377ms)
+✔ TOTP stimmt mit den unabhängigen RFC-Zeitwerten überein (1.659829ms)
+✔ Prüffenster akzeptiert aktuellen und vorherigen Schritt, keine Zukunft (0.660704ms)
+✔ Einrichtungsschlüssel verwendet kanonisches Base32 (0.229679ms)
+✔ Verschlüsselung ist zufällig, kontogebunden und erkennt Manipulation (2.60473ms)
+✔ 2FA-Schlüssel: atomare Anlage, unveränderter Bestand, sichere Dateirechte (3.899727ms)
+✔ Updatehilfe ist ohne Administratorrechte verfügbar (5.893393ms)
+✔ Installationshilfe erklärt den Browserport vor Systemzugriffen (16.672489ms)
+✔ Ein Update braucht eine feste Version und lehnt Optionen als Versionsnamen ab (46.61937ms)
+✔ Vorbereitung und Aktivierung sind getrennte dokumentierte Aufrufe mit festem Commit (58.566243ms)
+✔ Vergleicht stabile Versionen numerisch und erzeugt nur eigene Release-Links (6.530106ms)
+✔ 100 gleichzeitige Abfragen teilen einen Abruf und dessen Cache (21.640871ms)
+✔ Netzfehler behalten den letzten Erfolg, behaupten aber keinen frischen Stand (1.74662ms)
+✔ Manuelle Prüfung erneuert den gemeinsamen Cache vor Ablauf der sechs Stunden (25.303831ms)
+✔ Manuell lässt sich auch ein Fehlercache erneut prüfen; deaktiviert bleibt deaktiviert (1.482655ms)
+✔ Fehlgeschlagene manuelle Prüfung erneuert weder Versionsstand noch Erfolgszeitpunkt (0.582361ms)
+✔ Fehler, unzulässige Release-Daten und übergroße Antworten sind kein aktueller Stand (1.743742ms)
+✔ Deaktiviert führt die Prüfung keinen Abruf aus; Konfiguration ist eindeutig (0.612614ms)
+✔ Die öffentliche Updateauskunft benötigt keine Datenbankverbindung (214.283161ms)
+✔ Ein echter HTTP-Server bestätigt Timeout auch während des Antwortkörpers (91.084276ms)
+✔ Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betriebsgeheimnisse (217.70873ms)
+✔ Lokale Eingaben unterscheiden Sommerzeitlücke und die doppelte Stunde (62.993774ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 817.450656
+✔ Systemkonsole liest über den Unix-Socket nur validierte Journalfilter (51.666106ms)
+✔ Echter Unix-Socket: Annahme vor Abschluss, Wiederholung und Ergebnis nach Neustart (31.779386ms)
+✔ Domain wird aus unterstütztem Bestand abgeleitet; eigene Proxyregeln bleiben geschützt (2.260985ms)
+✔ Nur stabile Releases mit strikt höherer Version können vorbereitet werden (0.76902ms)
+✔ Ein Webupdate braucht einen passenden versionsgebundenen Betriebsvertrag (0.741106ms)
+✔ Abbruch zwischen Konfigurationsdateien erlaubt Rückbau, fremde Änderungen nicht (0.676822ms)
+✔ Prozessausgabe bewahrt UTF-8 über getrennte Puffer hinweg (652.903202ms)
+✔ Realer flock bleibt nach dem Lockprozess bestehen und ist an Kindprozesse vererbbar (12.244833ms)
+✔ Prozessfehler, Ausgabebegrenzung und Zeitüberschreitung führen zu Fehlern (113.29392ms)
+✔ Annahme ist dauerhaft, vertraulich und nach verlorener Antwort idempotent (28.358444ms)
+✔ Gleichzeitige Annahme erzeugt einen Auftrag; andere Betriebsaktionen kollidieren (11.674583ms)
+✔ Aktivierung benötigt den richtigen Vorzustand und einen eigenen Auftragsschlüssel (7.127774ms)
+✔ Unzulässige Argumente, fremde Pfade und Geheimnisse werden nicht gespeichert (3.280979ms)
+✔ Domainbestätigung gilt nur am neuen Ursprung, Rücknahme bleibt separat möglich (7.398506ms)
+✔ Beschädigter Bestand wird laut abgewiesen und nicht durch eine leere Datei ersetzt (2.595667ms)
+✔ Ungeklärte Wiederherstellung sperrt weitere Betriebsaufträge bis zur Nachprüfung (3.172165ms)
+✔ Journal: feste Dienste, echte Prioritäten und explizite Abschlussereignisse (4.756033ms)
+✔ Journal: ungültige Filter erreichen keinen Prozess (2.433501ms)
+✔ Journal: fremde Levelnamen und Prioritäts-Eigenschaften bleiben gewöhnliche Meldungen (0.539928ms)
+✔ Journal: Zugangsdaten, Steuerzeichen, Binärfelder und überlange Meldungen (1.400741ms)
+✔ Journal: parallele Aufrufe, Ablauf, Fehler und begrenzter Ergebnisspeicher (29.041525ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 890.710937
+2FA-Browser: Profil, Mailbestätigung, QR, Einrichtung, Recovery, Abmeldung, Fehler und Ausschalten bestanden.
+Auditbrowser: Rollenereignis, Filter, Export, Pagination, leerer Zustand, Fehler und Abmeldung bestanden.
+Footer: Version, Update-, Fehler- und Deaktiviert-Zustände, Tastatur, 320/390/1120 Pixel, 200 % Text und keine externen Browserabfragen bestanden.
+Browserprobe bestanden: getrennte Sitzungen, Kundenwechsel, Pause, Stopp, Historie, Abmeldung.
+Verwaltungsprobe bestanden: SMTP, Annahme, eigene Sitzungen, Sperre und mobile Darstellung.
+Rollenbrowser: Entwurf, Speichern, Rechtewechsel, eigener Kontoschutz und schmale Ansichten bestanden.
+Arbeitsablauf im Browser bestanden: Nachtrag, Übertragung, 20/12/28-Teilung, Vergleich, gemeinsame Grenzen, Woche, Pflege, Sofortstart, interne Zeit, mobile Ansicht und Zeitumstellung.
+Designprüfung bestanden: anmeldung, anmeldung-fehler, passwort-anfordern, heute-leer, neues-ziel, sofortstart, timer-vorlaeufig, timer-pause, timer-intern, timer-zugeordnet, leistungstext, ziel-bearbeiten, ziele-suche-leer, woche, nachweise, historie, nachtrag, verwaltung, einstellungen, web-offline, passwort-zuruecksetzen, ruecksetzlink-ungueltig
+Navigation: schneller Wechsel ohne Flackern, langsamer Abruf mit Hinweis, Fehler und Abbruch des verzögerten Hinweises bestanden.
+{"timereal_log":1,"level":"info","msg":"Updateauftrag wird ausgeführt."}
+{"timereal_log":1,"level":"success","msg":"Update zur Installation bereit."}
+{"timereal_log":1,"level":"info","msg":"Updateauftrag wird ausgeführt."}
+{"timereal_log":1,"level":"complete","msg":"Update abgeschlossen."}
+{"timereal_log":1,"level":"info","msg":"Domainauftrag wird ausgeführt."}
+{"timereal_log":1,"level":"success","msg":"Domainprüfung abgeschlossen."}
+Betriebsoberfläche: verlorene Antwort ohne Doppelauftrag, Neuladen, Passwortprüfung, Domainentwurf und responsive Ansichten bestanden.
+Systemkonsole (chromium 159.0.8154.6): Filter, Pause, Leseposition, Download, Fehler, Kontowechsel und Desktop/Mobil/Zoom bestanden.
+Erweiterung gebaut: /home/hermes/workspace/sap-zeiterfassung/dist/erweiterung
+Echte Chromium-Erweiterung geprüft: Anmeldung, geschlossener App-Tab, Wechsel und Notiz, Smartphone, Pause/Stopp, Offline-Bestätigung, Vollansicht und Sitzungswiderruf.
+Designabdeckung: Eingänge aus HTML/Manifest abzüglich erreichter Prüfansichten leer.

@@ -1,3 +1,4 @@
+import { faktorAnmeldung } from "./mfa-anmeldung.js";
 const $ = (s) => document.querySelector(s),
   q = new URLSearchParams(location.search);
 const daten = {
@@ -10,11 +11,11 @@ const melden = (e) => {
   $("#meldung").hidden = !e;
   $("#meldung").textContent = e?.message ?? "";
 };
-async function request(path, body) {
+async function request(path, body, method = body ? "POST" : "GET") {
   let r;
   try {
     r = await fetch("/api/v1" + path, {
-      method: body ? "POST" : "GET",
+      method,
       headers: body ? { "Content-Type": "application/json" } : {},
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -37,6 +38,7 @@ async function request(path, body) {
 async function profil() {
   try {
     const p = await request("/profil");
+    faktor.loeschen();
     $("#konto").textContent = p.login;
     $("#anmelden").hidden = true;
     $("#freigabe").hidden = false;
@@ -56,13 +58,17 @@ async function arbeiten(fn) {
   buttons.forEach((b) => {
     b.disabled = true;
   });
-  $("#arbeitsstatus").textContent = "Wird verarbeitet…";
-  $("#arbeitsstatus").hidden = false;
+  $("#arbeitsstatus").hidden = true;
+  const hinweis = setTimeout(() => {
+    $("#arbeitsstatus").textContent = "Wird verarbeitet…";
+    $("#arbeitsstatus").hidden = false;
+  }, 300);
   try {
     await fn();
   } catch (e) {
     melden(e);
   } finally {
+    clearTimeout(hinweis);
     busy = false;
     buttons.forEach((b) => {
       b.disabled = false;
@@ -74,14 +80,28 @@ $("#anmelden").onsubmit = (ev) => {
   ev.preventDefault();
   const f = ev.target;
   void arbeiten(async () => {
-    await request("/anmeldung", {
+    const result = await request("/anmeldung", {
       login: f.elements.login.value,
       passwort: f.elements.passwort.value,
     });
     f.elements.passwort.value = "";
+    if (result.zweiterFaktor) {
+      f.hidden = true;
+      faktor.zeigen(f.elements.login.value);
+      return;
+    }
     await profil();
   });
 };
+const faktor = faktorAnmeldung({
+  host: $("#faktor-anmeldung"),
+  request: (path, method, body) => request(path, body, method),
+  erfolgreich: profil,
+  zurueck: () => {
+    $("#anmelden").hidden = false;
+    $("#anmelden input").focus();
+  },
+});
 $("#verbinden").onclick = () => {
   void arbeiten(async () => {
     const r = await request("/erweiterung/freigabe", daten);

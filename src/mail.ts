@@ -41,7 +41,11 @@ export function maildienst(config?: MailConfig) {
       if (!transport) throw new Error("SMTP fehlt");
       await transport.verify();
     },
-    async senden(email: string, typ: "einladung" | "reset", url: string) {
+    async senden(
+      email: string,
+      typ: "einladung" | "reset" | "email",
+      url: string,
+    ) {
       if (!transport || !config)
         throw new Fehler(503, "Mailversand ist noch nicht eingerichtet.");
       try {
@@ -51,11 +55,15 @@ export function maildienst(config?: MailConfig) {
           subject:
             typ === "einladung"
               ? "Deine Einladung zu Timereal"
-              : "Timereal: Passwort zurücksetzen",
+              : typ === "email"
+                ? "Timereal: E-Mail-Adresse bestätigen"
+                : "Timereal: Passwort zurücksetzen",
           text:
             (typ === "einladung"
               ? "Du wurdest zu Timereal eingeladen. Lege dein eigenes Passwort fest. Der Link gilt 48 Stunden."
-              : "Setze dein Timereal-Passwort zurück. Der Link gilt 30 Minuten.") +
+              : typ === "email"
+                ? "Bestätige deine neue E-Mail-Adresse in deinem angemeldeten Timereal-Konto. Der Link gilt 30 Minuten."
+                : "Setze dein Timereal-Passwort zurück. Der Link gilt 30 Minuten.") +
             "\n\n" +
             url +
             "\n\nWenn du diese Nachricht nicht erwartet hast, kannst du sie ignorieren.",

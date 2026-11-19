@@ -14,24 +14,33 @@ Mit `passwort` statt `anlegen` änderst du ein Passwort und widerrufst bestehend
 
 ## Sichern und wiederherstellen
 
-Der Installer aktiviert eine tägliche Sicherung um 03:15 Uhr in der Gastzeitzone. Fertige Dumps liegen in `/var/lib/timereal-backups`. Dateien älter als 14 Tage werden nach einer erfolgreichen neuen Sicherung entfernt. Ein sofortiger Probelauf ist mit `systemctl start timereal-backup.service` möglich.
+Der Installer aktiviert eine tägliche Sicherung um 03:15 Uhr in der Gastzeitzone. Ab 0.9.0 liegen geschützte `.tar`-Pakete in `/var/lib/timereal-backups`: Datenbankdump, MFA-Schlüssel, Releaseangabe, Formatkennung und Prüfsummen. Der Dienst läuft für das Lesen des Schlüssels als root; `pg_dump` weiterhin als postgres. Neue Pakete werden atomar fertiggestellt. Pakete älter als 14 Tage werden nach einer erfolgreichen Sicherung entfernt. Alte `.dump`-Dateien bleiben unverändert erhalten.
 
-Eine zusätzliche manuelle Datenbanksicherung in der Root-Konsole:
+Sofort sichern:
+
+```bash
+systemctl start timereal-backup.service
+systemctl status timereal-backup.service --no-pager
+```
+
+Bewahre das Paket vertraulich außerhalb des Containers auf. Datenbank und `/etc/timereal/mfa.key` gehören zusammen. Ein Dump allein reicht bei eingeschalteter Zwei-Faktor-Anmeldung nicht für die Wiederherstellung. Der Schlüssel hat 32 zufällige Bytes, Eigentümer root, Gruppe timereal_app und Modus 0640. Installation und Update ersetzen keinen vorhandenen Schlüssel. Fehlt er bei vorhandenen Faktoren oder passt er nicht, bricht die Betriebsprüfung ab.
+
+Eine Paketprüfung erfolgt als root in einem getrennten Ersatzgast mit derselben Timereal-Version. Setze `BACKUP` auf den vollständigen Paketpfad. Die Datenbank `timereal_restore` muss noch nicht existieren:
 
 ```bash
 umask 077
-runuser -u postgres -- pg_dump -Fc timereal > "/root/timereal-$(date +%F-%H%M%S).dump"
+mkdir -m 700 /root/timereal-restore
+# Nur das eigene, vertrauenswürdige Sicherungspaket entpacken.
+tar -xf "$BACKUP" -C /root/timereal-restore
+(cd /root/timereal-restore && sha256sum -c SHA256SUMS) &&
+runuser -u postgres -- createdb timereal_restore &&
+runuser -u postgres -- pg_restore --single-transaction --exit-on-error -d timereal_restore < /root/timereal-restore/datenbank.dump &&
+bash /opt/timereal-current/betrieb/mfa-schluessel.sh pruefen timereal_restore /root/timereal-restore/mfa.key
 ```
 
-Sichere die Datei außerhalb des Containers vertraulich. Sie enthält Kundenarbeit und Passworthashes. Der PostgreSQL-Dump enthält Rollen nicht. Für einen neuen Testgast schafft die Installation die Rolle `timereal_app`. Zur Probe lässt sich der Dump dort in eine **separate, leere Datenbank** zurücklesen:
+Die Prüfung überschreibt die aktive Datenbank nicht. Vor einer tatsächlichen Übernahme den aktuellen Bestand zusätzlich sichern und App-/HTTPS-Dienste anhalten. Datenbankdump und zugehörigen Schlüssel gemeinsam übernehmen; den Schlüssel mit `install -o root -g timereal_app -m 640` nach `/etc/timereal/mfa.key` kopieren. Restaurierte Sitzungen, offene MFA-Anmeldungen, vorläufige MFA-Einrichtungen, E-Mail-Bestätigungen und unbenutzte Einladungs-/Rücksetzlinks vor Wiederfreigabe widerrufen. Der dauerhafte Authenticator und noch unbenutzte Wiederherstellungscodes bleiben erhalten. Anschließend Schlüsselprüfung und echte Anmeldung ausführen. Die konkrete Rückkehr zu einem älteren Datenstand ist eine Betreiberentscheidung, kein automatischer Teil des Updates.
 
-```bash
-runuser -u postgres -- createdb timereal_restore
-runuser -u postgres -- pg_restore --single-transaction --exit-on-error -d timereal_restore < "$BACKUP"
-runuser -u postgres -- psql -X -d timereal_restore -c 'SELECT count(*) FROM zeitabschnitt'
-```
-
-Setze `BACKUP` vorher auf den Pfad des Dumps. Für eine Sicherung des gesamten Gasts inklusive Zertifikatsvertrauen und Dienstkonfiguration ist zusätzlich eine verschlüsselt verwahrte Containersicherung sinnvoll. Nach einer tatsächlichen Rückkehr zu einem älteren Datenstand sind restaurierte Sitzungen zu widerrufen.
+Die [Releaseprüfung](../nachweise/0.9.0.md) beschreibt die echte Rücksicherung und Anmeldung im eigenen Debian/systemd-Prüfgast. Eine Containersicherung ergänzt Konfiguration und Zertifikatsvertrauen.
 
 ## Stand ab 0.5.0
 
@@ -47,16 +56,16 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.8.2**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.9.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.8.2:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.8.2 &&
-bash /root/timereal-update.sh v0.8.2
+git -C /opt/timereal show v0.9.0:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.9.0 &&
+bash /root/timereal-update.sh v0.9.0
 ```
 
-Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.8.2. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.9.0. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
 
 Ab 0.6.1 zeigen Installation und Update nummerierte Schritte und eine Browser-Adresse mit ausdrücklichem Port. Der Updater liest dafür `PUBLIC_ORIGIN` aus `/etc/timereal/dienst.conf`; eine eingerichtete Domain oder ein abweichender Port bleibt sichtbar. Beim normalen LXC-Zugang steht beispielsweise `https://192.0.2.42:443` (Beispieladresse). 443 ist der HTTPS-Port, 3040 bleibt intern. Schon `--check` zeigt die konfigurierte Adresse und den Befehl zum eigentlichen Update. Es prüft dabei keinen externen Browserzugriff. Eine fehlende oder ungültige Adresse wird als Hinweis gemeldet und nicht durch eine vermutete IP ersetzt.
 
@@ -66,7 +75,7 @@ Ab 0.7.0 ist **Verwaltung → Updates** der Einstieg für reguläre kompatible F
 
 Als Konsolenweg für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg; neue Tags vorher wieder mit `git fetch --tags origin` abholen. Der Updateweg verwendet `/opt/timereal` nur als Git-Quelle, `/opt/timereal-releases` für gebaute Stände und `/opt/timereal-current` als aktiven Zeiger. `git pull` oder ein erneuter Aufruf von `install.sh` ist auf einer versionierten Installation kein Updateweg.
 
-Sicherungen vor dem Update liegen getrennt von der täglichen Aufbewahrung unter `/var/lib/timereal-updates/`. Dort bleiben `before.dump`, die ursprünglichen Dienstdateien, Versionsangaben und das Migrationsprotokoll erhalten. Diese Verzeichnisse werden nicht automatisch gelöscht. Die HTTPS-Konfiguration, Zugangsdaten und Test-CA werden beim Update nicht ersetzt.
+Sicherungen vor dem Update liegen getrennt von der täglichen Aufbewahrung unter `/var/lib/timereal-updates/`. Dort bleiben `before.dump`, der MFA-Schlüssel `mfa.key`, die Konfiguration, ursprüngliche Dienstdateien, Versionsangaben und das Migrationsprotokoll erhalten. Diese Verzeichnisse werden nicht automatisch gelöscht. Die HTTPS-Konfiguration, Zugangsdaten und Test-CA werden beim Update nicht ersetzt.
 
 Bei einem Startfehler kehrt das Skript zur vorherigen Anwendung zurück. Additive Datenbankänderungen bleiben bestehen. Ein Stromausfall oder ein nicht startbarer alter Dienst erfordert die Prüfung der Ausgabe und des Verzeichnisses; ein automatisches Zurückspielen des Dumps findet nicht statt. Vor einer bewussten Rücksicherung müssen die seit dem Dump erfassten Zeiten gesichert und der Anwendungsdienst angehalten werden.
 
@@ -97,7 +106,7 @@ bash /opt/timereal-current/betrieb/mail-einrichten.sh
 
 Das Skript fragt Server, Port, TLS, Absender und Zugang ab. Das Passwort wird verdeckt gelesen. Es prüft die SMTP-Verbindung ohne eine Einladung zu versenden, speichert die Konfiguration in `/etc/timereal/mail.json` (root, Gruppe timereal_app, Modus 640) und startet den Anwendungsdienst neu. Bei externen Servern muss TLS direkt oder über STARTTLS funktionieren. Ein nicht authentifizierendes lokales Relay ist für die lokale Prüfung möglich. Einladungen versendest du danach ausdrücklich über **Verwaltung → Berater einladen**.
 
-Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Senden entwertet den alten Einladungslink. Der Berater legt ein eigenes Passwort fest und meldet sich mit seiner E-Mail-Adresse an. In **Einstellungen** kannst du deinem bestehenden Pilotkonto eine E-Mail-Adresse zuordnen, dein Passwort ändern und Sitzungen einzeln abmelden. Nach einem Passwortwechsel oder einer Zurücksetzung werden die vorherigen Sitzungen ungültig.
+Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Senden entwertet den alten Einladungslink. Der Berater legt ein eigenes Passwort fest und meldet sich mit seiner E-Mail-Adresse an. In **Einstellungen** kannst du deinem bestehenden Pilotkonto eine E-Mail-Adresse zuordnen und über den versendeten Link bestätigen, dein Passwort ändern und Sitzungen einzeln abmelden. Nach einem Passwortwechsel oder einer Zurücksetzung werden die vorherigen Sitzungen ungültig.
 
 ## Vorhandener Nginx / Nginx Proxy Manager
 
@@ -171,7 +180,7 @@ bash /opt/timereal-current/betrieb/extern-sichern.sh check
 bash /opt/timereal-current/betrieb/extern-sichern.sh pruefen latest
 ```
 
-`sichern` überträgt Datenbankdump, PostgreSQL-Rollen, Anwendungskonfiguration, HTTPS-Zustand und Releaseangabe. `check` liest und prüft die verschlüsselten Datenblöcke. `pruefen` entschlüsselt einen Snapshot, prüft die Dateiinhalte und restauriert den Dump in eine eigens angelegte Datenbank. Diese Prüfdatenbank und lokale temporäre Klartextdateien werden anschließend entfernt; die aktive Datenbank wird nicht überschrieben. Statt `latest` lässt sich eine Kennung aus `liste` verwenden.
+`sichern` überträgt Datenbankdump, PostgreSQL-Rollen, Anwendungskonfiguration, HTTPS-Zustand und Releaseangabe. `check` liest und prüft die verschlüsselten Datenblöcke. `pruefen` entschlüsselt einen Snapshot, prüft die Dateiinhalte und restauriert den Dump in eine eigens angelegte Datenbank. Ab Schema 9 prüft es zusätzlich, dass der gesicherte MFA-Schlüssel die darin gespeicherten Authenticator-Geheimnisse entschlüsseln kann. Diese Prüfdatenbank und lokale temporäre Klartextdateien werden anschließend entfernt; die aktive Datenbank wird nicht überschrieben. Statt `latest` lässt sich eine Kennung aus `liste` verwenden.
 
 Der Timer `timereal-extern.timer` läuft täglich ab 03:30 Uhr mit bis zu 15 Minuten Streuung und holt verpasste Läufe nach. Fehler stehen in `journalctl -u timereal-extern.service`; `systemctl list-timers timereal-extern.timer` zeigt den nächsten Lauf. Ein gleichzeitig laufendes Update verhindert die Sicherung mit einer sichtbaren Fehlermeldung; sie kann danach manuell wiederholt werden. Externe Snapshots werden nicht automatisch gelöscht. Lege passend zum verfügbaren Speicher eine Aufbewahrung mit Restic fest; verwende dafür dessen `forget --dry-run`, bevor du etwas entfernst.
 
@@ -208,3 +217,11 @@ Der Footer gehört zur Web-App. Die Chromium-Erweiterung hat eine eigene Paketve
 ## Audit-Protokoll ab 0.8.2
 
 Unter **Verwaltung → Audit-Protokoll** sehen Administratoren die protokollierten Konto- und Sicherheitsereignisse der letzten 180 Tage. Datum und Suche begrenzen die Auswahl; weitere Einträge lassen sich nachladen und als JSON herunterladen. Der Datumsfilter verwendet die eigene Profilzeitzone. Migration 8 legt das Protokoll an; ältere Ereignisse werden nicht nachträglich erfunden. Das Lesefenster löscht keine Daten. [Ereignisse, Zugriffs- und Exportgrenzen](../AUDIT.md).
+
+## Zwei-Faktor-Anmeldung ab 0.9.0
+
+Unter **Einstellungen → Eigenes Konto → Zwei-Faktor-Anmeldung → Einrichten** bestätigst du dein Passwort, verbindest eine Authenticator-App und sicherst die einmalig angezeigten Wiederherstellungscodes. Auf demselben Smartphone kannst du den Einrichtungsschlüssel kopieren. Aktivierung, neue Codes und Ausschalten melden andere Sitzungen und Erweiterungen ab. Danach die Erweiterung neu verbinden.
+
+Ein Passwortreset schaltet den zweiten Faktor nicht aus. Ohne Authenticator verwendest du einen unbenutzten Wiederherstellungscode. Neue Codes und Ausschalten verlangen Passwort plus zweiten Nachweis. Bei fehlendem Server-Schlüssel gibt es keinen Passwort-Fallback; stelle den ursprünglichen Schlüssel aus der Sicherung wieder her. Die Uhr des Linux-Gasts muss synchronisiert sein (z. B. `timedatectl status`). Ein bereits verwendeter Authenticator-Code wird abgewiesen; warte auf den nächsten Code.
+
+**Kompatibilität:** Erst den Server auf 0.9.0 aktualisieren, dann das Erweiterungspaket. Die API bleibt `/api/v1`. Ein alter Server-Anwendungsstand kann Konten mit eingeschalteter 2FA nach einem Rückbau nicht anmelden; die Datenbank verhindert dabei eine Anmeldung nur mit Passwort. Rückbau und Wiederherstellung umgehen den Faktor nicht.

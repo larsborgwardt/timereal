@@ -11,6 +11,10 @@ erDiagram
   KUNDE o|--o{ ZEITABSCHNITT : Zuordnung
   BUCHUNGSZIEL o|--o{ ZEITABSCHNITT : Ziel
   KONTO ||--o{ SITZUNG : authentifiziert
+  KONTO ||--o| MFA_KONTO : sichert
+  KONTO ||--o{ MFA_PRUEFUNG : prueft
+  KONTO ||--o{ MFA_CODE : besitzt
+  KONTO ||--o| PROFIL_EMAIL : bestaetigt
   SITZUNG ||--o{ ERWEITERUNGSCODE : autorisiert
   KONTO ||--o{ ERWEITERUNGSCODE : besitzt
   KONTO ||--o{ TIMER_AUFTRAG : verarbeitet
@@ -30,6 +34,7 @@ erDiagram
     bigint timer_version
     bigint pause_abschnitt_id FK
     boolean aktiv
+    text anzeigename
   }
   BUCHUNGSZIEL {
     bigint konto_id PK
@@ -99,3 +104,9 @@ Migration 007 ergänzt `ist_betrieb` und die gespeicherte abgeleitete Spalte `ro
 Migration 008 ergänzt `audit_art` und `audit_ereignis`. Die Ereignisse halten Kontobezeichnungen zum Ereigniszeitpunkt als Text fest; sie sind keine Fremdschlüssel auf heutige Kontonamen. Trigger an Konto, Sitzung und Kontolink schreiben innerhalb der jeweiligen Transaktion. Für fehlgeschlagene Passwortanmeldungen meldet der Server ein gesondertes Ereignis, ohne unbekannte eingereichte Namen abzulegen.
 
 Die Anwendungsrolle hat keine direkten Tabellenrechte. Die Lesefunktion prüft die aktive Administratorrolle, begrenzt den Zeitraum auf 180 Tage und verwendet ID-Cursor; der HTTP-Vertrag verlangt zusätzlich eine Websitzung. Änderungs-/Löschtrigger schützen vor gewöhnlichen SQL-Updates, ersetzen aber keine Kontrolle des Datenbankeigentümers. Die Migration ergänzt keine historischen Ereignisse. Aufbewahrung und Wartung sind getrennt vom Lesefenster zu entscheiden. [Daten- und Zugriffsvertrag](AUDIT.md).
+
+## Kontosicherheit ab 0.9.0
+
+Migration 009 ergänzt `mfa_konto` (verschlüsselter Faktor, Vorbereitung, letzter verbrauchter Zeitschritt, Revision und Fehlversuchsfenster), `mfa_pruefung` (Tokenhash, Revision, Ablauf) und `mfa_code` (Hash eines unbenutzten Wiederherstellungscodes). Die Funktionen sperren zuerst das aktive Konto; damit sind Abschluss, Wiederverwendung und paralleler Widerruf serialisiert. Die Anwendungsrolle besitzt keine direkten Tabellenrechte. Aktive Faktoren verhindern auch über die bisherige Funktion `sitzung_anlegen()` eine reine Passwortanmeldung.
+
+Migration 010 ergänzt den optionalen Anzeigenamen und `profil_email` für die ausstehende E-Mail-Bestätigung. Ein Einmallink ist an das angemeldete Konto gebunden. Passwort-, Rollen- oder Sperränderungen entwerten ausstehende Faktorprüfungen, Einrichtungen und Adressbestätigungen, erhalten aber einen aktiven Faktor. Der Schlüssel liegt außerhalb der Datenbank; eine vollständige Sicherung benötigt deshalb Dump und zugehörige Schlüsseldatei. [Kontosicherheitsvertrag](KONTOSICHERHEIT.md).

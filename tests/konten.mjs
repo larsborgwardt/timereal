@@ -55,7 +55,42 @@ test("Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und S
     assert.equal(profil.admin, true);
     assert.equal(profil.login, "admin-test");
     assert.equal(profil.passwort_hash, undefined);
-    await ok(q(a, "PATCH", "/profil", { email: "Admin@Example.Test" }));
+    const nameOnly = await ok(
+      q(a, "PATCH", "/profil", { name: "Nur Anzeigename" }),
+    );
+    assert.equal(nameOnly.name, "Nur Anzeigename");
+    assert.equal(nameOnly.email, null);
+    assert.equal(nameOnly.emailAusstehend, null);
+    const saved = await ok(
+      q(a, "PATCH", "/profil", {
+        name: "Alex Beratung",
+        email: "Admin@Example.Test",
+      }),
+    );
+    assert.equal(saved.name, "Alex Beratung");
+    assert.equal(saved.email, null);
+    assert.equal(saved.emailAusstehend, "admin@example.test");
+    const emailMessage = mail.nachrichten
+      .at(-1)
+      .replace(/=\r\n/g, "")
+      .replace(/=3D/g, "=");
+    const emailToken = /#email=([a-f0-9]{64})/.exec(emailMessage)?.[1];
+    assert.ok(emailToken);
+    await ok(q(a, "PATCH", "/profil", { name: "Alex Beratung" }));
+    await ok(
+      q(b, "POST", "/profil/email-bestaetigen", { token: emailToken }),
+      410,
+    );
+    await ok(q(a, "POST", "/profil/email-bestaetigen", { token: emailToken }));
+    await ok(
+      q(a, "POST", "/profil/email-bestaetigen", { token: emailToken }),
+      410,
+    );
+    assert.equal(
+      (await ok(q(a, "GET", "/profil"))).email,
+      "admin@example.test",
+    );
+    assert.notEqual((await ok(q(b, "GET", "/profil"))).name, "Alex Beratung");
     await ok(
       q("", "POST", "/anmeldung", {
         login: "ADMIN@EXAMPLE.TEST",

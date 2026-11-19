@@ -1,0 +1,30 @@
+✖ 2FA-Schlüssel: atomare Anlage, unveränderter Bestand, sichere Dateirechte (3.056769ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53.643525
+
+✖ failing tests:
+
+test at tests/mfa-schluessel.test.mjs:8:1
+✖ 2FA-Schlüssel: atomare Anlage, unveränderter Bestand, sichere Dateirechte (3.056769ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  384 !== 416
+  
+      at TestContext.<anonymous> (file:///home/hermes/workspace/sap-zeiterfassung/tests/mfa-schluessel.test.mjs:33:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 384,
+    expected: 416,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

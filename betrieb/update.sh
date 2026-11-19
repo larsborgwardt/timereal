@@ -208,6 +208,12 @@ schritt 3 'Anwendung kurz anhalten und Datenbanksicherung erstellen'
 printf 'Sicherung: %s/before.dump\n' "$receipt"
 stopped=true
 systemctl stop timereal.service
+# Der dauerhafte Schlüssel bleibt außerhalb des Releasebaums. Niemals bei vorhandenen Faktoren ersetzen.
+bash "$stage/betrieb/mfa-schluessel.sh" anlegen
+cp -p /etc/timereal/mfa.key "$receipt/mfa.key"
+cp -a /etc/timereal "$receipt/konfiguration"
+cp "$previous/release.json" "$receipt/release.json"
+sync -f "$receipt/mfa.key"
 # Shell öffnet die geschützte Datei; pg_dump läuft weiterhin als postgres.
 runuser -u postgres -- pg_dump --format=custom timereal > "$receipt/before.dump"
 runuser -u postgres -- pg_restore --list < "$receipt/before.dump" > "$receipt/inhalte.txt"

@@ -17,6 +17,11 @@ Lars beauftragt am 18. November 2026 die Umsetzung der offenen Funktionen mit Ve
 | 0.6.2 | Versionsfooter, Updatehinweis, konfigurierbare Proxy-Domain und abgesicherter Start der Erweiterungsanmeldung | Cache-/Fehlerproben, mobile und vergrößerte Darstellung, echtes Update von 0.6.1 und Domainwechsel im Prüfgast |
 | 0.7.0 | Designkorrekturen, Updates und Domainzugriff im Adminbereich, dauerhafter Betriebsdienst | PostgreSQL-/Browserprüfungen, Bootstrap aus 0.6.2, privater Folgesprung, Startfehler und SIGKILL-Wiederanlauf im Debian/systemd-Prüfgast; [Belege und Grenzen](nachweise/0.7.0.md) |
 | 0.7.1 | Aktionsabstand unter Nachweise korrigiert | Ergänzte Abstandsprüfung und Sichtnachweise; [Releasebeleg](nachweise/0.7.1.md) |
+| 0.7.2 | Manuelle Updateprüfung | Frischer Versionsabruf; [Releasebeleg](nachweise/0.7.2.md) |
+| 0.8.0 | Systemkonsole | Echte Journalquelle und Betriebsfehler; [Releasebeleg](nachweise/0.8.0.md) |
+| 0.8.1 | Benutzer und Rollen | Kontotrennung und Widerruf; [Releasebeleg](nachweise/0.8.1.md) |
+| 0.8.2 | Audit-Protokoll | Filter, Zeitraum und Export; [Releasebeleg](nachweise/0.8.2.md) |
+| 0.9.0 | Eigenes Konto, bestätigte E-Mail und Zwei-Faktor-Anmeldung; Erweiterungsanmeldung | Authenticator, Recovery, Webupdate aus v0.8.2 und Sicherung mit Schlüssel; [Releasebeleg](nachweise/0.9.0.md) |
 
 Die Versionsnummer beschreibt ein geprüftes Lieferpaket. Fehlerkorrekturen erhöhen die dritte Stelle. Ein Git-Tag `vX.Y.Z` wird nach den Prüfungen angelegt und anschließend nicht verschoben. Die API bleibt unter `/api/v1`; ein zusätzlicher Endpunkt ändert nicht deren Hauptversion. Eine spätere inkompatible Schnittstelle bekommt einen eigenen Pfad.
 
@@ -46,7 +51,7 @@ Die Erweiterung erhält nur die Berechtigung für die konfigurierte Timereal-Adr
 
 **0.7.0 – Betrieb über den Adminbereich** ist implementiert. Der [Betriebsvertrag](ADMIN-BETRIEB.md) beschreibt den getrennten Dienst, Berechtigungen, Wiederanlauf und die freigegebene Bildvorlage. Die erste Installation des Betriebsdienstes benötigt ein Konsolenupdate. Der Webupdateweg übernimmt danach reguläre kompatible Folgeupdates.
 
-Die zunächst vorgemerkten Themen sind inzwischen zur Umsetzung beauftragt: Rollen, Audit und Systemkonsole für 0.8.0; Profil/2FA und Erweiterungsausbau für 0.9.0. Die Systemkonsole ist mit D-RELEASE-003 freigegeben; Rollen, Audit und Kontosicherheit warten auf Bildfreigabe. Der [Backlog](BACKLOG.md) und das [Entscheidungsjournal](RELEASEPLAN.md#entscheidungsjournal) führen den aktuellen Stand.
+Die Systemkonsole, Rollen und Audit wurden als Pakete 0.8.0–0.8.2 ausgeliefert. Profil/2FA und die angepasste Chromium-Anmeldung gehören zu 0.9.0; die Bilder 13/14 sind mit D-RELEASE-006/007 freigegeben. Der [Backlog](BACKLOG.md) und das [Entscheidungsjournal](RELEASEPLAN.md#entscheidungsjournal) führen den aktuellen Stand.
 
 ## Bildmaßstab und Auslieferungsnachweis
 

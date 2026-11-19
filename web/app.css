@@ -382,6 +382,49 @@ small,
 .login {
   max-width: 420px;
 }
+.konto-raster {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.mfa-bereich {
+  max-width: 640px;
+  margin-inline: auto;
+}
+#mfa-qr {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+#mfa-schluessel-kopieren {
+  margin: 16px 0 24px;
+}
+#mfa-code-liste {
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  line-height: 1.9;
+}
+.mfa-gesichert {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+}
+.mfa-gesichert input {
+  width: 24px;
+  flex: none;
+}
+#login-faktor-fehler,
+#mfa-fehler {
+  color: #932b26;
+}
+@media (max-width: 700px) {
+  .konto-raster {
+    grid-template-columns: 1fr;
+  }
+}
 dialog {
   color: inherit;
   width: min(92vw, 480px);
@@ -664,4 +707,23 @@ h2:focus-visible {
   color: #4b6475;
   font-size: 0.9rem;
   margin-bottom: 8px;
+}
+
+.mfa-schritte {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+  margin-bottom: 16px;
+}
+.mfa-schritte li {
+  background: #edf3f5;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+.mfa-schritte [aria-current] {
+  background: #e0f3ed;
+  color: #006d69;
+  font-weight: 700;
 }

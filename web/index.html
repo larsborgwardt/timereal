@@ -59,6 +59,7 @@
           ><button>Anmelden</button>
         </form>
         <button id="vergessen" class="text">Passwort vergessen?</button>
+        <div id="faktor-anmeldung"></div>
       </section>
       <section id="heute" hidden>
         <div class="zeile">
@@ -506,8 +507,58 @@
         </div>
       </section>
       <section id="einstellungen" hidden>
-        <h1>Einstellungen</h1>
+        <h1>Eigenes Konto</h1>
         <p id="kontoname"></p>
+        <div id="konto-uebersicht" class="konto-raster">
+          <form class="karte" id="profilform">
+            <h2>Profil</h2>
+            <p>So erscheint dein Name in Timereal.</p>
+            <label
+              >Anzeigename<input
+                name="name"
+                maxlength="120"
+                autocomplete="name"
+            /></label>
+            <label
+              >E-Mail-Adresse<input
+                name="email"
+                type="email"
+                maxlength="250"
+                autocomplete="email"
+            /></label>
+            <p class="neben">
+              Für eine neue E-Mail-Adresse erhältst du einen Bestätigungslink.
+            </p>
+            <p id="profil-ausstehend" class="neben" hidden></p>
+            <button>Profil speichern</button>
+          </form>
+          <div>
+            <section class="karte">
+              <h2>Passwort</h2>
+              <p>Ändere dein Passwort für die Anmeldung.</p>
+              <button class="sek" type="button" id="passwort-oeffnen">
+                Passwort ändern
+              </button>
+            </section>
+            <section class="karte" id="mfa-karte">
+              <h2>Zwei-Faktor-Anmeldung</h2>
+              <p id="mfa-status"></p>
+              <p>Schütze dein Konto zusätzlich mit einer Authenticator-App.</p>
+              <p id="mfa-verfuegbar" hidden>
+                Der Betreiber muss den Zwei-Faktor-Schlüssel im Dienst
+                einrichten.
+              </p>
+              <button type="button" id="mfa-start">Einrichten</button>
+            </section>
+            <section class="karte">
+              <h2>Angemeldete Geräte</h2>
+              <p>Browser und Erweiterungen haben eigene Sitzungen.</p>
+              <button class="sek" type="button" id="sitzungen-oeffnen">
+                Sitzungen verwalten
+              </button>
+            </section>
+          </div>
+        </div>
         <form id="grundeinstellungen" class="karte">
           <h2>Zeiterfassung</h2>
           <label
@@ -530,44 +581,51 @@
               required /></label
           ><button>Einstellungen speichern</button>
         </form>
-        <form class="karte" id="profilform">
-          <h2>Mein Konto</h2>
-          <label
-            >E-Mail-Adresse für die Passwortzurücksetzung<input
-              name="email"
-              type="email"
-              required
-              maxlength="250"
-              autocomplete="email" /></label
-          ><button>Adresse speichern</button>
-        </form>
-        <form class="karte" id="passwortform">
-          <h2>Passwort ändern</h2>
-          <label
-            >Bisheriges Passwort<input
-              type="password"
-              name="alt"
-              required
-              autocomplete="current-password"
-              maxlength="512" /></label
-          ><label
-            >Neues Passwort · mindestens 12 Zeichen<input
-              type="password"
-              name="neu"
-              required
-              minlength="12"
-              maxlength="512"
-              autocomplete="new-password" /></label
-          ><button>Passwort ändern und abmelden</button>
-        </form>
-        <section class="karte">
-          <h2>Angemeldete Geräte</h2>
+        <section id="mfa-bereich" class="mfa-bereich" hidden></section>
+        <dialog id="passwortfenster" aria-labelledby="passworttitel">
+          <form class="karte" id="passwortform">
+            <h2 id="passworttitel">Passwort ändern</h2>
+            <label
+              >Bisheriges Passwort<input
+                type="password"
+                name="alt"
+                required
+                autocomplete="current-password"
+                maxlength="512" /></label
+            ><label
+              >Neues Passwort · mindestens 12 Zeichen<input
+                type="password"
+                name="neu"
+                required
+                minlength="12"
+                maxlength="512"
+                autocomplete="new-password"
+            /></label>
+            <div class="aktionen">
+              <button>Passwort ändern und abmelden</button
+              ><button type="button" class="sek" data-close>Abbrechen</button>
+            </div>
+          </form>
+        </dialog>
+        <dialog id="sitzungsfenster" aria-labelledby="sitzungstitel">
+          <h2 id="sitzungstitel">Angemeldete Geräte</h2>
           <p>Du kannst Browser und Erweiterung einzeln abmelden.</p>
           <div id="sitzungsliste"></div>
-        </section>
+          <div class="aktionen">
+            <button class="sek" type="button" data-close>Schließen</button>
+          </div>
+        </dialog>
         <p id="versionsnummer" class="neben"></p>
       </section>
     </main>
+    <dialog id="emailfenster" aria-labelledby="emailtitel">
+      <h2 id="emailtitel">Neue E-Mail-Adresse</h2>
+      <p>Übernimm die bestätigte Adresse für dein angemeldetes Konto.</p>
+      <div class="aktionen">
+        <button id="email-bestaetigen">E-Mail-Adresse bestätigen</button
+        ><button type="button" class="sek" data-close>Abbrechen</button>
+      </div>
+    </dialog>
     <dialog id="zielfenster" aria-labelledby="zieltitel">
       <form id="zielform">
         <h2 id="zieltitel">Neues Buchungsziel</h2>
