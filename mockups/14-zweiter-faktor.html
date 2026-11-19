@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Timereal · Zweiter Faktor · Bildentwurf</title>
+  <link rel="stylesheet" href="../web/app.css">
+  <style>
+    .entwurf{color:#4b6475;font-size:.85rem;margin:24px 0}
+    .faktor{max-width:640px;margin:32px auto}.faktor h1{font-size:1.75rem}
+    .faktor .aktionen{gap:16px;margin:24px 0}.faktor input{max-width:100%}
+    .statusgut{color:#086e66;font-weight:650}.faktor .neben{font-size:.95rem}
+    .faktor label{margin:16px 0}.faktor .sek{white-space:normal}
+    .kontozeile{overflow-wrap:anywhere}.faktor .warnung{padding:16px;background:#fff3db;color:#644a0b;border-radius:8px}
+    @media(max-width:650px){.faktor{margin:24px 0}.faktor .aktionen>*{width:100%}}
+  </style>
+</head>
+<body>
+<header><div class="kopf"><strong>Timereal</strong></div></header>
+<main>
+<p class="entwurf">BILDENTWURF · BEISPIELDATEN · NOCH KEINE PRODUKTFUNKTION</p>
+<section class="faktor" data-screen="anmeldung">
+  <div class="karte">
+    <h1>Anmeldung bestätigen</h1>
+    <p class="kontozeile">Für alex@example.org</p>
+    <p>Gib den aktuellen Code aus deiner Authenticator-App ein.</p>
+    <label>Sechsstelliger Code<input inputmode="numeric" autocomplete="one-time-code" placeholder="000000" maxlength="6"></label>
+    <div class="aktionen"><button type="button">Anmelden</button><button type="button" class="sek">Zurück zur Anmeldung</button></div>
+    <button type="button" class="sek">Wiederherstellungscode verwenden</button>
+    <p class="neben">Die Bestätigung ist fünf Minuten gültig. Danach meldest du dich erneut mit deinem Passwort an.</p>
+  </div>
+</section>
+<section class="faktor" data-screen="wiederherstellung" hidden>
+  <div class="karte">
+    <h1>Wiederherstellungscode verwenden</h1>
+    <p>Nutze einen deiner gesicherten Codes, wenn du keinen Zugriff auf die Authenticator-App hast.</p>
+    <label>Wiederherstellungscode<input type="password" autocomplete="off"></label>
+    <p class="neben">Der Code kann nach erfolgreicher Anmeldung nicht erneut verwendet werden.</p>
+    <div class="aktionen"><button type="button">Anmelden</button><button type="button" class="sek">Authenticator verwenden</button></div>
+  </div>
+</section>
+<section class="faktor" data-screen="verwaltung" hidden>
+  <h1>Zwei-Faktor-Anmeldung</h1>
+  <div class="karte">
+    <h2>Authenticator</h2><p class="statusgut">Eingeschaltet</p>
+    <p>Dein Konto verlangt bei einer neuen Anmeldung zusätzlich einen Authenticator- oder Wiederherstellungscode.</p>
+    <h2>Wiederherstellungscodes</h2><p>6 unbenutzte Codes verfügbar</p>
+    <p>Neue Codes ersetzen deine bisherigen Codes. Du kannst sie anschließend einmal herunterladen oder kopieren.</p>
+    <div class="aktionen"><button type="button">Neue Codes erstellen</button><button type="button" class="sek">Zwei-Faktor-Anmeldung ausschalten</button></div>
+    <button type="button" class="sek">Zurück zum Konto</button>
+  </div>
+</section>
+<section class="faktor" data-screen="bestaetigung" hidden>
+  <div class="karte">
+    <h1>Zwei-Faktor-Anmeldung ausschalten</h1>
+    <p class="warnung">Danach schützt nur noch dein Passwort neue Anmeldungen. Andere angemeldete Geräte und Erweiterungen werden abgemeldet.</p>
+    <label>Aktuelles Passwort<input type="password" autocomplete="current-password"></label>
+    <label>Authenticator-Code<input inputmode="numeric" autocomplete="one-time-code" placeholder="000000" maxlength="6"></label>
+    <button type="button" class="sek">Wiederherstellungscode verwenden</button>
+    <div class="aktionen"><button type="button">Ausschalten</button><button type="button" class="sek">Abbrechen</button></div>
+  </div>
+</section>
+</main>
+<script>
+  const screen=new URLSearchParams(location.search).get('screen')||'anmeldung';
+  document.querySelectorAll('[data-screen]').forEach(el=>el.hidden=el.dataset.screen!==screen);
+</script>
+</body>
+</html>
