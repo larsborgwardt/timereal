@@ -87,3 +87,5 @@ Lars meldet „der domainwechsel wird immer zurückgenommen“, konkret „Sofor
 ## D-RELEASE-014 — Einfachere Betriebsaktionen und Fortschrittsbalken
 
 20.11.2026: Lars beanstandet wiederholte Passwortabfragen und Bestätigungen bei Domainzugriff und Updates. Er ergänzt „Beim Update hätte ich auch gerne ein Fortschritts Diagramm als Balken horizontal“ und gibt `mockups/18-betrieb-390.png` sowie `mockups/18-betrieb-1280.png` mit **„Entwurf umsetzen (empfohlen)“** frei. Version 0.9.4 bündelt Vorbereitung/Installation und Domainprüfung/Übernahme jeweils in einem Auftrag; der neue Domainzugriff wird automatisch erkannt. Die aktive Betriebs-Websitzung bleibt erforderlich. Die bestehenden Sicherungen und Rücknahmen bleiben technische Bestandteile.
+
+Ergänzung vom 20.11.2026: Lars entscheidet „Das Lastprofil finde ich unnötig, wichtiger ist gitleaks“. Der automatische Kapazitätsjob entfällt zugunsten einer Gitleaks-Prüfung der Git-Historie mit redigierter Ausgabe. `tests/last.sh` bleibt für gezielte manuelle Messungen verfügbar; PostgreSQL-/Browser-Funktionstests bleiben Teil der Releaseprüfung.

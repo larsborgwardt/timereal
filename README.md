@@ -166,6 +166,10 @@ Ein vorhandenes Chromium lässt sich mit `CHROMIUM_PATH` angeben. Die Tests lege
 
 Fehler und Vorschläge können als [GitHub-Issue](https://github.com/larsborgwardt/timereal/issues) eingereicht werden. Nenne Version, Installationsart und Schritte zum Nachstellen. Zugangsdaten und echte Kundendaten gehören nicht in öffentliche Issues. Besprich größere Funktionsänderungen vor einem Pull Request.
 
+### Prüfung auf eingecheckte Zugangsdaten
+
+Die GitHub-Prüfung führt Gitleaks 8.30.1 über die ausgecheckte Git-Historie aus. Treffer lassen den Job fehlschlagen; Ausgaben sind redigiert. Lokal mit installiertem Gitleaks: `bash tests/gitleaks.sh`. Der Test prüft zuerst einen sauberen Bestand und einen synthetischen, aus dem aktuellen Baum gelöschten Token. Eine eng begrenzte historische Ausnahme für den öffentlichen Entwickler-Erweiterungsschlüssel steht in `.gitleaksignore`. Das Lastprofil aus `tests/last.sh` wird bei Bedarf manuell ausgeführt.
+
 ## Lizenz
 
 Timereal wird unter der [GNU Affero General Public License v3](LICENSE) bereitgestellt.

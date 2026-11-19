@@ -1,0 +1,4 @@
+# Historischer öffentlicher RSA-SPKI-Schlüssel zur stabilen Entwicklungs-ID.
+# Mit crypto.createPublicKey als type=public, algorithm=rsa geprüft.
+# Ausnahme nur für diesen Fund, kein Pfad- oder Regel-Ausschluss.
+ab7d9808ff4d30e30be876e8daa9aa4aa28dc3d6:erweiterung/manifest.json:generic-api-key:6

@@ -2,6 +2,7 @@
 
 ## 0.9.4 — 20. November 2026
 
+- Gitleaks prüft die Git-Historie auf eingecheckte Zugangsdaten. Der automatische Lastprofil-Job entfällt; Lastmessungen bleiben manuell möglich.
 - Updates starten mit einem Klick; Vorbereitung, Datensicherung und Installation laufen auf dem Server weiter. Ein horizontaler Fortschrittsbalken zeigt die tatsächlichen Phasen.
 - Domain speichern prüft und übernimmt die Konfiguration in einem Auftrag. Der angemeldete Zugriff über die neue Adresse wird automatisch erkannt.
 - Erneute Passworteingabe und manueller Bestätigungsklick entfallen für diese Betriebsaktionen. Betriebsrolle, Websitzung, Herkunftsprüfung und wiederholbare Auftragsschlüssel bleiben erforderlich.
