@@ -4,13 +4,15 @@ Die Erweiterung verwendet den bestehenden Timereal-Server. Ihr Popup bedient den
 
 ## Bauen und laden
 
-Für den Testpilot kannst du auch `timereal-erweiterung-0.6.1.zip` aus dem [Release v0.6.1](https://github.com/larsborgwardt/timereal/releases/tag/v0.6.1) herunterladen und entpacken. Lade dann den entpackten Ordner im Browser; die ZIP-Datei selbst wird nicht als Erweiterung geladen.
+Für den Testpilot kannst du auch `timereal-erweiterung-0.7.0.zip` aus dem [Release v0.7.0](https://github.com/larsborgwardt/timereal/releases/tag/v0.7.0) herunterladen und entpacken. Lade dann den entpackten Ordner im Browser; die ZIP-Datei selbst wird nicht als Erweiterung geladen.
 
 Im Repository `npm ci --ignore-scripts` und `node scripts/erweiterung-bauen.mjs` ausführen. In `chrome://extensions` beziehungsweise `edge://extensions` den Entwicklermodus einschalten und **Entpackte Erweiterung laden** wählen. Ordner: `dist/erweiterung`. Das Browserleistensymbol anschließend anheften. Ein Update lädt denselben Ordner erneut; der öffentliche Schlüssel im Manifest hält die Kennung stabil. Ein privater Signaturschlüssel liegt nicht im Repository.
 
 Unter den Erweiterungsoptionen die HTTPS-Adresse des eigenen Timereal-Servers eintragen. Erlaube den Zugriff auf diese Adresse, melde dich im geöffneten Timereal-Fenster an und bestätige „Erweiterung verbinden“. Für den lokalen Entwicklungstest ist HTTP nur auf Loopback zugelassen. Im Testnetz mit eigener Zertifizierungsstelle muss der Browser der Test-CA vertrauen.
 
 Die Erweiterung speichert ihre Sitzung im Sitzungsspeicher des Browsers und benötigt nach einem Browserneustart eine neue Anmeldung. Ein Wechsel der konfigurierten Serveradresse sendet den alten Sitzungsschlüssel nicht an den neuen Server. Unter Einstellungen der Web-App kann die Sitzung „Browsererweiterung“ widerrufen werden.
+
+Updates und Domainwechsel des Servers werden über eine Administrator-Websitzung in der Web-App ausgeführt. Diese Betriebsbereiche werden in der Erweiterungsseite ausgeblendet.
 
 ## Verbindung und Berechtigungen
 

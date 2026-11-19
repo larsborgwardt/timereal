@@ -1,6 +1,6 @@
 # Timereal 0.7.0 — Betrieb im Adminbereich
 
-**Umsetzungsplan vom 19. November 2026.** Grundlage: veröffentlichte Version 0.6.2, Commit `2e287287df539c8465567f2b9c95ddfb937100e1`. Der Auftrag umfasst Updates und die Einrichtung einer öffentlichen Domain in der Verwaltung. Lars hat die Bildvorlagen für Updates und Domainzugriff einschließlich Fortschritt und Zugriffsbestätigung mit „Bildentwürfe freigeben (empfohlen)“ zur Umsetzung freigegeben. Die bereits abgenommenen Verwaltungs- und Footerbilder bleiben der Gestaltungsmaßstab. Implementierung und Abnahme folgen; die Freigabe ist kein Funktionsnachweis.
+**Implementierungsstand 0.7.0 vom 19. November 2026.** Grundlage: veröffentlichte Version 0.6.2, Commit `2e287287df539c8465567f2b9c95ddfb937100e1`. Der Auftrag umfasst Updates und die Einrichtung einer öffentlichen Domain in der Verwaltung. Lars hat die Bildvorlagen für Updates und Domainzugriff einschließlich Fortschritt und Zugriffsbestätigung mit „Bildentwürfe freigeben (empfohlen)“ zur Umsetzung freigegeben. Die bereits abgenommenen Verwaltungs- und Footerbilder bleiben der Gestaltungsmaßstab. Die Implementierung und ihre tatsächlich ausgeführten Prüfungen sind im [Auslieferungsnachweis](nachweise/0.7.0.md) getrennt von offenen Messungen dokumentiert.
 
 ## Bedienung
 
@@ -50,7 +50,7 @@ flowchart LR
 
 ## Auftrags- und API-Vertrag
 
-Geplante Endpunkte, noch keine verfügbaren APIs:
+Implementierte Endpunkte; der Unix-Betriebsdienst muss eingerichtet sein:
 
 | Endpunkt unter `/api/v1/verwaltung/betrieb` | Zweck |
 |---|---|
@@ -69,7 +69,9 @@ Der root-eigene Zustandsbestand liegt unter `/var/lib/timereal-betrieb`. Austaus
 
 Updatezustände: `vorbereitung`, `bereit`, `sicherung`, `migration`, `neustart`, `erfolgreich`, `fehlgeschlagen`, `vorherige_version_aktiv`, `wiederherstellung_noetig`. Domainzustände: `geprueft`, `uebernahme`, `bestaetigung_ausstehend`, `erfolgreich`, `zurueckgesetzt`, `wiederherstellung_noetig`. Nach einem Dienst-/Hostneustart wird der tatsächlich aktive Stand geprüft, bevor ein terminales Ergebnis festgeschrieben wird. Ein unterbrochener Auftrag wird nicht blind erneut ausgeführt.
 
-Der Betriebsdienst liegt außerhalb des aktiven App-Releasezeigers. Seine eigene Aktualisierung muss den gerade laufenden Auftrag überleben: neuer Dienststand wird separat installiert, vorheriger bleibt für Rückkehr verfügbar; erst nach dauerhaftem Ergebnis darf der Dienst neu gestartet werden. Das feste Bootstrap-Protokoll und die Kompatibilitätsprüfung bleiben versionsgebunden. Auch der Folgesprung von 0.7.0 auf einen Testkandidaten wird geprüft.
+Der Betriebsdienst liegt außerhalb des aktiven App-Releasezeigers. Seine eigene Aktualisierung überlebt den gerade laufenden Auftrag: neuer Dienststand wird separat installiert, vorheriger bleibt für Rückkehr verfügbar; erst nach dauerhaftem Ergebnis wird der Dienst neu gestartet. `release.json` bindet Webupdates an `betriebProtokoll: 1` und `apiVersion: 1`. Ein inkompatibles Release wird mit einem Hinweis auf den Konsolenweg abgewiesen. Nach einem Abbruch während des Dienstwechsels wird auch der Hilfsdienst nachgezogen, bevor die Wiederherstellung als erfolgreich endet. Folgesprung und Abbruchfall wurden mit privaten Prüftags ausgeführt, nicht mit vorweg veröffentlichten Releases.
+
+Aufträge und Wiederholungsschlüssel werden nicht automatisch gelöscht. Bei den Grenzen von 2.000 Aufträgen beziehungsweise 10.000 Schlüsseln verweigert der Dienst neue Aufträge und verlangt Wartung. Die Zahlen sind Begrenzungen des Auftragsbuchs, keine Aufbewahrungsfrist. Sicherungen unter `/var/lib/timereal-betrieb/sicherungen` können vertrauliche Konfiguration enthalten und bleiben root-eigen. Speicherverbrauch und Sicherung dieses Bestands gehören zum Containerbetrieb.
 
 ## Lieferfolge und Prüfungen
 
@@ -79,9 +81,9 @@ Der Betriebsdienst liegt außerhalb des aktiven App-Releasezeigers. Seine eigene
 4. Erstinstallation und Bootstrap aus 0.6.2 sowie Folgesprung im eigenen Debian-13/systemd-Prüfgast ausführen. Der Testgast ist getrennt von Lars' LXC.
 5. Gegen das freigegebene Bild auf Laptop und Smartphone prüfen; Links, Tastatur, Fehler, Verbindungsverlust und 200 % Textgröße einschließen. Release erst nach grüner Prüfung veröffentlichen.
 
-Abnahmefälle: zwei echte Konten mit unterschiedlichen Rollen; fremde/abgelaufene Sitzung; falsches Passwort; falsche Origin; Erweiterungs-Bearer; doppelter Start nach verlorener HTTP-Antwort; paralleler Domain-/Updateauftrag; GitHub-Ausfall; ungültiges Release und veränderter Tag; Speichermangel und misslungene Sicherung; Startfehler mit erfolgreicher sowie fehlschlagender Wiederherstellung; Prozessabbruch und Neustart während des Auftrags; geschlossener Browser; neue Domain mit nichtleerem Inhalt; falscher externer Proxy; fehlende Bestätigung und Rückbau. Das sind geplante Prüfungen, noch keine bestandenen Nachweise.
+Die tatsächlich ausgeführten API-, Browser-, Zustands- und Debian-Betriebsproben stehen mit Befehlen und Ergebnissen im [Auslieferungsnachweis](nachweise/0.7.0.md). Eine Browserprobe mit ersetztem privilegiertem Betriebsschritt misst die Bedienung; die getrennte native Probe misst echte Dienste, PostgreSQL, TLS, Git und Rückbau. Das wird nicht als gemeinsamer Ende-zu-Ende-Browserlauf auf Proxmox ausgegeben. Zusätzliche Störungsproben für Speicherknappheit, Sicherungsfehler und einen ebenfalls nicht mehr startbaren Vorgänger bleiben offen; Lars' externer Proxy wurde nicht verändert oder als funktionsfähig abgenommen.
 
-**Einmaliger Umstieg:** Der bereits laufende Container enthält den Betriebsdienst noch nicht. Lars installiert 0.7.0 zunächst einmal über die Konsole; dabei werden die root-eigenen Dateien und systemd-Einheiten eingerichtet. Anschließend sollen reguläre Updates und unterstützte Domainwechsel über die Verwaltung möglich sein. Bei nicht mehr erreichbarer Anwendung bleibt die Konsole ein Wiederherstellungsweg.
+**Einmaliger Umstieg:** Ein Container mit 0.6.2 enthält den Betriebsdienst noch nicht. Lars installiert 0.7.0 zunächst einmal über die Konsole; dabei werden die root-eigenen Dateien und systemd-Einheiten eingerichtet. Anschließend sind reguläre Updates und unterstützte Domainwechsel über die Verwaltung möglich. Bei nicht mehr erreichbarer Anwendung bleibt die Konsole ein Wiederherstellungsweg.
 
 ## Bilder und Quellen
 

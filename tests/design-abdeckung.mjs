@@ -19,9 +19,11 @@ try {
   const page = await browser.newPage();
   const ids = await page.evaluate((html) => {
     const document = new DOMParser().parseFromString(html, "text/html");
-    return [...document.querySelectorAll("main > section[id], dialog[id]")].map(
-      (el) => el.id,
-    );
+    return [
+      ...document.querySelectorAll(
+        "main > section[id], dialog[id], [data-betrieb-panel][id]",
+      ),
+    ].map((el) => el.id);
   }, html);
   const reached = new Set(
     records.filter((r) => !r.findings.length).flatMap((r) => r.ids),

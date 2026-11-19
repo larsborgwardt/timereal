@@ -34,7 +34,11 @@ done
 node=/opt/timereal-node/bin/node
 ca=/var/lib/timereal-https/caddy/pki/authorities/local/root.crt
 [[ -x $node && -f $ca ]] || { echo 'Timereal-Laufzeit oder interne Test-CA fehlt.' >&2; exit 1; }
-exec 9>/run/lock/timereal-install.lock
+if [[ ${TIMEREAL_BETRIEB_LOCK:-} == 1 ]]; then
+  [[ $(readlink /proc/$$/fd/9) == /run/lock/timereal-install.lock ]] || { echo 'Gemeinsame Betriebssperre fehlt.' >&2; exit 1; }
+else
+  exec 9>/run/lock/timereal-install.lock
+fi
 flock -n 9 || { echo 'Eine Einrichtung oder Aktualisierung läuft.' >&2; exit 1; }
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT

@@ -1,26 +1,28 @@
 # Backlog — offene Arbeit
 
-## Aktuell beauftragt
+Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen Punkte einschließlich Release beauftragt. Die Lieferpakete und Bildentscheidungen stehen im [Releaseplan](RELEASEPLAN.md).
 
-| Thema | Ziel | Stand |
+## Nächste Lieferpakete
+
+| Version / Thema | Ziel | Stand und nächster Schritt |
 |---|---|---|
-| Updates im Adminbereich | Version prüfen, Update mit Sicherung starten und Ergebnis nach Neustart wieder anzeigen | Für 0.7.0 geplant; [Architektur und Bedienentwurf](ADMIN-BETRIEB.md). Noch nicht in 0.6.2 enthalten. Einmalige Einrichtung des Betriebsdienstes über ein Konsolenupdate erforderlich. |
-| Domainzugriff im Adminbereich | Öffentliche Domain hinter einem externen HTTPS-Proxy eintragen, prüfen und sicher übernehmen | Für 0.7.0 geplant; [Domainwechsel mit Rückkehrmöglichkeit](ADMIN-BETRIEB.md#domainwechsel). Das vorhandene Einrichtungsskript wird in den Ablauf eingebunden. |
+| 0.8.0 — Benutzer und Rollen | Berater, Betrieb und Administrator mit abgegrenzten Rechten | Bestehende Einladungen und Sperren weiterverwenden. Neue Rollenansicht wartet nach „Bildentwürfe zuerst ändern“ auf Bildfreigabe; Rollenwechsel und Schutz des letzten Administrators vor dem Bau verbindlich beschreiben. |
+| 0.8.0 — Audit-Protokoll | Sicherheits- und Verwaltungsereignisse lesbar machen | Buchungshistorie besteht. Eigene Einsicht, Aufbewahrung und Exportgrenzen ergänzen; neuer Entwurf noch nicht freigegeben. |
+| 0.8.0 — Systemkonsole | Fortlaufende Systemausgabe wie eine CLI: Quelle, Level, Freitextsuche, live, Aktualisieren und Download | Lars' Änderung aus D-RELEASE-002 ist in [Laptopbild](mockups/12-systemkonsole-desktop.png) und [Mobilbild](mockups/12-systemkonsole-mobil.png) vorgelegt; Bildfreigabe steht aus. Keine beliebige Befehlsausführung. Gewünschte Level: `all`, `info`, `warn`, `error`, `debug`, `success`, `fatal`, `complete`; Journallevel und fachliche Abschlussereignisse im Vertrag unterscheiden. |
+| 0.9.0 — Eigenes Konto und 2FA | Profil bearbeiten und Zwei-Faktor-Anmeldung mit Wiederherstellung | Passwortwechsel, E-Mail und Sitzungsverwaltung bestehen. Neue Kontosicherheitsansicht noch nicht freigegeben; Einrichtung, Verlust des Faktors und Recovery ausarbeiten. |
+| 0.9.0 — Browsererweiterung | Neuen Anmeldevertrag übernehmen; weitere Browser- und Alltagstests | Chromium-Timer, Notizen und eigene widerrufbare Sitzung bestehen seit 0.5.0. Firefox, Safari/WebKit, Vertriebsweg und Store-Veröffentlichung bleiben gesondert zu qualifizieren. |
 
-Die Apple-Design-Prüfung der bestehenden Web-App und Chromium-Erweiterung ist im Arbeitszweig umgesetzt und lokal geprüft. Korrekturen betreffen insbesondere Eingabenerhalt, Tastaturfokus, mobile Dialoge, große Schrift und verständliche Statusmeldungen. [Ergebnisse und Messgrenzen](DESIGNPRUEFUNG.md). Die Änderungen sind noch nicht als neues Release veröffentlicht; die oben geplante Betriebsverwaltung bleibt offen.
+## Umfang von 0.7.0
 
-Die Repository-Präsentation wurde am 19. November 2026 mit Commit `c3999a5` auf `main` veröffentlicht: README mit echten Bildschirmbildern, Release-/Prüfstatus sowie getrennten Installations-, Update- und Domainanleitungen. Sie wird deshalb nicht als offene Funktion weitergeführt.
+Designkorrekturen der vorhandenen Web-App und Chromium-Erweiterung sowie **Verwaltung → Updates / Domainzugriff** sind implementiert. Prüfungen und deren Grenzen: [Designprüfung](DESIGNPRUEFUNG.md), [Betriebsvertrag](ADMIN-BETRIEB.md), [Releasebelege](nachweise/0.7.0.md). Ein bestehender Container braucht für den Betriebsdienst zunächst das Konsolenupdate auf 0.7.0. Die Veröffentlichung eines Releases aktualisiert Lars' LXC nicht automatisch.
 
-## Für später vorgemerkt
+## Noch offene Betriebs- und Gerätenachweise
 
-Diese Themen bleiben ausdrücklich für später vorgemerkt. Die Versionszuordnung erfolgt bei ihrem Zuschnitt.
+| Thema | Abgrenzung / nächster Nachweis |
+|---|---|
+| Proxmox-LXC-Pilot | Neue 0.7.0-Betriebsfunktionen wurden im eigenen Debian-13/systemd-Prüfgast gemessen. Update auf Lars' LXC und externer Domainaufruf erfolgen durch Lars. |
+| Weitere Fehlerfälle | Speicherknappheit, misslungene Datenbanksicherung und ein nicht mehr startbarer Vorgänger zusätzlich in nativer Laufzeit erzwingen; bisherige Startfehler-, Bootstrap- und SIGKILL-Proben im Releasebeleg. |
+| Geräte und Hilfstechnik | VoiceOver-Ausgabe, physische Touchgeräte, Firefox und Safari/WebKit sind in der Chromium-Designmatrix nicht enthalten. |
+| Aufbewahrung der Betriebsaufträge | Root-eigene Aufträge und Konfigurationssicherungen bleiben erhalten. Wartungsweg für die endlichen Bestandsgrenzen planen; keine stillschweigende Löschung. |
 
-| Thema | Gewünschter Ausbau | Ausgangspunkt |
-|---|---|---|
-| Benutzer und Rollen | Benutzerverwaltung und differenzierte Rollen/Berechtigungen | Verwaltung mit Administrator/Berater, Einladungen und Sperren besteht seit 0.3.0; Rollenmodell vor dem Ausbau abgleichen |
-| Audit-Protokoll | Nachvollziehbare sicherheits- und verwaltungsbezogene Ereignisse | Fachliche Buchungshistorie besteht; gesonderte Einsicht und Aufbewahrung planen |
-| Systemlogs | Filter nach `all`, `info`, `warn`, `error`, `debug`, `success`, `fatal`, `complete`; Freitextsuche; Liveansicht; Aktualisieren; Download | Systemdienst schreibt ins Journal; Oberfläche und Export noch einzuplanen. Standardlevel und fachliche Abschlusszustände bei der Planung unterscheiden |
-| Eigenes Konto | Passwortänderung, Profil bearbeiten, Zwei-Faktor-Authentifizierung | Passwortwechsel, E-Mail-Adresse und Sitzungsverwaltung bestehen; Profilumfang und 2FA ergänzend planen |
-| Browsererweiterung | Späteren Ausbau und Alltagstest als eigenen Backlogpunkt führen | Chromium-Grundversion mit gemeinsamem Timer, Notizen und widerrufbarer Sitzung besteht seit 0.5.0. Weitere Browser und Vertriebsweg werden beim Zuschnitt entschieden |
-
-Für Protokolle werden Sichtrechte, personenbezogene Inhalte, Aufbewahrung und Exportbegrenzung im jeweiligen Architekturentwurf festgelegt. Für 2FA gehören Wiederherstellung und Verlust des zweiten Faktors zum Bedienablauf.
+Die Repository-Präsentation ist seit `c3999a5` auf `main` veröffentlicht und wird mit den jeweiligen Releases nachgezogen.

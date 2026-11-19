@@ -47,26 +47,43 @@ Eine vom Sicherungsdienst erzeugte Datei wurde in eine neue Datenbank zurückges
 
 ## Versioniert aktualisieren (ab 0.2)
 
-Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.6.2**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
+Die Befehle laufen in der Root-Konsole deines bestehenden Testcontainers. Sie aktualisieren den ursprünglichen Pilot direkt auf **0.7.0**. Ein neuer Container und Zwischeninstallationen sind nicht nötig. Die `&&`-Verknüpfung verhindert, dass nach einem fehlgeschlagenen Abruf ein älteres Skript ausgeführt wird.
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.6.2:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.6.2 &&
-bash /root/timereal-update.sh v0.6.2
+git -C /opt/timereal show v0.7.0:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.7.0 &&
+bash /root/timereal-update.sh v0.7.0
 ```
 
-Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.6.2. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
+Der Prüfaufruf unterbricht die Anwendung nicht. Der Updateaufruf baut zuerst separat. Erst für Sicherung und Migration wird die Anwendung kurz angehalten. Die laufende Zeit liegt in PostgreSQL und läuft nach dem Update weiter. Lade danach den Browser neu. Wenn du die Erweiterung verwendest, aktualisiere anschließend auch deren entpacktes Paket auf 0.7.0. Die Serveraktualisierung kommt zuerst. Die App-Version lässt sich über `/api/v1/version` prüfen.
 
 Ab 0.6.1 zeigen Installation und Update nummerierte Schritte und eine Browser-Adresse mit ausdrücklichem Port. Der Updater liest dafür `PUBLIC_ORIGIN` aus `/etc/timereal/dienst.conf`; eine eingerichtete Domain oder ein abweichender Port bleibt sichtbar. Beim normalen LXC-Zugang steht beispielsweise `https://192.0.2.42:443` (Beispieladresse). 443 ist der HTTPS-Port, 3040 bleibt intern. Schon `--check` zeigt die konfigurierte Adresse und den Befehl zum eigentlichen Update. Es prüft dabei keinen externen Browserzugriff. Eine fehlende oder ungültige Adresse wird als Hinweis gemeldet und nicht durch eine vermutete IP ersetzt.
 
 Beim Update sind die Vorbereitung mit noch laufender Anwendung und die Phase mit angehaltenem Dienst getrennt benannt. Die Ausgabe nennt Sicherung und Migrationsprotokoll. Bei Fehlern stehen Phase, Exitcode und der Befehl `journalctl -u timereal -u timereal-https -n 80 --no-pager` am Ende. Eine gescheiterte Startprüfung wird als Abbruch mit Ergebnis der Wiederherstellung gemeldet. Der Erfolgsabschluss prüft den Dienst im Container; öffne die ausgegebene Adresse anschließend auch auf deinem Endgerät.
 
-Für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg; neue Tags vorher wieder mit `git fetch --tags origin` abholen. Der Updateweg verwendet `/opt/timereal` nur als Git-Quelle, `/opt/timereal-releases` für gebaute Stände und `/opt/timereal-current` als aktiven Zeiger. `git pull` oder ein erneuter Aufruf von `install.sh` ist auf einer versionierten Installation kein Updateweg.
+Ab 0.7.0 ist **Verwaltung → Updates** der Einstieg für reguläre kompatible Folgeupdates. Die Vorbereitung lässt die App laufen; **Sichern und installieren** verlangt das aktuelle Administratorpasswort. Der Server führt den angenommenen Auftrag auch bei geschlossenem Browser weiter. Nach dem Neustart wird sein Ergebnis erneut angezeigt. Der Betriebsdienst prüft ein stabiles Release aus `larsborgwardt/timereal` und dessen Betriebsprotokoll. Die Browsererweiterung kann diese Aktionen nicht ausführen.
+
+Als Konsolenweg für Folgeversionen dient `/opt/timereal-current/betrieb/update.sh` als Einstieg; neue Tags vorher wieder mit `git fetch --tags origin` abholen. Der Updateweg verwendet `/opt/timereal` nur als Git-Quelle, `/opt/timereal-releases` für gebaute Stände und `/opt/timereal-current` als aktiven Zeiger. `git pull` oder ein erneuter Aufruf von `install.sh` ist auf einer versionierten Installation kein Updateweg.
 
 Sicherungen vor dem Update liegen getrennt von der täglichen Aufbewahrung unter `/var/lib/timereal-updates/`. Dort bleiben `before.dump`, die ursprünglichen Dienstdateien, Versionsangaben und das Migrationsprotokoll erhalten. Diese Verzeichnisse werden nicht automatisch gelöscht. Die HTTPS-Konfiguration, Zugangsdaten und Test-CA werden beim Update nicht ersetzt.
 
 Bei einem Startfehler kehrt das Skript zur vorherigen Anwendung zurück. Additive Datenbankänderungen bleiben bestehen. Ein Stromausfall oder ein nicht startbarer alter Dienst erfordert die Prüfung der Ausgabe und des Verzeichnisses; ein automatisches Zurückspielen des Dumps findet nicht statt. Vor einer bewussten Rücksicherung müssen die seit dem Dump erfassten Zeiten gesichert und der Anwendungsdienst angehalten werden.
+
+## Betriebsdienst ab 0.7.0
+
+`timereal-betrieb.service` läuft getrennt von der Web-App. Er hört ausschließlich auf `/run/timereal-betrieb/dienst.sock`; es gibt keinen zusätzlichen öffentlichen Port. Die Anwendung bleibt unprivilegiert. Der Dienst akzeptiert fest definierte Update- und Domainaufträge; freie Shellbefehle sind über diese Oberfläche nicht möglich.
+
+Dauerhafte Aufträge und Konfigurationssicherungen liegen root-eigen unter `/var/lib/timereal-betrieb`. Sie werden nicht automatisch entfernt und müssen bei der Speicherplanung berücksichtigt werden. Das Auftragsbuch begrenzt sich auf 2.000 Aufträge und 10.000 Wiederholungsschlüssel; beim Erreichen der Grenze verweigert es neue Aufträge. Konfigurationssicherungen können Geheimnisse enthalten. Nicht mit veröffentlichten Diagnoseausgaben teilen.
+
+Bei „Betriebsdienst nicht erreichbar“ zuerst in der Root-Konsole prüfen:
+
+```bash
+systemctl status timereal-betrieb --no-pager
+journalctl -u timereal-betrieb -n 80 --no-pager
+```
+
+Bei „manuelle Wiederherstellung erforderlich“ keine neue Aktion starten. Aktive Anwendung, gespeicherten Auftrag und Sicherung prüfen. Das System spielt einen alten Datenbankdump nicht automatisch zurück. Hinweise zu Fehlerfällen und zur geprüften Laufzeit stehen im [Releasebeleg](../nachweise/0.7.0.md).
 
 ## Berater einladen (ab 0.3.0)
 
@@ -84,7 +101,9 @@ Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Sende
 
 ## Vorhandener Nginx / Nginx Proxy Manager
 
-Wenn ein vorgeschalteter Proxy bereits das öffentliche HTTPS-Zertifikat bereitstellt, verwende **Proxy-Patch 2** (`betrieb/proxy-einrichten.sh`) aus Version 0.6.2. Das Skript lässt sich einzeln auf einen bestehenden Pilot kopieren; ein Anwendungsupdate und eine Datenbankmigration sind dafür nicht erforderlich. Es erwartet die vom Timereal-Installer erzeugte interne HTTPS-Konfiguration. Eigene Caddy-Anpassungen führen zum Abbruch ohne Umschaltung.
+Ab 0.7.0 wird die Domain unter **Verwaltung → Domainzugriff** eingerichtet. **Domain prüfen** zeigt das vorhandene HTTPS-Ziel mit Port an; **Domain übernehmen** verlangt das aktuelle Administratorpasswort. Öffne danach die neue Adresse, melde dich erneut an und bestätige den Zugriff innerhalb von drei Minuten. Ohne Bestätigung wird die vorherige Konfiguration serverseitig wiederhergestellt. Das funktioniert auch nach Schließen des Tabs; der Betriebsdienst liest die gespeicherte Frist bei einem Neustart erneut.
+
+Timereal konfiguriert den eigenen Caddy-Dienst und `PUBLIC_ORIGIN`. Den vorgeschalteten Nginx-Host, DNS und das öffentliche Zertifikat konfigurierst du selbst. Die unterstützte Vorlage stammt aus dem Timereal-Installer; eigene Caddy-Anpassungen werden nicht überschrieben. Für die Wiederherstellung oder ältere Versionen bleibt der folgende Konsolenweg verfügbar. Proxy-Patch 2 wurde mit 0.6.2 eingeführt.
 
 Ersetze Domain und lokale IPv4-Adresse durch deinen Bestand. Im LXC als root zuerst prüfen, danach anwenden:
 
@@ -99,7 +118,7 @@ Der Patch ergänzt die öffentliche Domain im Caddy-Siteblock und setzt `PUBLIC_
 
 Für einen Domainwechsel denselben Befehl mit dem neuen DNS-Namen ausführen. Die bisherige öffentliche Domain wird ersetzt, die lokale IP bleibt erhalten. DNS-Namen werden kleingeschrieben und ohne Protokoll, Port oder Pfad übergeben; internationale Namen in Punycode-Schreibweise. Diese Variante verwendet Port 443 und eine lokale IPv4-Adresse. Die Anmeldung und die Erweiterung anschließend über die neue öffentliche Domain verwenden. Der IP-Zugang bleibt für Diagnoseabrufe verfügbar; Schreibanfragen von der alten Adresse werden durch die Herkunftsprüfung abgewiesen.
 
-Die Befehle oben verwenden den Patch aus der auf 0.6.2 aktualisierten Installation. Für die einzelne Verwendung ohne Anwendungsupdate lade das Skript aus dem festen Git-Tag `v0.6.2` herunter und verwende seinen lokalen Dateipfad.
+Die Befehle oben verwenden das Proxy-Skript aus der aktiven Installation. Für die einzelne Verwendung ohne Anwendungsupdate lade das Skript aus dem festen Git-Tag `v0.6.2` herunter und verwende seinen lokalen Dateipfad.
 
 Die Nachprüfung des Skripts erfolgt innerhalb des Containers. Öffne anschließend die öffentliche Domain auch außerhalb deines lokalen Netzes, um die Nginx-/Routerstrecke zu prüfen. Der [ursprüngliche Prüfnachweis](../nachweise/proxy-patch-1.md) und die [Ergänzung für 0.6.2](../nachweise/0.6.2.md) beschreiben den getesteten Umfang.
 
@@ -170,7 +189,7 @@ Das Update legt zusätzliche Indizes an. Bei einem großen Altbestand kann die P
 
 ## Versionsfooter und Updateprüfung (ab 0.6.2)
 
-Der Footer zeigt die laufende Serverversion und verlinkt das GitHub-Repository. Ein neueres stabiles Release erscheint als „Update verfügbar: v…“ mit Link zu dessen Versionshinweisen. Die Installation erfolgt mit dem oben beschriebenen Updatebefehl im Container. Die Oberfläche installiert keine Pakete.
+Der Footer zeigt die laufende Serverversion und verlinkt das GitHub-Repository. Ein neueres stabiles Release erscheint als „Update verfügbar: v…“ mit Link zu dessen Versionshinweisen. Ab 0.7.0 können Administratoren kompatible Folgeupdates unter **Verwaltung → Updates** vorbereiten und installieren; für ältere Installationen gilt der oben beschriebene einmalige Konsolenumstieg.
 
 Der Server prüft bei Bedarf `https://api.github.com/repos/larsborgwardt/timereal/releases/latest`, höchstens einmal innerhalb von sechs Stunden pro Prozess. Gleichzeitige Anfragen teilen denselben Abruf. Fehlgeschlagene Prüfungen werden erst nach 15 Minuten erneut versucht; ein Neustart leert den Cache. Die offene Oberfläche fragt stündlich und bei Rückkehr zum Tab den eigenen Server ab. Es werden keine Kundendaten, Buchungstexte, Anmeldenamen oder Sitzungsschlüssel an GitHub gesendet; GitHub sieht technisch die ausgehende Server-IP und einen allgemeinen User-Agent. Die Browserprüfung benötigt keine Verbindung des Endgeräts zu GitHub. Beim bewussten Öffnen des Repository-/Release-Links wird GitHub normal im neuen Tab geladen.
 

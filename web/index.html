@@ -146,28 +146,204 @@
       </section>
       <section id="verwaltung" hidden>
         <h1>Verwaltung</h1>
-        <p>
-          Berater einladen und Zugänge verwalten. Jeder erfasst seine eigenen
-          Kunden und Zeiten.
-        </p>
-        <form id="einladen" class="karte filter">
-          <label
-            >E-Mail-Adresse<input
-              name="email"
-              type="email"
-              required
-              maxlength="250" /></label
-          ><button>Berater einladen</button>
-          <p id="mailhinweis"></p>
-        </form>
-        <section class="karte">
-          <h2>Beraterkonten</h2>
-          <div id="kontoliste"></div>
-        </section>
-        <section class="karte">
-          <h2>Einladungen</h2>
-          <div id="einladungsliste"></div>
-        </section>
+        <p>Zugänge verwalten und Timereal auf dem eigenen Server betreiben.</p>
+        <nav class="register betriebsregister" aria-label="Verwaltungsbereiche">
+          <button type="button" data-betrieb="berater" aria-current="page">
+            Berater
+          </button>
+          <button type="button" data-betrieb="updates">Updates</button>
+          <button type="button" data-betrieb="domain">Domainzugriff</button>
+        </nav>
+        <div id="betrieb-berater" data-betrieb-panel>
+          <form id="einladen" class="karte filter">
+            <label
+              >E-Mail-Adresse<input
+                name="email"
+                type="email"
+                required
+                maxlength="250" /></label
+            ><button>Berater einladen</button>
+            <p id="mailhinweis"></p>
+          </form>
+          <section class="karte">
+            <h2>Beraterkonten</h2>
+            <div id="kontoliste"></div>
+          </section>
+          <section class="karte">
+            <h2>Einladungen</h2>
+            <div id="einladungsliste"></div>
+          </section>
+        </div>
+        <div id="betrieb-bereich" hidden>
+          <p id="betrieb-status" role="status" aria-live="polite"></p>
+          <p id="betrieb-fehler" role="alert" hidden></p>
+          <button type="button" class="sek" id="betrieb-aktualisieren">
+            Status aktualisieren
+          </button>
+          <div
+            id="betrieb-updates"
+            data-betrieb-panel
+            class="betrieb-grid"
+            hidden
+          >
+            <section class="karte">
+              <h2>Timereal aktualisieren</h2>
+              <dl class="betrieb-versionen">
+                <div>
+                  <dt>Installiert</dt>
+                  <dd id="betrieb-version">–</dd>
+                </div>
+                <div>
+                  <dt>Neue Version</dt>
+                  <dd id="betrieb-neu">–</dd>
+                </div>
+              </dl>
+              <p id="betrieb-updatehinweis"></p>
+              <a
+                id="betrieb-release"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+                >Änderungsnotizen ansehen ↗</a
+              >
+              <div class="aktionen">
+                <button type="button" id="betrieb-vorbereiten" disabled>
+                  Update vorbereiten
+                </button>
+              </div>
+              <section
+                id="betrieb-updateauftrag"
+                class="betrieb-fortschritt"
+                hidden
+              >
+                <h3 id="betrieb-updatetitel"></h3>
+                <p id="betrieb-updatephase"></p>
+                <p id="betrieb-updatemeta" class="neben"></p>
+                <p id="betrieb-updatemeldung"></p>
+                <form id="betrieb-installieren" hidden>
+                  <p>
+                    Für Sicherung und Installation wird Timereal kurz
+                    angehalten. Laufende Timer bleiben zeitlich erhalten.
+                  </p>
+                  <label
+                    >Administratorpasswort für das Update<input
+                      type="password"
+                      name="passwort"
+                      autocomplete="current-password"
+                      required
+                      maxlength="512"
+                  /></label>
+                  <button>Sichern und installieren</button>
+                </form>
+                <p>
+                  Du kannst diesen Tab schließen. Der Auftrag läuft auf dem
+                  Server weiter.
+                </p>
+              </section>
+            </section>
+            <aside class="karte">
+              <h2>Updateverwaltung</h2>
+              <p>Updates werden erst nach deiner Bestätigung installiert.</p>
+              <dl>
+                <dt>Quelle</dt>
+                <dd>larsborgwardt/timereal</dd>
+                <dt>Versionskanal</dt>
+                <dd>Stabile Veröffentlichungen</dd>
+                <dt>Zuletzt geprüft</dt>
+                <dd id="betrieb-geprueft">–</dd>
+              </dl>
+              <p>
+                Die Versionsprüfung wird serverseitig zwischengespeichert. Die
+                Vorbereitung prüft das ausgewählte Release erneut.
+              </p>
+            </aside>
+          </div>
+          <div
+            id="betrieb-domain"
+            data-betrieb-panel
+            class="betrieb-grid"
+            hidden
+          >
+            <section class="karte">
+              <h2>Öffentliche Domain einrichten</h2>
+              <form id="betrieb-domainpruefen">
+                <label
+                  >Öffentliche Domain<input
+                    name="domain"
+                    type="text"
+                    inputmode="url"
+                    spellcheck="false"
+                    autocomplete="off"
+                    required
+                    maxlength="253"
+                    aria-describedby="betrieb-domainhilfe"
+                /></label>
+                <p id="betrieb-domainhilfe">
+                  Ohne https://, Port oder Pfad. Du kannst eine eigene Domain
+                  verwenden.
+                </p>
+                <p>
+                  DNS, öffentliches Zertifikat und Weiterleitung richtest du am
+                  Reverse Proxy ein. Timereal übernimmt hier die passende App-
+                  und Serverkonfiguration.
+                </p>
+                <button>Domain prüfen</button>
+              </form>
+              <section
+                id="betrieb-domainauftrag"
+                class="betrieb-fortschritt"
+                hidden
+              >
+                <h3 id="betrieb-domaintitel"></h3>
+                <p id="betrieb-domainphase"></p>
+                <p id="betrieb-domainmeta" class="neben"></p>
+                <p id="betrieb-domainmeldung"></p>
+                <form id="betrieb-uebernehmen" hidden>
+                  <p>
+                    Öffne nach der Übernahme die neue Adresse, melde dich an und
+                    bestätige den Zugriff innerhalb von drei Minuten. Sonst wird
+                    die vorherige Konfiguration wiederhergestellt.
+                  </p>
+                  <label
+                    >Administratorpasswort für den Domainwechsel<input
+                      type="password"
+                      name="passwort"
+                      autocomplete="current-password"
+                      required
+                      maxlength="512"
+                  /></label>
+                  <button>Domain übernehmen</button>
+                </form>
+                <div id="betrieb-bestaetigung" hidden>
+                  <p id="betrieb-frist"></p>
+                  <a
+                    id="betrieb-neueadresse"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Neue Adresse öffnen und anmelden ↗</a
+                  >
+                  <div class="aktionen">
+                    <button type="button" id="betrieb-bestaetigen">
+                      Zugriff bestätigen</button
+                    ><button type="button" class="sek" id="betrieb-zurueck">
+                      Änderung zurücknehmen
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </section>
+            <aside class="karte">
+              <h2>Aktueller Zugang</h2>
+              <dl>
+                <dt>Konfigurierte Adresse</dt>
+                <dd id="betrieb-origin">–</dd>
+                <dt>Weiterleitungsziel für den Proxy</dt>
+                <dd id="betrieb-proxy">–</dd>
+              </dl>
+              <p id="betrieb-domainhinweis"></p>
+            </aside>
+          </div>
+        </div>
       </section>
       <section id="einstellungen" hidden>
         <h1>Einstellungen</h1>

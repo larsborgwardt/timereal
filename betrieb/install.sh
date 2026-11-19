@@ -104,6 +104,7 @@ systemctl enable --now timereal-backup.timer
 systemctl reset-failed timereal.service timereal-https.service
 schritt 6 'Dienste starten und HTTPS im Container prüfen'
 systemctl restart timereal.service timereal-https.service
+bash /opt/timereal/betrieb/verwaltung-einrichten.sh /opt/timereal
 ca=/var/lib/timereal-https/caddy/pki/authorities/local/root.crt
 for _ in $(seq 1 30); do
   if [[ -s $ca ]] && curl --connect-timeout 2 --max-time 3 -fsS --cacert "$ca" --resolve "$adresse:443:127.0.0.1" "https://$adresse/health" >/dev/null 2>&1; then break; fi

@@ -1,0 +1,1 @@
+Bootstrap: fehlgeschlagener Dienststart, ursprüngliche Unit und Dienstlink sowie erneut erreichbarer Unix-Dienst geprüft.

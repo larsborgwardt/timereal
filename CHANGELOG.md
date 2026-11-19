@@ -1,13 +1,18 @@
 # Änderungen
 
-## Noch nicht veröffentlicht — Vorbereitung auf 0.7.0
+## 0.7.0 — 19. November 2026
 
 - Apple-Design-Prüfung der bestehenden Web-App und Chromium-Erweiterung mit dauerhaft mitlaufenden Browserproben.
 - Lange Kunden-/Ticketnamen, vergrößerte Schrift und mobile Formulare passen in den verfügbaren Bereich; Dialogaktionen bleiben beim Scrollen erreichbar.
 - Tastaturfokus und ungespeicherte Profileinstellungen bleiben bei Hintergrundaktualisierungen erhalten. Während einer Speicherung neu geschriebene Änderungen bleiben als Entwurf erkennbar.
 - Benannte Dialoge, sichtbare Verarbeitung, verständliche Verbindungsfehler der Erweiterungsanmeldung und textliche Änderungskennzeichnung im Buchungsvergleich.
 - Einladungsbutton bleibt ohne Mailkonfiguration gesperrt; Rücksetzlinks funktionieren auch im bereits geöffneten Tab.
-- Die Adminfunktionen für Updates und Domainzugriff sind weiterhin geplant, noch nicht implementiert. API-Version 1 und Datenbankschema 6 bleiben unverändert.
+- Updates im Adminbereich: konkretes stabiles Release vorbereiten, nach Passwortprüfung sichern und installieren; Fortschritt und Ergebnis überleben das Schließen des Browsers.
+- Domainzugriff im Adminbereich: eigenen DNS-Namen prüfen und übernehmen; neue Anmeldung und Bestätigung innerhalb von drei Minuten, sonst automatische Rückkehr zur bisherigen Konfiguration.
+- Getrennter root-eigener Betriebsdienst mit lokalem Unix-Socket, festem Auftragsprotokoll, gemeinsamem Betriebslock und dauerhaften Wiederholungsschlüsseln.
+- Wiederanlauf nach abgebrochenem Dienstwechsel; fehlgeschlagener Bootstrap stellt den bisherigen Betriebsdienst wieder her. Keine automatische Rücksicherung alter Datenbankstände.
+- Bestehende Installationen richten den Betriebsdienst einmalig über das Konsolenupdate ein. Betriebsaktionen bleiben Websitzungen von Administratoren vorbehalten; die Erweiterung blendet diese Bereiche aus.
+- API-Version 1 und Datenbankschema 6 bleiben unverändert; Webupdates prüfen Betriebsprotokoll 1. Rollen-/Audit-/Systemlog- und 2FA-Ausbau folgen gemäß Backlog nach Bildfreigabe.
 
 ## 0.6.2 — 19. November 2026
 

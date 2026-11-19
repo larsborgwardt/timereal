@@ -6,12 +6,24 @@ usage() {
   echo 'Aufruf: bash update.sh [--check] vMAJOR.MINOR.PATCH'
   echo 'Vorher im Repository: git fetch --tags origin'
   echo '--check prüft Ausgangsstand und Ziel, ohne Dienste oder Daten zu ändern.'
+  echo '--prepare vMAJOR.MINOR.PATCH baut das Ziel, ohne die laufende Anwendung anzuhalten.'
+  echo '--install-prepared vMAJOR.MINOR.PATCH COMMIT installiert nur den zuvor gebauten Commit.'
   echo 'Die Ausgabe nennt die konfigurierte Browser-Adresse einschließlich Port.'
   echo 'Standard: HTTPS-Port 443; Port 3040 ist nur für den internen Anwendungsdienst.'
 }
 if [[ ${1:-} == --help && $# == 1 ]]; then usage; exit 0; fi
 check=false
-if [[ ${1:-} == --check ]]; then check=true; shift; fi
+prepare=false
+prepared=false
+expected_sha=''
+if [[ ${1:-} == --check ]]; then check=true; shift
+elif [[ ${1:-} == --prepare ]]; then prepare=true; shift
+elif [[ ${1:-} == --install-prepared ]]; then
+  prepared=true; shift
+  [[ $# == 2 && $2 =~ ^[a-f0-9]{40}$ ]] || { echo 'Aufruf: --install-prepared VERSION COMMIT (40 Hex-Zeichen)' >&2; exit 2; }
+  expected_sha=$2
+  set -- "$1"
+fi
 [[ $# == 1 && $1 =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || {
   echo 'Eine feste Version ist erforderlich. Aufruf: update.sh [--check] vMAJOR.MINOR.PATCH' >&2; exit 2;
 }
@@ -22,7 +34,15 @@ receipt=''
 stopped=false
 switched=false
 done=false
-schritt() { phase=$2; printf '\n[%s/6] %s\n' "$1" "$phase"; }
+ereignis() {
+  if [[ ${TIMEREAL_BETRIEB_EVENTS:-} == 1 ]]; then
+    printf '{"phase":"%s"}\n' "$1" >&3
+  fi
+}
+schritt() {
+  phase=$2; printf '\n[%s/6] %s\n' "$1" "$phase"
+  case "$1" in 1) ereignis pruefung;; 2) ereignis vorbereitung;; 3) ereignis sicherung;; 4) ereignis migration;; 5) ereignis neustart;; 6) ereignis erfolgreich;; esac
+}
 zugang_anzeigen() {
   local url
   # dienst.conf ist eine systemd-Umgebungsdatei, kein auszuführendes Shellskript.
@@ -75,14 +95,17 @@ cleanup() {
       sleep 1
     done
     if [[ $recovered == true ]]; then
+      ereignis vorherige_version_aktiv
       echo 'Vorherige Anwendung ist im Container wieder erreichbar.' >&2
       zugang_anzeigen >&2
     else
+      ereignis wiederherstellung_noetig
       echo 'Vorherige Anwendung startet nicht fehlerfrei. Dienstprotokoll prüfen.' >&2
     fi
     echo "Sicherung und Diagnose: $receipt. Kein automatisches Zurückspielen der Datenbank." >&2
     code=1
   elif [[ $code != 0 && $stopped != true ]]; then
+    ereignis fehlgeschlagen
     echo 'Der Anwendungsdienst wurde durch dieses Update noch nicht angehalten.' >&2
   fi
   if [[ $code != 0 ]]; then
@@ -100,7 +123,11 @@ schritt 1 'Installation und Zielversion prüfen'
 [[ $EUID == 0 && -d /run/systemd/system ]] || { echo 'Im Testcontainer als root ausführen.' >&2; exit 2; }
 source /etc/os-release
 [[ $ID == debian && $VERSION_ID == 13 ]] || { echo 'Debian 13 erforderlich.' >&2; exit 2; }
-exec 9>/run/lock/timereal-install.lock
+if [[ ${TIMEREAL_BETRIEB_LOCK:-} == 1 ]]; then
+  [[ $(readlink /proc/$$/fd/9) == /run/lock/timereal-install.lock ]] || { echo 'Gemeinsame Betriebssperre fehlt.' >&2; exit 1; }
+else
+  exec 9>/run/lock/timereal-install.lock
+fi
 flock -n 9 || { echo 'Eine Installation oder Aktualisierung läuft bereits.' >&2; exit 1; }
 repo=/opt/timereal
 node=/opt/timereal-node/bin/node
@@ -111,6 +138,7 @@ export PATH=/opt/timereal-node/bin:$PATH
 sha=$(git -C "$repo" rev-parse --verify "refs/tags/$tag^{commit}") || {
   echo 'Version nicht vorhanden. Zuerst git -C /opt/timereal fetch --tags origin ausführen.' >&2; exit 1;
 }
+[[ -z $expected_sha || $sha == "$expected_sha" ]] || { echo 'Release-Tag wurde seit der Vorbereitung verändert.' >&2; exit 1; }
 previous=$(readlink -f /opt/timereal-current 2>/dev/null || true)
 if [[ ! -d $previous ]]; then previous=$repo; fi
 [[ -f $previous/dist/server.js && -f $previous/package.json ]] || { echo 'Vorheriger Anwendungsstand fehlt.' >&2; exit 1; }
@@ -140,11 +168,38 @@ fi
 [[ $old_version != "${tag#v}" ]] || { echo 'Dieselbe Versionsnummer hat einen anderen Stand. Abbruch.' >&2; exit 1; }
 [[ ! -e $target ]] || { echo "Releaseverzeichnis existiert bereits: $target. Vor einem neuen Versuch den fehlgeschlagenen Stand prüfen." >&2; exit 1; }
 install -d -m 755 /opt/timereal-releases
-stage=$(mktemp -d /opt/timereal-releases/.vorbereitung.XXXXXXXX)
-chmod 755 "$stage"
-schritt 2 'Neue Anwendung bauen und prüfen (bisherige Anwendung läuft weiter)'
-git -C "$repo" archive "$sha" | tar -x -C "$stage"
-(cd "$stage" && npm ci --ignore-scripts --no-audit --no-fund && npm run build && node --test tests/version.test.mjs tests/update.test.mjs)
+ready="/opt/timereal-releases/.bereit-${tag#v}-$sha"
+if [[ $prepared == true || ( $prepare == true && -e $ready ) ]]; then
+  [[ -d $ready && ! -L $ready && -f $ready/.timereal-commit && $(cat "$ready/.timereal-commit") == "$sha" && -f $ready/dist/server.js ]] || {
+    echo 'Der vorbereitete Anwendungsstand fehlt oder passt nicht zum Auftrag.' >&2; exit 1;
+  }
+  if [[ $prepare == true ]]; then
+    (cd "$ready" && "$node" --test tests/version.test.mjs tests/update.test.mjs)
+    echo "Bereits vorbereiteten Stand erneut geprüft: $tag ($sha). Die bisherige Anwendung läuft weiter."
+    ereignis bereit
+    exit 0
+  fi
+  stage=$ready
+else
+  [[ ! -e $ready ]] || { echo 'Ein vorbereiteter Stand existiert bereits. Diesen prüfen und gezielt installieren.' >&2; exit 1; }
+  frei=$(df -Pk /opt/timereal-releases | awk 'NR==2 {print $4}')
+  [[ $frei =~ ^[0-9]+$ && $frei -ge 524288 ]] || { echo 'Mindestens 512 MiB freier Platz für die Vorbereitung erforderlich.' >&2; exit 1; }
+  stage=$(mktemp -d /opt/timereal-releases/.vorbereitung.XXXXXXXX)
+  chmod 755 "$stage"
+  schritt 2 'Neue Anwendung bauen und prüfen (bisherige Anwendung läuft weiter)'
+  git -C "$repo" archive "$sha" | tar -x -C "$stage"
+  (cd "$stage" && npm ci --ignore-scripts --no-audit --no-fund && npm run build && node --test tests/version.test.mjs tests/update.test.mjs)
+  printf '%s\n' "$sha" > "$stage/.timereal-commit"
+fi
+if [[ $prepare == true ]]; then
+  sync -f "$stage"
+  mv "$stage" "$ready"
+  sync -f /opt/timereal-releases
+  stage=''
+  echo "Vorbereitung abgeschlossen: $tag ($sha). Die bisherige Anwendung läuft weiter."
+  ereignis bereit
+  exit 0
+fi
 install -d -m 700 /var/lib/timereal-updates
 receipt=$(mktemp -d "/var/lib/timereal-updates/${tag#v}.XXXXXXXX")
 cp /etc/systemd/system/timereal.service /etc/systemd/system/timereal-backup.service "$receipt/"
@@ -181,6 +236,9 @@ for _ in $(seq 1 30); do
   sleep 1
 done
 [[ $healthy == true ]] || { echo 'Neue Anwendung startet nicht fehlerfrei.' >&2; exit 1; }
+if [[ -f $target/betrieb/verwaltung-einrichten.sh ]]; then
+  bash "$target/betrieb/verwaltung-einrichten.sh" "$target"
+fi
 done=true
 printf '%s\n' 'Ergebnis: erfolgreich' >> "$receipt/stand.txt"
 schritt 6 'Update abgeschlossen'

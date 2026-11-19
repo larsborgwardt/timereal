@@ -105,7 +105,11 @@ export async function pruefeAnsicht(
   if (process.env.DESIGN_PROBE_LOG) {
     const state = await page.evaluate(() => ({
       path: location.pathname,
-      ids: [...document.querySelectorAll("main > section[id], dialog[open]")]
+      ids: [
+        ...document.querySelectorAll(
+          "main > section[id], dialog[open], [data-betrieb-panel][id]",
+        ),
+      ]
         .filter((el) => el.getClientRects().length)
         .map((el) => el.id),
     }));

@@ -38,3 +38,15 @@ test("Ein Update braucht eine feste Version und lehnt Optionen als Versionsnamen
     assert.match(r.stderr, /Version|Aufruf/);
   }
 });
+
+test("Vorbereitung und Aktivierung sind getrennte dokumentierte Aufrufe mit festem Commit", () => {
+  const hilfe = run("--help");
+  assert.match(hilfe.stdout, /--prepare/);
+  assert.match(hilfe.stdout, /--install-prepared/);
+  for (const args of [
+    ["--install-prepared", "v0.7.0"],
+    ["--install-prepared", "v0.7.0", "main"],
+    ["--prepare", "main"],
+  ])
+    assert.equal(run(...args).status, 2);
+});

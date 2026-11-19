@@ -7,7 +7,8 @@ export function kontenOberflaeche({
   abmelden,
 }) {
   let profil = null,
-    links = [];
+    links = [],
+    namen = new Map();
   for (const id of ["profilform", "grundeinstellungen"])
     $("#" + id).addEventListener("input", () => {
       $("#" + id).dataset.geaendert = "true";
@@ -41,6 +42,7 @@ export function kontenOberflaeche({
         request("/verwaltung/mail"),
       ]);
       links = einladungen;
+      namen = new Map(konten.map((k) => [String(k.id), k.login]));
       $("#mailhinweis").textContent = mail.konfiguriert
         ? "Einladungen werden per E-Mail versendet."
         : "Mailversand noch nicht eingerichtet. Im Container die Mailkonfiguration hinterlegen.";
@@ -240,5 +242,10 @@ export function kontenOberflaeche({
       melden("Passwort gespeichert. Melde dich mit deiner E-Mail-Adresse an.");
     });
   };
-  return { aktualisieren, laden, linkOffen: () => !!einmallink };
+  return {
+    aktualisieren,
+    laden,
+    linkOffen: () => !!einmallink,
+    name: (id) => namen.get(String(id)) ?? `Konto ${id}`,
+  };
 }

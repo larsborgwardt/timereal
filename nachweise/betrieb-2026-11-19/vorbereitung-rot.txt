@@ -1,0 +1,13 @@
+
+Timereal aktualisieren
+
+[1/6] Installation und Zielversion prüfen
+Installiert: 0.7.0 · Ziel: 0.7.1 · Datenbankschema: 6 → 6
+Browser-Adresse: https://example.org:443
+Port 3040 ist nur intern erreichbar und keine Browser-Adresse.
+Ein vorbereiteter Stand existiert bereits. Diesen prüfen und gezielt installieren.
+
+Update abgebrochen: Installation und Zielversion prüfen (Exitcode 1).
+Beachte die Fehlermeldung darüber.
+Der Anwendungsdienst wurde durch dieses Update noch nicht angehalten.
+Dienstprotokoll: journalctl -u timereal -u timereal-https -n 80 --no-pager

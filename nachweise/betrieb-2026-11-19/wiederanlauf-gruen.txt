@@ -1,0 +1,5 @@
+Bootstrap 0.6.2 → 0.7.0 bestanden.
+Webupdate 0.7.0 → 0.7.1 und eigenständiger Dienstneustart bestanden.
+Startfehler 0.7.2 → wieder erreichbare Version 0.7.1 bestanden.
+SIGKILL während des Dienstwechsels: Anwendung und eigener Betriebsdienst wiederhergestellt.
+Prüfbelege: /tmp/timereal-betrieb-release.ReGRFqOx

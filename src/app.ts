@@ -5,6 +5,7 @@ import {
 } from "./erweiterung.js";
 import { stammdatenRouten } from "./stammdaten-routen.js";
 import { kontenRouten } from "./konten-routen.js";
+import { betriebsRouten } from "./betrieb.js";
 import { profil } from "./konten.js";
 import type { MailConfig } from "./mail.js";
 import { id, version, wort, tag, objekt } from "./http.js";
@@ -55,6 +56,7 @@ export function createApp(
     origin?: string;
     smtp?: MailConfig;
     updateCheck?: () => Promise<UpdateStatus>;
+    betriebSocket?: string;
   },
 ) {
   const app = Fastify({
@@ -149,11 +151,17 @@ export function createApp(
       );
       return run(db);
     });
+  betriebsRouten(
+    app,
+    privat,
+    options.betriebSocket ?? "/run/timereal-betrieb/dienst.sock",
+  );
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
     ["/app.js", "app.js", "text/javascript"],
     ["/version.js", "version.js", "text/javascript"],
     ["/konten.js", "konten.js", "text/javascript"],
+    ["/betrieb.js", "betrieb.js", "text/javascript"],
     ["/zeit.js", "zeit.js", "text/javascript"],
     ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
     ["/app.css", "app.css", "text/css"],

@@ -1,0 +1,27 @@
+{
+  "reached": [
+    "anmeldung",
+    "anmeldung-fehler",
+    "passwort-anfordern",
+    "heute-leer",
+    "neues-ziel",
+    "sofortstart",
+    "timer-vorlaeufig",
+    "timer-pause",
+    "timer-intern",
+    "timer-zugeordnet",
+    "leistungstext",
+    "ziel-bearbeiten",
+    "ziele-suche-leer",
+    "woche",
+    "nachweise",
+    "historie",
+    "nachtrag",
+    "verwaltung",
+    "einstellungen",
+    "web-offline",
+    "passwort-zuruecksetzen",
+    "ruecksetzlink-ungueltig"
+  ],
+  "findings": []
+}

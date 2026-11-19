@@ -353,6 +353,21 @@ try {
       path: process.env.SCREENSHOT_DIR + "/erweiterung-vollansicht.png",
       fullPage: true,
     });
+  await owner.query("update konto set ist_admin=true where login_referenz=$1", [
+    login,
+  ]);
+  await full.reload();
+  await full.getByRole("button", { name: "Verwaltung", exact: true }).click();
+  await full.locator("#betrieb-berater").waitFor();
+  assert.equal(
+    await full.locator('[data-betrieb="updates"]').isVisible(),
+    false,
+    "Betriebsaktionen benötigen die Websitzung und werden in der Erweiterung nicht angeboten.",
+  );
+  assert.equal(
+    await full.locator('[data-betrieb="domain"]').isVisible(),
+    false,
+  );
   await mobile
     .getByRole("button", { name: "Einstellungen", exact: true })
     .click();

@@ -1,6 +1,7 @@
 import * as transport from "./transport.js";
 import { arbeitsablaufOberflaeche } from "./arbeitsablauf.js";
 import { kontenOberflaeche } from "./konten.js";
+import { betriebsOberflaeche } from "./betrieb.js";
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) =>
   String(value ?? "").replace(
@@ -95,6 +96,7 @@ async function request(pfad, methode = "GET", body, key) {
   return data;
 }
 function zeigeLogin() {
+  betrieb.zuruecksetzen();
   ++refreshNr;
   seite = "login";
   state = null;
@@ -144,7 +146,7 @@ function panels() {
   ])
     $("#" + id).hidden = seite !== id;
   $("nav").hidden = $("#logout").hidden = seite === "login";
-  document.querySelectorAll("nav button").forEach((b) => {
+  document.querySelectorAll("nav button[data-page]").forEach((b) => {
     if (b.dataset.page === seite) b.setAttribute("aria-current", "page");
     else b.removeAttribute("aria-current");
   });
@@ -333,7 +335,14 @@ async function laden() {
   state = snapshot.timer;
   ziele = snapshot.ziele;
   kunden = snapshot.kunden;
-  if (seite === "login") seite = "heute";
+  if (seite === "login") {
+    seite = "heute";
+    if (snapshot.profil.admin && location.hash === "#betrieb-domain") {
+      seite = "verwaltung";
+      betrieb.domainOeffnen();
+      history.replaceState(null, "", location.pathname);
+    }
+  }
   panels();
   if (seite === "heute") {
     zeigeTimer();
@@ -354,6 +363,7 @@ async function laden() {
   }
   if (["verwaltung", "einstellungen"].includes(seite)) {
     await konten.laden(seite);
+    if (seite === "verwaltung") await betrieb.laden();
     fokusZurueck();
     return;
   }
@@ -635,6 +645,17 @@ const konten = kontenOberflaeche({
   melden,
   abmelden: zeigeLogin,
 });
+const betrieb = betriebsOberflaeche({
+  $,
+  request,
+  kontoname: (id) => konten.name(id),
+  verbindungGeprueft: async () => {
+    if (transport.verbindungUnsicher()) {
+      await transport.verbindungGeprueft();
+      verbindungMelden();
+    }
+  },
+});
 laden()
   .catch((e) => {
     if (e.status !== 401) melden(e.message);
@@ -660,6 +681,8 @@ $("#verbindung-laden").onclick = () =>
     );
   });
 if (transport.istErweiterung) {
+  for (const bereich of ["updates", "domain"])
+    document.querySelector(`[data-betrieb="${bereich}"]`).hidden = true;
   $("#anmelden").hidden = true;
   $("#vergessen").hidden = true;
   const verbinden = document.createElement("button");
