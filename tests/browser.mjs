@@ -4,6 +4,7 @@ import pg from "pg";
 import { createApp } from "../dist/app.js";
 import { passwordHash } from "../dist/session.js";
 import { randomBytes } from "node:crypto";
+import { pruefeSeitenicons } from "./hilfe/icons.mjs";
 
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
@@ -29,6 +30,7 @@ try {
   async function anmelden(width, height) {
     const page = await browser.newPage({ viewport: { width, height } });
     await page.goto(addr);
+    await pruefeSeitenicons(page);
     await page.getByLabel("Anmeldename").fill("browserprobe");
     await page.getByLabel("Passwort", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Anmelden", exact: true }).click();

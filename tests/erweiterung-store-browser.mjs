@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { pruefeSeitenicons } from "./hilfe/icons.mjs";
 
 const manifest = JSON.parse(
   await readFile("erweiterung/manifest.json", "utf8"),
@@ -29,6 +30,29 @@ try {
     (await context.waitForEvent("serviceworker"));
   const packaged = await worker.evaluate(() => chrome.runtime.getManifest());
   assert.equal(Object.hasOwn(packaged, "key"), false);
+  assert.equal(packaged.action.default_title, "Timereal");
+  assert.deepEqual(Object.keys(packaged.icons), ["16", "32", "48", "128"]);
+  const images = await worker.evaluate(async () => {
+    const manifest = chrome.runtime.getManifest();
+    return Promise.all(
+      Object.entries(manifest.icons).map(async ([size, path]) => {
+        const response = await fetch(chrome.runtime.getURL(path));
+        const bitmap = await createImageBitmap(await response.blob());
+        const result = {
+          size: Number(size),
+          width: bitmap.width,
+          height: bitmap.height,
+        };
+        bitmap.close();
+        return result;
+      }),
+    );
+  });
+  assert.ok(
+    images.every(
+      (image) => image.width === image.size && image.height === image.size,
+    ),
+  );
   const workerUrl = new URL(worker.url());
   const origin = workerUrl.protocol + "//" + workerUrl.host;
   assert.notEqual(
@@ -39,6 +63,7 @@ try {
   const page = await context.newPage();
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(origin + "/einstellungen.html");
+  await pruefeSeitenicons(page);
   await page.waitForFunction(
     () => !document.querySelector("form button").disabled,
   );
@@ -48,10 +73,13 @@ try {
   );
   assert.equal(await page.getByLabel("Timereal-Adresse").isEnabled(), true);
   await page.goto(origin + "/popup.html");
+  await pruefeSeitenicons(page);
   await page
     .getByRole("button", { name: "Erweiterung verbinden", exact: true })
     .waitFor();
   assert.deepEqual(errors, []);
+  await page.goto(origin + "/index.html");
+  await pruefeSeitenicons(page);
   console.log(
     "Edge-Upload-ZIP: Dienst, Optionen und Popup in Chromium geladen; PKCE mit Microsoft-ID wird separat im Datenbank-/Browserlauf geprüft.",
   );

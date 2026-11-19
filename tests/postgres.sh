@@ -15,6 +15,7 @@ done
 docker cp datenmodell "$container:/tmp/datenmodell"
 docker exec "$container" psql -X -U postgres -f /tmp/datenmodell/entwurf.sql
 npm run build
+node --test tests/icons.test.mjs
 node --test tests/rollen.mjs
 node --test tests/audit.mjs
 npm run test:db

@@ -11,6 +11,7 @@ import { createApp } from "../dist/app.js";
 import { passwordHash, issueSession } from "../dist/session.js";
 import { totp } from "../dist/mfa-crypto.js";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
+import { pruefeSeitenicons } from "./hilfe/icons.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
 });
@@ -166,6 +167,7 @@ try {
   await auth.waitForLoadState("domcontentloaded");
   await auth.getByLabel("Anmeldename").waitFor();
   assert.deepEqual(await pruefeAnsicht(auth, "erweiterung-anmeldung"), []);
+  await pruefeSeitenicons(auth);
   await auth.getByLabel("Anmeldename").fill(login);
   await auth.getByLabel("Passwort", { exact: true }).fill(pass);
   await auth.route("**/api/v1/anmeldung", (route) =>

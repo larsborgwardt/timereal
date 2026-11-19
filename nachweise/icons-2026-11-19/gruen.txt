@@ -1,0 +1,11 @@
+✔ Edge-Upload-ZIP entfernt Entwicklungsfelder und enthält das Manifest direkt an der Wurzel (423.526264ms)
+✔ Icons sind ohne Anmeldung unter beliebigen Serverdomains als unveränderte Bilddateien erreichbar (205.893821ms)
+✔ Die installierte Version ist ohne Anmeldung lesbar und enthält keine Betriebsgeheimnisse (184.733792ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 483.670812
