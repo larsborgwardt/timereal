@@ -2,7 +2,7 @@
   font-family: Inter, system-ui, sans-serif;
   color: #102542;
   background: #f8fafb;
-  font-size: 16px;
+  font-size: 100%;
   font-synthesis: none;
 }
 * {
@@ -13,6 +13,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 header {
   border-bottom: 1px solid #c7d4da;
@@ -63,6 +65,9 @@ main {
 }
 .zeile {
   justify-content: space-between;
+}
+#heute > .zeile {
+  margin-bottom: 16px;
 }
 main {
   padding-top: 22px;
@@ -127,12 +132,15 @@ input,
 select,
 textarea {
   background: white;
-  border: 1px solid #8499a7;
+  border: 1px solid #718898;
   border-radius: 6px;
   padding: 10px;
   color: inherit;
   width: 100%;
   margin-top: 5px;
+  min-width: 0;
+  min-height: 44px;
+  max-width: 100%;
 }
 label {
   display: block;
@@ -141,6 +149,27 @@ label {
 }
 .check input {
   width: auto;
+  min-height: auto;
+  margin: 0;
+  flex-shrink: 0;
+}
+.check {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.zeile > *,
+.daten > *,
+.zeitfelder > *,
+.vergleich > *,
+.kennzahlen > * {
+  min-width: 0;
+  max-width: 100%;
+}
+button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .suche {
   font-size: 0.9rem;
@@ -191,6 +220,14 @@ dialog {
 }
 dialog::backdrop {
   background: #15294166;
+}
+dialog .aktionen {
+  position: sticky;
+  bottom: -24px;
+  padding: 12px 0 24px;
+  margin-bottom: -24px;
+  background: #fff;
+  box-shadow: 0 -8px 0 #fff;
 }
 .aktionen {
   margin-top: 14px;
@@ -285,7 +322,7 @@ dialog::backdrop {
 .vergleich,
 .kennzahlen {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   gap: 16px;
 }
 .kennzahlen {
@@ -329,6 +366,12 @@ dd {
 .geaendert {
   background: #fff6dc;
   padding: 5px;
+}
+.aenderungslabel {
+  display: inline-block;
+  margin-left: 4px;
+  color: #483719;
+  font-weight: 500;
 }
 #vergleichfenster {
   width: min(94vw, 850px);
@@ -397,6 +440,15 @@ dd {
 }
 .updatehinweis:empty {
   display: none;
+}
+.arbeitsstatus {
+  color: #4b6475;
+  margin: 8px 0;
+}
+h1:focus-visible,
+h2:focus-visible {
+  outline: 3px solid #568dd3;
+  outline-offset: 4px;
 }
 @media (max-width: 600px) {
   .versionsfooter {

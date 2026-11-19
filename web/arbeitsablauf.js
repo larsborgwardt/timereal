@@ -171,12 +171,21 @@ export function arbeitsablaufOberflaeche({
       return v === null || v === undefined
         ? "—"
         : ["beginn", "ende"].includes(key)
-          ? lokalText(v, getZone()).replace("T", " ")
-          : typeof v === "boolean"
-            ? v
-              ? "Ja"
-              : "Nein"
-            : v;
+          ? new Intl.DateTimeFormat("de-DE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: getZone(),
+            }).format(new Date(v))
+          : key === "stunden"
+            ? String(v).replace(".", ",") + " h"
+            : typeof v === "boolean"
+              ? v
+                ? "Ja"
+                : "Nein"
+              : v;
     };
     $("#vergleichinhalt").innerHTML =
       '<div class="vergleich">' +
@@ -194,6 +203,9 @@ export function arbeitsablaufOberflaeche({
                 ([key, label]) =>
                   "<dt>" +
                   label +
+                  (wert(e.uebertragener_stand, key) !== wert(e.stand, key)
+                    ? ' <small class="aenderungslabel">geändert</small>'
+                    : "") +
                   "</dt><dd" +
                   (wert(e.uebertragener_stand, key) !== wert(e.stand, key)
                     ? ' class="geaendert"'
@@ -334,8 +346,15 @@ export function arbeitsablaufOberflaeche({
   };
   async function ladeWoche() {
     const w = await request("/woche?von=" + wochentag);
+    const datum = (tag) =>
+      new Intl.DateTimeFormat("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(tag + "T12:00:00Z"));
     wochentag = w.von;
-    $("#wochentitel").textContent = w.von + " – " + w.bis;
+    $("#wochentitel").textContent = datum(w.von) + " – " + datum(w.bis);
     $("#wochensumme").textContent = minutenText(w.erfasst);
     $("#wochenabrechenbar").textContent = minutenText(w.abrechenbar);
     $("#wochenzeilen").innerHTML =
@@ -343,7 +362,7 @@ export function arbeitsablaufOberflaeche({
         .map(
           (r) =>
             "<tr><td>" +
-            esc(r.tag) +
+            esc(datum(r.tag)) +
             "</td><td>" +
             esc(r.kunde ?? "Intern / vorläufig") +
             "</td><td>" +

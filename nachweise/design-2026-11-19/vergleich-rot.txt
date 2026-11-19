@@ -1,0 +1,102 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /1,00 h/. Input:
+
+'Buchung vergleichen\n' +
+  'Zuletzt übertragen\n' +
+  'Beginn\n' +
+  '2026-11-09 09:00\n' +
+  'Ende\n' +
+  '2026-11-09 10:00\n' +
+  'Kunde\n' +
+  'Kunde Alpha\n' +
+  'Projekt\n' +
+  '—\n' +
+  'Art\n' +
+  'Ticket\n' +
+  'Buchungsziel\n' +
+  'Konfiguration\n' +
+  'Leistungstext\n' +
+  'Customizing geprüft\n' +
+  'Abrechenbar\n' +
+  'Ja\n' +
+  'Stunden\n' +
+  '1.00\n' +
+  'Aktuell\n' +
+  'Beginn\n' +
+  '2026-11-09 09:00\n' +
+  'Ende\n' +
+  '2026-11-09 09:20\n' +
+  'Kunde\n' +
+  'Kunde Alpha\n' +
+  'Projekt\n' +
+  '—\n' +
+  'Art\n' +
+  'Ticket\n' +
+  'Buchungsziel\n' +
+  'Konfiguration\n' +
+  'Leistungstext\n' +
+  'Customizing geprüft\n' +
+  'Abrechenbar\n' +
+  'Ja\n' +
+  'Stunden\n' +
+  '0.33\n' +
+  '\n' +
+  'Übertrage die Korrektur zuerst in dein Abrechnungssystem. Bestätige sie anschließend am Nachweis.\n' +
+  '\n' +
+  'Schließen'
+
+    at file:///home/hermes/workspace/sap-zeiterfassung/tests/arbeitsablauf-browser.mjs:129:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'Buchung vergleichen\n' +
+    'Zuletzt übertragen\n' +
+    'Beginn\n' +
+    '2026-11-09 09:00\n' +
+    'Ende\n' +
+    '2026-11-09 10:00\n' +
+    'Kunde\n' +
+    'Kunde Alpha\n' +
+    'Projekt\n' +
+    '—\n' +
+    'Art\n' +
+    'Ticket\n' +
+    'Buchungsziel\n' +
+    'Konfiguration\n' +
+    'Leistungstext\n' +
+    'Customizing geprüft\n' +
+    'Abrechenbar\n' +
+    'Ja\n' +
+    'Stunden\n' +
+    '1.00\n' +
+    'Aktuell\n' +
+    'Beginn\n' +
+    '2026-11-09 09:00\n' +
+    'Ende\n' +
+    '2026-11-09 09:20\n' +
+    'Kunde\n' +
+    'Kunde Alpha\n' +
+    'Projekt\n' +
+    '—\n' +
+    'Art\n' +
+    'Ticket\n' +
+    'Buchungsziel\n' +
+    'Konfiguration\n' +
+    'Leistungstext\n' +
+    'Customizing geprüft\n' +
+    'Abrechenbar\n' +
+    'Ja\n' +
+    'Stunden\n' +
+    '0.33\n' +
+    '\n' +
+    'Übertrage die Korrektur zuerst in dein Abrechnungssystem. Bestätige sie anschließend am Nachweis.\n' +
+    '\n' +
+    'Schließen',
+  expected: /1,00 h/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v24.22.2

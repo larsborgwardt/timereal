@@ -7,16 +7,27 @@ const daten = {
 };
 history.replaceState(null, "", location.pathname);
 const melden = (e) => {
-  $("#meldung").hidden = false;
-  $("#meldung").textContent = e.message;
+  $("#meldung").hidden = !e;
+  $("#meldung").textContent = e?.message ?? "";
 };
 async function request(path, body) {
-  const r = await fetch("/api/v1" + path, {
-    method: body ? "POST" : "GET",
-    headers: body ? { "Content-Type": "application/json" } : {},
-    body: body ? JSON.stringify(body) : undefined,
+  let r;
+  try {
+    r = await fetch("/api/v1" + path, {
+      method: body ? "POST" : "GET",
+      headers: body ? { "Content-Type": "application/json" } : {},
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error(
+      "Keine Verbindung zu Timereal. Bitte prüfe deine Verbindung und versuche es erneut.",
+    );
+  }
+  const d = await r.json().catch(() => {
+    throw new Error(
+      "Die Serverantwort konnte nicht gelesen werden. Bitte versuche es erneut.",
+    );
   });
-  const d = await r.json();
   if (!r.ok)
     throw Object.assign(new Error(d.fehler ?? "Anmeldung fehlgeschlagen."), {
       status: r.status,
@@ -33,38 +44,53 @@ async function profil() {
     if (e.status === 401) {
       $("#anmelden").hidden = false;
       $("#freigabe").hidden = true;
-    } else melden(e);
+    } else throw e;
   }
 }
-$("#anmelden").onsubmit = async (ev) => {
+let busy = false;
+async function arbeiten(fn) {
+  if (busy) return;
+  busy = true;
+  melden();
+  const buttons = [...document.querySelectorAll("button:enabled")];
+  buttons.forEach((b) => {
+    b.disabled = true;
+  });
+  $("#arbeitsstatus").textContent = "Wird verarbeitet…";
+  $("#arbeitsstatus").hidden = false;
+  try {
+    await fn();
+  } catch (e) {
+    melden(e);
+  } finally {
+    busy = false;
+    buttons.forEach((b) => {
+      b.disabled = false;
+    });
+    $("#arbeitsstatus").hidden = true;
+  }
+}
+$("#anmelden").onsubmit = (ev) => {
   ev.preventDefault();
   const f = ev.target;
-  f.querySelector("button").disabled = true;
-  try {
+  void arbeiten(async () => {
     await request("/anmeldung", {
       login: f.elements.login.value,
       passwort: f.elements.passwort.value,
     });
     f.elements.passwort.value = "";
     await profil();
-  } catch (e) {
-    melden(e);
-  } finally {
-    f.querySelector("button").disabled = false;
-  }
+  });
 };
-$("#verbinden").onclick = async () => {
-  $("#verbinden").disabled = true;
-  try {
+$("#verbinden").onclick = () => {
+  void arbeiten(async () => {
     const r = await request("/erweiterung/freigabe", daten);
     location.assign(r.weiter);
-  } catch (e) {
-    melden(e);
-    $("#verbinden").disabled = false;
-  }
+  });
 };
-if (!daten.challenge || !daten.state || !daten.redirect)
+if (!daten.challenge || !daten.state || !daten.redirect) {
+  $("#arbeitsstatus").hidden = true;
   melden(
     new Error("Bitte die Anmeldung aus der Timereal-Erweiterung starten."),
   );
-else void profil();
+} else void arbeiten(profil);

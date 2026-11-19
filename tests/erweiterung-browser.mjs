@@ -7,14 +7,16 @@ import { mkdir, mkdtemp, readFile, writeFile, cp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { createApp } from "../dist/app.js";
 import { passwordHash } from "../dist/session.js";
+import { pruefeAnsicht } from "./hilfe/design.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
 });
 await owner.connect();
 const pass = randomBytes(20).toString("hex");
+const login = "extension-browser-" + randomBytes(8).toString("hex");
 await owner.query(
-  "insert into konto(login_referenz,passwort_hash) values('extension-browser',$1)",
-  [await passwordHash(pass)],
+  "insert into konto(login_referenz,passwort_hash) values($1,$2)",
+  [login, await passwordHash(pass)],
 );
 const url = new URL(process.env.TEST_DATABASE_URL);
 url.username = "timereal_app";
@@ -35,6 +37,7 @@ assert.deepEqual(manifest.permissions, ["storage", "identity"]);
 manifest.host_permissions = ["http://127.0.0.1/*"];
 await writeFile(resolve(dir, "manifest.json"), JSON.stringify(manifest));
 const ctx = await chromium.launchPersistentContext("", {
+  locale: "de-DE",
   channel: "chromium",
   headless: true,
   args: ["--disable-extensions-except=" + dir, "--load-extension=" + dir],
@@ -45,6 +48,7 @@ const id = "foobkcceoconhlclbnechjlimhkfbcno";
 const origin = "chrome-extension://" + id;
 let settings;
 const errors = [];
+const designErrors = [];
 ctx.on("page", (p) => p.on("pageerror", (e) => errors.push(e.message)));
 try {
   settings = await ctx.newPage();
@@ -77,6 +81,7 @@ try {
     "Frühe Eingaben dürfen nicht vom geladenen Stand überschrieben werden.",
   );
   await settings.evaluate(() => window.releaseSettingsLoad());
+  assert.deepEqual(await pruefeAnsicht(settings, "erweiterung-verbinden"), []);
   await settings.getByLabel("Timereal-Adresse").fill(addr);
   // Der Modulstart liest gespeicherte Einstellungen asynchron.
   await settings.waitForFunction(
@@ -88,9 +93,47 @@ try {
     .click();
   const auth = await authWait;
   await auth.waitForLoadState("domcontentloaded");
-  await auth.getByLabel("Anmeldename").fill("extension-browser");
+  await auth.getByLabel("Anmeldename").waitFor();
+  assert.deepEqual(await pruefeAnsicht(auth, "erweiterung-anmeldung"), []);
+  await auth.getByLabel("Anmeldename").fill(login);
   await auth.getByLabel("Passwort", { exact: true }).fill(pass);
+  await auth.route("**/api/v1/anmeldung", (route) =>
+    route.abort("internetdisconnected"),
+  );
   await auth.getByRole("button", { name: "Anmelden", exact: true }).click();
+  await auth.getByRole("alert").waitFor();
+  if (!(await auth.getByRole("alert").innerText()).includes("Verbindung"))
+    designErrors.push(
+      "Die Anmeldung der Erweiterung braucht eine verständliche Verbindungsmeldung",
+    );
+  await auth.unroute("**/api/v1/anmeldung");
+  let releaseLogin, loginReached;
+  const holdLogin = new Promise((resolve) => {
+    releaseLogin = resolve;
+  });
+  const reachedLogin = new Promise((resolve) => {
+    loginReached = resolve;
+  });
+  await auth.route("**/api/v1/anmeldung", async (route) => {
+    loginReached();
+    await holdLogin;
+    await route.continue();
+  });
+  await auth.getByRole("button", { name: "Anmelden", exact: true }).click();
+  await reachedLogin;
+  if (!(await auth.getByRole("status").isVisible()))
+    designErrors.push(
+      "Die Anmeldung der Erweiterung braucht einen sichtbaren Ladezustand",
+    );
+  if (await auth.getByRole("alert").isVisible())
+    designErrors.push(
+      "Die überholte Fehlermeldung muss beim erneuten Anmelden verschwinden",
+    );
+  releaseLogin();
+  await auth
+    .getByRole("button", { name: "Erweiterung verbinden", exact: true })
+    .waitFor();
+  assert.deepEqual(await pruefeAnsicht(auth, "erweiterung-freigabe"), []);
   await auth
     .getByRole("button", { name: "Erweiterung verbinden", exact: true })
     .click();
@@ -148,6 +191,10 @@ try {
   await popup.setViewportSize({ width: 380, height: 650 });
   await popup.goto(origin + "/popup.html");
   await popup.getByRole("heading", { name: "Heute", exact: true }).waitFor();
+  assert.deepEqual(
+    await pruefeAnsicht(popup, "erweiterung-popup", { widths: [380] }),
+    [],
+  );
   await popup
     .locator("#ziele .ziel")
     .filter({ hasText: "Erweiterung A" })
@@ -161,6 +208,10 @@ try {
     .getByRole("button", { name: "Leistungstext", exact: true })
     .click();
   await popup.locator("#notiz").fill("Direkt aus der Browserleiste");
+  assert.deepEqual(
+    await pruefeAnsicht(popup, "erweiterung-notiz", { widths: [380] }),
+    [],
+  );
   await popup
     .locator("#notizfenster")
     .getByRole("button", { name: "Speichern", exact: true })
@@ -191,7 +242,8 @@ try {
     .waitFor();
   const before = (
     await owner.query(
-      "select timer_version from konto where login_referenz='extension-browser'",
+      "select timer_version from konto where login_referenz=$1",
+      [login],
     )
   ).rows[0].timer_version;
   await ctx.setOffline(true);
@@ -203,6 +255,10 @@ try {
   await popup
     .getByRole("heading", { name: "Keine Verbindung", exact: true })
     .waitFor();
+  assert.deepEqual(
+    await pruefeAnsicht(popup, "erweiterung-offline", { widths: [380] }),
+    [],
+  );
   if (process.env.SCREENSHOT_DIR)
     await popup.screenshot({
       path: process.env.SCREENSHOT_DIR + "/erweiterung-offline.png",
@@ -221,7 +277,8 @@ try {
   assert.equal(
     (
       await owner.query(
-        "select timer_version from konto where login_referenz='extension-browser'",
+        "select timer_version from konto where login_referenz=$1",
+        [login],
       )
     ).rows[0].timer_version,
     before,
@@ -240,7 +297,8 @@ try {
   const vorVerlust = Number(
     (
       await owner.query(
-        "select timer_version from konto where login_referenz='extension-browser'",
+        "select timer_version from konto where login_referenz=$1",
+        [login],
       )
     ).rows[0].timer_version,
   );
@@ -270,7 +328,8 @@ try {
     Number(
       (
         await owner.query(
-          "select timer_version from konto where login_referenz='extension-browser'",
+          "select timer_version from konto where login_referenz=$1",
+          [login],
         )
       ).rows[0].timer_version,
     ),
@@ -288,6 +347,7 @@ try {
   await full.goto(origin + "/index.html");
   await full.getByRole("button", { name: "Woche", exact: true }).click();
   await full.getByRole("heading", { name: "Wochenübersicht" }).waitFor();
+  assert.deepEqual(await pruefeAnsicht(full, "erweiterung-vollansicht"), []);
   if (process.env.SCREENSHOT_DIR)
     await full.screenshot({
       path: process.env.SCREENSHOT_DIR + "/erweiterung-vollansicht.png",
@@ -306,15 +366,24 @@ try {
   await popup
     .getByRole("button", { name: "Erweiterung verbinden", exact: true })
     .waitFor();
+  await popup.setViewportSize({ width: 380, height: 650 });
+  assert.deepEqual(
+    await pruefeAnsicht(popup, "erweiterung-abgemeldet", { widths: [380] }),
+    [],
+  );
 
   assert.deepEqual(errors, []);
+  assert.deepEqual(designErrors, []);
   console.log(
     "Echte Chromium-Erweiterung geprüft: Anmeldung, geschlossener App-Tab, Wechsel und Notiz, Smartphone, Pause/Stopp, Offline-Bestätigung, Vollansicht und Sitzungswiderruf.",
   );
 } catch (e) {
   console.error(
     "Verbindungsfenster:",
-    await settings?.locator("body").innerText(),
+    await settings
+      ?.locator("body")
+      .innerText()
+      .catch(() => "Fenster nicht mehr erreichbar"),
   );
   console.error(
     "Offene Fenster:",

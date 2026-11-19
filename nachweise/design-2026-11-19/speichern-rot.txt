@@ -1,0 +1,30 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Design-/Bedienbefunde
++ actual - expected
+
++ [
++   'Weiterschreiben während des Speicherns bewahrt den neueren Einstellungsentwurf',
++   'Speichermeldung kennzeichnet den neueren ungespeicherten Entwurf',
++   'Weiterschreiben während des Speicherns bewahrt den neueren Profilentwurf',
++   'Profilmeldung kennzeichnet den neueren ungespeicherten Entwurf'
++ ]
+- []
+
+    at file:///home/hermes/workspace/sap-zeiterfassung/tests/design-browser.mjs:322:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [
+    'Weiterschreiben während des Speicherns bewahrt den neueren Einstellungsentwurf',
+    'Speichermeldung kennzeichnet den neueren ungespeicherten Entwurf',
+    'Weiterschreiben während des Speicherns bewahrt den neueren Profilentwurf',
+    'Profilmeldung kennzeichnet den neueren ungespeicherten Entwurf'
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.2

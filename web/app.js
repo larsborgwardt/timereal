@@ -36,6 +36,39 @@ let seite = "heute",
   busy = false,
   pending = null,
   refreshNr = 0;
+function fokusMerken() {
+  const vorher = document.activeElement;
+  const bereich = vorher?.closest("section[id], dialog[id]");
+  const attribute = ["data-action", "data-arbeit", "data-konto", "data-id"];
+  const selector = vorher?.id
+    ? "#" + CSS.escape(vorher.id)
+    : attribute
+        .filter((a) => vorher?.hasAttribute(a))
+        .map((a) => `[${a}="${CSS.escape(vorher.getAttribute(a))}"]`)
+        .join("");
+  return () => {
+    // Einen zwischenzeitlich vom Menschen gesetzten Fokus nicht zurückholen.
+    if (
+      document.activeElement !== document.body &&
+      document.activeElement !== vorher
+    )
+      return;
+    let ziel = vorher?.isConnected ? vorher : selector ? $(selector) : null;
+    if (!ziel && bereich?.getClientRects().length) {
+      ziel = bereich.querySelector("h1, h2");
+      if (ziel) ziel.tabIndex = -1;
+    }
+    if (ziel?.getClientRects().length && !ziel.disabled)
+      ziel.focus({ preventScroll: true });
+  };
+}
+function seitenFokus() {
+  const heading = $("#" + seite + " h1");
+  if (heading) {
+    heading.tabIndex = -1;
+    heading.focus();
+  }
+}
 function melden(msg = "") {
   const box = $("#meldung");
   box.textContent = msg;
@@ -89,6 +122,15 @@ function zeigeLogin() {
   document.querySelectorAll("dialog form").forEach((f) => {
     if (!["linkform", "resetform"].includes(f.id)) f.reset();
   });
+  for (const id of [
+    "profilform",
+    "grundeinstellungen",
+    "passwortform",
+    "einladen",
+  ]) {
+    $("#" + id).reset();
+    delete $("#" + id).dataset.geaendert;
+  }
   panels();
 }
 function panels() {
@@ -102,11 +144,10 @@ function panels() {
   ])
     $("#" + id).hidden = seite !== id;
   $("nav").hidden = $("#logout").hidden = seite === "login";
-  document
-    .querySelectorAll("nav button")
-    .forEach((b) =>
-      b.toggleAttribute("aria-current", b.dataset.page === seite),
-    );
+  document.querySelectorAll("nav button").forEach((b) => {
+    if (b.dataset.page === seite) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
+  });
 }
 function btn(label, action, klasse = "sek") {
   return (
@@ -287,6 +328,7 @@ async function laden() {
   const nr = ++refreshNr;
   const snapshot = await request("/arbeitsstand");
   if (nr !== refreshNr) return;
+  const fokusZurueck = fokusMerken();
   konten.aktualisieren(snapshot.profil);
   state = snapshot.timer;
   ziele = snapshot.ziele;
@@ -295,11 +337,14 @@ async function laden() {
   panels();
   if (seite === "heute") {
     zeigeTimer();
+    fokusZurueck();
     const heute = tag(new Date());
     const rows = await request("/historie?von=" + heute + "&bis=" + heute);
     if (nr === refreshNr) {
+      const eintragFokus = fokusMerken();
       eintraege = rows;
       zeigeEintraege("#tageseintraege", true);
+      eintragFokus();
     }
     return;
   }
@@ -309,6 +354,7 @@ async function laden() {
   }
   if (["verwaltung", "einstellungen"].includes(seite)) {
     await konten.laden(seite);
+    fokusZurueck();
     return;
   }
   const f = $("#filter").elements;
@@ -316,8 +362,10 @@ async function laden() {
     "/historie?von=" + f.von.value + "&bis=" + f.bis.value,
   );
   if (nr === refreshNr) {
+    const eintragFokus = fokusMerken();
     eintraege = rows;
     zeigeEintraege();
+    eintragFokus();
   }
 }
 async function kommando(action, felder = {}) {
@@ -346,7 +394,18 @@ async function kommando(action, felder = {}) {
 }
 async function bediene(fn) {
   if (busy) return;
+  const vorherigeSeite = seite;
+  const fokusZurueck = fokusMerken();
   busy = true;
+  const dialog = document.querySelector("dialog[open]");
+  const status = dialog ? document.createElement("p") : $("#arbeitsstatus");
+  if (dialog) {
+    status.className = "arbeitsstatus";
+    status.setAttribute("role", "status");
+    dialog.prepend(status);
+  }
+  status.hidden = false;
+  status.textContent = "Wird verarbeitet…";
   document.querySelectorAll("button:enabled").forEach((b) => {
     b.disabled = true;
     b.dataset.wartet = "";
@@ -365,6 +424,13 @@ async function bediene(fn) {
       b.disabled = false;
       delete b.dataset.wartet;
     });
+    if (dialog) status.remove();
+    else {
+      status.textContent = "";
+      status.hidden = true;
+    }
+    if (seite !== vorherigeSeite) seitenFokus();
+    else fokusZurueck();
   }
 }
 function oeffneNotiz(e) {
@@ -569,9 +635,14 @@ const konten = kontenOberflaeche({
   melden,
   abmelden: zeigeLogin,
 });
-laden().catch((e) => {
-  if (e.status !== 401) melden(e.message);
-});
+laden()
+  .catch((e) => {
+    if (e.status !== 401) melden(e.message);
+  })
+  .finally(() => {
+    $("#arbeitsstatus").textContent = "";
+    $("#arbeitsstatus").hidden = true;
+  });
 
 function verbindungMelden() {
   $("#verbindung").hidden = !transport.verbindungUnsicher();

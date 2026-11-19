@@ -6,6 +6,7 @@ import { mkdir } from "node:fs/promises";
 import { createApp } from "../dist/app.js";
 import { passwordHash } from "../dist/session.js";
 import { postfach } from "./hilfe/smtp.mjs";
+import { pruefeAnsicht } from "./hilfe/design.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
 });
@@ -30,6 +31,7 @@ try {
     executablePath: process.env.CHROMIUM_PATH,
   });
   const page = await browser.newPage({
+      locale: "de-DE",
       viewport: { width: 1280, height: 900 },
     }),
     errors = [];
@@ -61,15 +63,18 @@ try {
     .replace(/=3D/g, "=");
   const token = /#einladung=([a-f0-9]{64})/.exec(message)[1];
   const phone = await browser.newPage({
+    locale: "de-DE",
     viewport: { width: 390, height: 844 },
   });
   await phone.goto(addr + "/#einladung=" + token);
   const dialog = phone.locator("#linkfenster");
   await dialog.waitFor();
+  assert.deepEqual(await pruefeAnsicht(phone, "einladung-annehmen"), []);
   await dialog.getByLabel("Passwort · mindestens").fill(pass);
   await dialog.getByLabel("Passwort wiederholen").fill(pass + "falsch");
   await dialog.getByRole("button", { name: "Passwort speichern" }).click();
   await dialog.getByRole("alert").waitFor({ timeout: 3000 });
+  assert.deepEqual(await pruefeAnsicht(phone, "einladung-passwortfehler"), []);
   await dialog.getByLabel("Passwort wiederholen").fill(pass);
   await dialog.getByRole("button", { name: "Passwort speichern" }).click();
   await dialog.waitFor({ state: "hidden" });

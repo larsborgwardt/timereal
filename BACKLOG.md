@@ -6,7 +6,8 @@
 |---|---|---|
 | Updates im Adminbereich | Version prüfen, Update mit Sicherung starten und Ergebnis nach Neustart wieder anzeigen | Für 0.7.0 geplant; [Architektur und Bedienentwurf](ADMIN-BETRIEB.md). Noch nicht in 0.6.2 enthalten. Einmalige Einrichtung des Betriebsdienstes über ein Konsolenupdate erforderlich. |
 | Domainzugriff im Adminbereich | Öffentliche Domain hinter einem externen HTTPS-Proxy eintragen, prüfen und sicher übernehmen | Für 0.7.0 geplant; [Domainwechsel mit Rückkehrmöglichkeit](ADMIN-BETRIEB.md#domainwechsel). Das vorhandene Einrichtungsskript wird in den Ablauf eingebunden. |
-| Apple-Design-Prüfung der gesamten App | Darstellung, Bedienung, Zustände, Tastatur und vergrößerten Text über die App und Erweiterung prüfen | Von Lars zusätzlich beauftragt; Bestandteil der Arbeit an 0.7.0. Ausgangspunkt sind die freigegebenen Bilder; [Prüfumfang](DESIGNPRUEFUNG.md). |
+
+Die Apple-Design-Prüfung der bestehenden Web-App und Chromium-Erweiterung ist im Arbeitszweig umgesetzt und lokal geprüft. Korrekturen betreffen insbesondere Eingabenerhalt, Tastaturfokus, mobile Dialoge, große Schrift und verständliche Statusmeldungen. [Ergebnisse und Messgrenzen](DESIGNPRUEFUNG.md). Die Änderungen sind noch nicht als neues Release veröffentlicht; die oben geplante Betriebsverwaltung bleibt offen.
 
 Die Repository-Präsentation wurde am 19. November 2026 mit Commit `c3999a5` auf `main` veröffentlicht: README mit echten Bildschirmbildern, Release-/Prüfstatus sowie getrennten Installations-, Update- und Domainanleitungen. Sie wird deshalb nicht als offene Funktion weitergeführt.
 

@@ -1,0 +1,22 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Design-/Bedienbefunde
++ actual - expected
+
++ [
++   'Nach Pausieren bleibt der Fokus im Timer'
++ ]
+- []
+
+    at file:///home/hermes/workspace/sap-zeiterfassung/tests/design-browser.mjs:137:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [ 'Nach Pausieren bleibt der Fokus im Timer' ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.2

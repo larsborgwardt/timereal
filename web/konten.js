@@ -8,6 +8,10 @@ export function kontenOberflaeche({
 }) {
   let profil = null,
     links = [];
+  for (const id of ["profilform", "grundeinstellungen"])
+    $("#" + id).addEventListener("input", () => {
+      $("#" + id).dataset.geaendert = "true";
+    });
   const zeile = (name, sub, action) =>
     '<article class="ziel zeile"><div><strong>' +
     esc(name) +
@@ -41,6 +45,8 @@ export function kontenOberflaeche({
         ? "Einladungen werden per E-Mail versendet."
         : "Mailversand noch nicht eingerichtet. Im Container die Mailkonfiguration hinterlegen.";
       $("#einladen button").disabled = !mail.konfiguriert;
+      // Die fachliche Sperre darf am Ende einer Bedienaktion nicht aufgehoben werden.
+      if (!mail.konfiguriert) delete $("#einladen button").dataset.wartet;
       $("#kontoliste").innerHTML = konten
         .map((k) =>
           zeile(
@@ -74,14 +80,17 @@ export function kontenOberflaeche({
           .join("") || "<p>Noch keine Einladungen.</p>";
     }
     if (seite === "einstellungen") {
-      $("#profilform").elements.email.value = profil.email ?? "";
+      if (!$("#profilform").dataset.geaendert)
+        $("#profilform").elements.email.value = profil.email ?? "";
       $("#kontoname").textContent = profil.login;
-      $("#grundeinstellungen").elements.nachkommastellen.value = String(
-        profil.nachkommastellen,
-      );
-      $("#grundeinstellungen").elements.pruefminuten.value = String(
-        profil.pruefminuten,
-      );
+      if (!$("#grundeinstellungen").dataset.geaendert) {
+        $("#grundeinstellungen").elements.nachkommastellen.value = String(
+          profil.nachkommastellen,
+        );
+        $("#grundeinstellungen").elements.pruefminuten.value = String(
+          profil.pruefminuten,
+        );
+      }
       const [sessions, release] = await Promise.all([
         request("/sitzungen"),
         request("/version"),
@@ -137,21 +146,37 @@ export function kontenOberflaeche({
   $("#profilform").onsubmit = (ev) => {
     ev.preventDefault();
     void bediene(async () => {
+      const email = ev.target.elements.email.value;
       profil = await request("/profil", "PATCH", {
-        email: ev.target.elements.email.value,
+        email,
       });
-      melden("E-Mail-Adresse gespeichert.");
+      const neuerEntwurf = ev.target.elements.email.value !== email;
+      if (!neuerEntwurf) delete ev.target.dataset.geaendert;
+      melden(
+        neuerEntwurf
+          ? "E-Mail-Adresse gespeichert. Deine weiteren Änderungen sind noch nicht gespeichert."
+          : "E-Mail-Adresse gespeichert.",
+      );
     });
   };
   $("#grundeinstellungen").onsubmit = (ev) => {
     ev.preventDefault();
     void bediene(async () => {
       const f = ev.target.elements;
-      await request("/einstellungen", "PATCH", {
+      const gesendet = {
         nachkommastellen: Number(f.nachkommastellen.value),
         pruefminuten: Number(f.pruefminuten.value),
-      });
-      melden("Einstellungen gespeichert.");
+      };
+      await request("/einstellungen", "PATCH", gesendet);
+      const neuerEntwurf =
+        Number(f.nachkommastellen.value) !== gesendet.nachkommastellen ||
+        Number(f.pruefminuten.value) !== gesendet.pruefminuten;
+      if (!neuerEntwurf) delete ev.target.dataset.geaendert;
+      melden(
+        neuerEntwurf
+          ? "Einstellungen gespeichert. Deine weiteren Änderungen sind noch nicht gespeichert."
+          : "Einstellungen gespeichert.",
+      );
     });
   };
   $("#passwortform").onsubmit = (ev) => {
@@ -181,14 +206,19 @@ export function kontenOberflaeche({
     });
   };
   let einmallink = null;
-  const match = /^#(einladung|reset)=([a-f0-9]{64})$/.exec(location.hash);
-  if (match) {
+  function einmallinkLaden() {
+    const match = /^#(einladung|reset)=([a-f0-9]{64})$/.exec(location.hash);
+    if (!match) return;
     einmallink = { typ: match[1], token: match[2] };
     history.replaceState(null, "", location.pathname);
+    $("#linkform").reset();
+    melden();
     $("#linktitel").textContent =
       match[1] === "einladung" ? "Einladung annehmen" : "Passwort zurücksetzen";
     $("#linkfenster").showModal();
   }
+  window.addEventListener("hashchange", einmallinkLaden);
+  einmallinkLaden();
   $("#linkform").onsubmit = (ev) => {
     ev.preventDefault();
     void bediene(async () => {

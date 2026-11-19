@@ -5,16 +5,18 @@ import { randomBytes } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import { createApp } from "../dist/app.js";
 import { passwordHash } from "../dist/session.js";
+import { pruefeAnsicht } from "./hilfe/design.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
 });
 await owner.connect();
 const pass = randomBytes(20).toString("hex");
+const login = "arbeitsablauf-browser-" + randomBytes(8).toString("hex");
 const {
   rows: [konto],
 } = await owner.query(
-  "insert into konto(login_referenz,passwort_hash) values('arbeitsablauf-browser',$1) returning id",
-  [await passwordHash(pass)],
+  "insert into konto(login_referenz,passwort_hash) values($1,$2) returning id",
+  [login, await passwordHash(pass)],
 );
 const url = new URL(process.env.TEST_DATABASE_URL);
 url.username = "timereal_app";
@@ -26,7 +28,10 @@ options.origin = addr;
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH,
 });
-const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+const page = await browser.newPage({
+  locale: "de-DE",
+  viewport: { width: 1280, height: 900 },
+});
 page.setDefaultTimeout(6000);
 const errors = [],
   befunde = [];
@@ -69,7 +74,7 @@ const history = async () => {
 };
 try {
   await page.goto(addr);
-  await page.getByLabel("Anmeldename").fill("arbeitsablauf-browser");
+  await page.getByLabel("Anmeldename").fill(login);
   await page.getByLabel("Passwort", { exact: true }).fill(pass);
   await btn("Anmelden").click();
   await page.getByRole("heading", { name: "Heute", exact: true }).waitFor();
@@ -108,6 +113,7 @@ try {
     ["20 min", "12 min", "28 min"],
   );
   await shot("unterbrechung");
+  assert.deepEqual(await pruefeAnsicht(page, "unterbrechung"), []);
   await dlg.getByRole("button", { name: "Übernehmen", exact: true }).click();
   await dlg.waitFor({ state: "hidden" });
   await page.locator("#eintraege article").nth(2).waitFor();
@@ -123,11 +129,14 @@ try {
   await first.getByRole("button", { name: "Buchung vergleichen" }).click();
   const compare = page.locator("#vergleichfenster");
   await compare.getByText("Zuletzt übertragen", { exact: true }).waitFor();
-  assert.match(await compare.innerText(), /1.00/);
-  assert.match(await compare.innerText(), /0.33/);
+  assert.match(await compare.innerText(), /1,00 h/);
+  assert.match(await compare.innerText(), /0,33 h/);
+  assert.equal(await compare.getByText("geändert", { exact: true }).count(), 4);
   await shot("vergleich");
+  assert.deepEqual(await pruefeAnsicht(page, "buchungsvergleich"), []);
   await compare.getByRole("button", { name: "Schließen" }).click();
   await first.getByRole("button", { name: "Korrigieren", exact: true }).click();
+  assert.deepEqual(await pruefeAnsicht(page, "korrektur"), []);
   await dlg.locator("[name=ende]").fill(day + "T09:22");
   await dlg.getByRole("button", { name: "Übernehmen", exact: true }).click();
   await dlg.waitFor({ state: "hidden" });
@@ -144,10 +153,26 @@ try {
   await page.locator("#woche-vorher").click();
   await page
     .locator("#wochentitel")
-    .getByText(day + " – " + sunday.toISOString().slice(0, 10), { exact: true })
+    .getByText(
+      monday.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        timeZone: "UTC",
+      }) +
+        " – " +
+        sunday.toLocaleDateString("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "UTC",
+        }),
+      { exact: true },
+    )
     .waitFor();
   assert.equal(await page.locator("#wochensumme").innerText(), "01:00");
   await shot("woche");
+  assert.deepEqual(await pruefeAnsicht(page, "woche-gefuellt"), []);
   await btn("Einstellungen").click();
   const settings = page.locator("#grundeinstellungen");
   await settings.locator("[name=nachkommastellen]").selectOption("3");

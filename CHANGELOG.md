@@ -1,5 +1,14 @@
 # Änderungen
 
+## Noch nicht veröffentlicht — Vorbereitung auf 0.7.0
+
+- Apple-Design-Prüfung der bestehenden Web-App und Chromium-Erweiterung mit dauerhaft mitlaufenden Browserproben.
+- Lange Kunden-/Ticketnamen, vergrößerte Schrift und mobile Formulare passen in den verfügbaren Bereich; Dialogaktionen bleiben beim Scrollen erreichbar.
+- Tastaturfokus und ungespeicherte Profileinstellungen bleiben bei Hintergrundaktualisierungen erhalten. Während einer Speicherung neu geschriebene Änderungen bleiben als Entwurf erkennbar.
+- Benannte Dialoge, sichtbare Verarbeitung, verständliche Verbindungsfehler der Erweiterungsanmeldung und textliche Änderungskennzeichnung im Buchungsvergleich.
+- Einladungsbutton bleibt ohne Mailkonfiguration gesperrt; Rücksetzlinks funktionieren auch im bereits geöffneten Tab.
+- Die Adminfunktionen für Updates und Domainzugriff sind weiterhin geplant, noch nicht implementiert. API-Version 1 und Datenbankschema 6 bleiben unverändert.
+
 ## 0.6.2 — 19. November 2026
 
 - Footer mit installierter Version, GitHub-Link und Hinweis auf neuere stabile Releases.

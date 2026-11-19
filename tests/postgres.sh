@@ -4,7 +4,8 @@ cd "$(dirname "$0")/.."
 # Wegwerf-Datenbank auf einem zufälligen Loopback-Port, getrennt vom Pilot.
 password=$(node -e "process.stdout.write(require('node:crypto').randomBytes(24).toString('hex'))")
 container=$(docker run -d --rm -p 127.0.0.1::5432 --tmpfs /var/lib/postgresql:rw -e POSTGRES_PASSWORD="$password" "${POSTGRES_IMAGE:-postgres:18-alpine}")
-trap 'docker rm -f "$container" >/dev/null 2>&1 || true' EXIT
+export DESIGN_PROBE_LOG="$(mktemp /tmp/timereal-design-proben.XXXXXXXX.jsonl)"
+trap 'docker rm -f "$container" >/dev/null 2>&1 || true; rm -f "$DESIGN_PROBE_LOG"' EXIT
 port=$(docker port "$container" 5432/tcp | cut -d: -f2)
 export TEST_DATABASE_URL="postgres://postgres:$password@127.0.0.1:$port/postgres"
 for _ in $(seq 1 90); do
@@ -19,4 +20,4 @@ node --test tests/konten.mjs tests/ausbau.mjs tests/erweiterung.mjs
 node --test tests/kapazitaet.mjs
 node tests/kapazitaet-stoerungen.mjs
 node --test tests/version.test.mjs tests/updates.test.mjs tests/update.test.mjs tests/mail-cli.test.mjs tests/zeit.test.mjs tests/erweiterung-client.test.mjs tests/betrieb.test.mjs
-if [[ ${BROWSER_TEST:-0} == 1 ]]; then node tests/footer-browser.mjs; node tests/browser.mjs; node tests/konten-browser.mjs; node tests/arbeitsablauf-browser.mjs; node scripts/erweiterung-bauen.mjs; node tests/erweiterung-browser.mjs; fi
+if [[ ${BROWSER_TEST:-0} == 1 ]]; then node tests/footer-browser.mjs; node tests/browser.mjs; node tests/konten-browser.mjs; node tests/arbeitsablauf-browser.mjs; node tests/design-browser.mjs; node scripts/erweiterung-bauen.mjs; node tests/erweiterung-browser.mjs; node tests/design-abdeckung.mjs; fi
