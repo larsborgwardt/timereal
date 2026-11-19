@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import pg from "pg";
+import { EventEmitter } from "node:events";
 import { createApp } from "../dist/app.js";
 import { issueSession } from "../dist/session.js";
 import * as datenbank from "../dist/db.js";
@@ -148,14 +149,14 @@ test("Ein fehlgeschlagener Rollback verwirft die Verbindung und erhält den ursp
   // Testdouble nur für den Transportausfall während ROLLBACK; keine simulierte Fachantwort.
   let release;
   const original = new Error("Verbindung verloren");
-  const client = {
+  const client = Object.assign(new EventEmitter(), {
     query: async (sql) => {
       if (sql === "ROLLBACK") throw new Error("Rollback nicht mehr möglich");
     },
     release: (value) => {
       release = value;
     },
-  };
+  });
   await assert.rejects(
     datenbank.transaktion({ connect: async () => client }, async () => {
       throw original;
@@ -229,6 +230,46 @@ test("Ein gemeinsamer Arbeitsstand liefert Timer und Stammdaten ausschließlich 
     assert.equal(snapshot.kunden.length, 1);
     assert.equal(snapshot.kunden[0].name, "Eigener Kunde");
     assert(!JSON.stringify(snapshot).includes("passwort_hash"));
+  } finally {
+    await x.close();
+  }
+});
+
+test("Das Anmeldelimit zählt Großschreibungsvarianten desselben Kontos gemeinsam", async () => {
+  const x = await setup({});
+  const adresse = "caseprobe-" + crypto.randomUUID() + "@example.test";
+  try {
+    await x.owner.query("update konto set email=$1 where id=$2", [
+      adresse,
+      x.a.id,
+    ]);
+    for (let i = 0; i < 13; i++) {
+      const login =
+        adresse
+          .slice(0, 9)
+          .split("")
+          .map((c, n) => (i & (1 << n) ? c.toUpperCase() : c))
+          .join("") + adresse.slice(9);
+      assert.equal(
+        (await x.owner.query("select id from login_suchen($1)", [login]))
+          .rows[0].id,
+        x.a.id,
+      );
+      const r = await x.app.inject({
+        method: "POST",
+        url: "/api/v1/anmeldung",
+        headers: { origin: "https://timereal.test" },
+        payload: { login, passwort: "FalschesTestpasswort" },
+      });
+      assert.equal(r.statusCode, i < 12 ? 401 : 429);
+    }
+    const andere = await x.app.inject({
+      method: "POST",
+      url: "/api/v1/anmeldung",
+      headers: { origin: "https://timereal.test" },
+      payload: { login: "anderes-konto", passwort: "FalschesTestpasswort" },
+    });
+    assert.equal(andere.statusCode, 401);
   } finally {
     await x.close();
   }

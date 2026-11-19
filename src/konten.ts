@@ -2,8 +2,6 @@ import { randomBytes } from "node:crypto";
 import type { PoolClient } from "pg";
 import { Fehler } from "./db.js";
 import { digest, passwordHash, verify } from "./session.js";
-import type { maildienst } from "./mail.js";
-type Mail = ReturnType<typeof maildienst>;
 export async function profil(db: PoolClient) {
   const {
     rows: [k],
@@ -21,7 +19,6 @@ export async function profilMail(db: PoolClient, email: string) {
 }
 export async function einladen(
   db: PoolClient,
-  mail: Mail,
   origin: string,
   email: string,
   id: string | null = null,
@@ -42,8 +39,11 @@ export async function einladen(
   const {
     rows: [invite],
   } = await db.query("select * from einladungen_lesen() where id=$1", [row.id]);
-  await mail.senden(invite.email, "einladung", origin + "/#einladung=" + token);
-  return { id: row.id, versendet: true };
+  return {
+    id: row.id,
+    email: invite.email as string,
+    url: origin + "/#einladung=" + token,
+  };
 }
 export async function linkAnnehmen(
   db: PoolClient,
@@ -68,7 +68,6 @@ export async function linkAnnehmen(
 }
 export async function resetAnfordern(
   db: PoolClient,
-  mail: Mail,
   origin: string,
   email: string,
 ) {
@@ -79,12 +78,9 @@ export async function resetAnfordern(
     email.toLowerCase(),
     digest(token),
   ]);
-  if (r.id)
-    await mail.senden(
-      email.toLowerCase(),
-      "reset",
-      origin + "/#reset=" + token,
-    );
+  return r.id
+    ? { email: email.toLowerCase(), url: origin + "/#reset=" + token }
+    : null;
 }
 export async function passwortAendern(
   db: PoolClient,

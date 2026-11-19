@@ -21,6 +21,10 @@ Für 100 Nutzer bleibt diese Architektur erhalten: ein Node-Dienst, ein begrenzt
 
 Verbindungswartezeit, Datenbanksperren und SQL-Laufzeit erhalten endliche Grenzen. Eine vorübergehend überlastete Datenbank liefert einen verständlichen 503-Fehler; die Oberfläche darf Schreibaufträge nicht automatisch wiederholen. Defekte Poolverbindungen werden verworfen, damit nachfolgende Konten keine fremde Transaktion übernehmen.
 
+Einladungs- und Passwortlink-Anfragen werden je IP und Ziel auf zwölf Versuche pro zehn Minuten begrenzt, zusätzlich auf 200 Anfragen je IP. Verschiedene Berater hinter derselben Firmen-IP teilen damit nicht dasselbe kleine Zielkontingent. Der lokale Caddy ist der vertrauenswürdige Proxy; direkte entfernte Aufrufer können ihre Adresse nicht über Weiterleitungsheader ersetzen. Anmeldeversuche zählen je IP und normalisierter Loginadresse. Die Zähler liegen im einzelnen App-Prozess; ein Neustart leert sie. Ein öffentlicher Mehrinstanzbetrieb benötigt ein zusätzliches, gemeinsam wirksames Schutzkonzept.
+
+Einladungs- und Rücksetzlinks werden vor dem SMTP-Versand bestätigt gespeichert. Während der Mailzustellung bleibt keine Datenbanktransaktion offen. Scheitert der Versand oder endet der Prozess zwischen Speichern und Versand, kann die Einladung erneut gesendet beziehungsweise ein neuer Passwortlink angefordert werden; eine automatische Versandwarteschlange ist nicht implementiert.
+
 Der Lastlauf zeichnet Versionen, Ressourcenbegrenzung, Datensatzmenge, Laufzeit, Antwortperzentile und Fehler auf. Er baut zunächst das Schema des 0.5-Piloten auf, füllt den Bestand und wendet anschließend die aktuellen Migrationen an. Inhaltssignaturen vor und nach der Migration müssen übereinstimmen. Der Messrechner ersetzt keinen Nachweis für Lars' tatsächlichen LXC, seine Datenträger oder seine Internetverbindung.
 
 Technische Grundlagen: [node-postgres Pool](https://node-postgres.com/apis/pool), [PostgreSQL Zeitgrenzen](https://www.postgresql.org/docs/18/runtime-config-client.html).

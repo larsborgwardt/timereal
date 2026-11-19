@@ -53,6 +53,9 @@ export function createApp(
 ) {
   const app = Fastify({
     bodyLimit: 32768,
+    // Der mitgelieferte Caddy ist der einzige vertrauenswürdige Proxy.
+    trustProxy: (address, hop) =>
+      hop === 0 && ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(address),
     ajv: { customOptions: { coerceTypes: false, removeAdditional: false } },
   });
   const loginversuche = new Map<string, { ab: number; n: number }>();
@@ -182,7 +185,7 @@ export function createApp(
       const now = Date.now();
       for (const [k, v] of loginversuche)
         if (v.ab <= now) loginversuche.delete(k);
-      const key = req.ip + "|" + req.body.login;
+      const key = req.ip + "|" + req.body.login.toLowerCase();
       const versuch = loginversuche.get(key) ?? { ab: now + 600000, n: 0 };
       if (versuch.n >= 12 || loginversuche.size >= 2048)
         throw new Fehler(

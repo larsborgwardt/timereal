@@ -8,6 +8,11 @@
 - Begrenzte Wartezeiten für Pool, Sperren und SQL; verständliche 503-Antwort bei vorübergehender Überlast und Erholung nach Verbindungsabbruch.
 - Wiederholbarer HTTP-Lasttest mit Datenprüfung und Migration von Schema 5 auf 6; GitHub führt ihn als eigene Prüfung aus.
 
+- Mailversand nach dem Speichern des Links; langsame SMTP-Antworten halten keine Kontosperre und keine Datenbanktransaktion offen.
+- Ausgeliehene Datenbankverbindungen behandeln Verbindungsabbrüche ohne Prozessabsturz.
+- Einladungen für verschiedene Berater funktionieren auch hinter derselben Firmen-IP; wiederholte Linkversuche bleiben begrenzt. Weiterleitungsadressen werden nur vom lokalen Proxy übernommen.
+- Das Anmeldelimit zählt Großschreibungsvarianten einer E-Mail-Adresse zusammen.
+
 ## 0.5.0 — 19. November 2026
 
 - Chromium-Erweiterung mit gemeinsamem Timer und Notizfeld, vollständiger Ansicht und separat widerrufbarer Sitzung.

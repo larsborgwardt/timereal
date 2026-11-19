@@ -30,16 +30,34 @@ export function kontenRouten(
 ) {
   const mail = maildienst(options.smtp),
     versuche = new Map<string, { n: number; bis: number }>();
-  function limit(req: FastifyRequest) {
+  function limit(req: FastifyRequest, ziel: string) {
     const jetzt = Date.now();
     for (const [k, v] of versuche) if (v.bis < jetzt) versuche.delete(k);
-    const v = versuche.get(req.ip) ?? { n: 0, bis: jetzt + 600000 };
-    if (++v.n > 12 || versuche.size >= 2048)
-      throw new Fehler(
-        429,
-        "Zu viele Versuche. Bitte später erneut versuchen.",
-      );
-    versuche.set(req.ip, v);
+    // Eigenes Ziel-Limit plus Obergrenze je IP: ein Büro kann verschiedene
+    // Einladungen annehmen, wiederholte Versuche bleiben trotzdem begrenzt.
+    for (const [key, max] of [
+      ["ip:" + req.ip, 200],
+      ["ziel:" + req.ip + ":" + digest(ziel), 12],
+    ] as const) {
+      const bekannt = versuche.get(key);
+      const v = bekannt ?? { n: 0, bis: jetzt + 600000 };
+      if (v.n >= max || (!bekannt && versuche.size >= 4096))
+        throw new Fehler(
+          429,
+          "Zu viele Versuche. Bitte später erneut versuchen.",
+        );
+      v.n++;
+      versuche.set(key, v);
+    }
+  }
+  async function versenden(req: FastifyRequest, email: string, id?: string) {
+    if (!mail.konfiguriert)
+      throw new Fehler(503, "Mailversand ist noch nicht eingerichtet.");
+    // Erst COMMIT, dann externer Versand. Fehler bleiben sichtbar; die
+    // gespeicherte Einladung kann über die Verwaltung erneut gesendet werden.
+    const link = await privat(req, (db) => einladen(db, origin(), email, id));
+    await mail.senden(link.email, "einladung", link.url);
+    return { id: link.id, versendet: true };
   }
   function origin() {
     if (!options.origin)
@@ -97,13 +115,12 @@ export function kontenRouten(
   app.post<{ Body: { email: string } }>(
     "/api/v1/verwaltung/einladungen",
     { schema: { body: objekt({ email }, ["email"]) } },
-    (req) => privat(req, (db) => einladen(db, mail, origin(), req.body.email)),
+    (req) => versenden(req, req.body.email),
   );
   app.post<{ Params: { id: string } }>(
     "/api/v1/verwaltung/einladungen/:id/erneut",
     { schema: { params: objekt({ id: uuid }, ["id"]) } },
-    (req) =>
-      privat(req, (db) => einladen(db, mail, origin(), "", req.params.id)),
+    (req) => versenden(req, "", req.params.id),
   );
   app.delete<{ Params: { id: string } }>(
     "/api/v1/verwaltung/einladungen/:id",
@@ -128,7 +145,7 @@ export function kontenRouten(
       "/api/v1" + path,
       { schema: { body: objekt({ token, passwort }, ["token", "passwort"]) } },
       (req) => {
-        limit(req);
+        limit(req, req.body.token);
         return transaktion(pool, (db) =>
           linkAnnehmen(db, req.body.token, typ, req.body.passwort),
         );
@@ -138,13 +155,14 @@ export function kontenRouten(
     "/api/v1/passwort/anfordern",
     { schema: { body: objekt({ email }, ["email"]) } },
     async (req, reply) => {
-      limit(req);
+      limit(req, req.body.email.toLowerCase());
       if (!mail.konfiguriert)
         throw new Fehler(503, "Mailversand ist noch nicht eingerichtet.");
       try {
-        await transaktion(pool, (db) =>
-          resetAnfordern(db, mail, origin(), req.body.email),
+        const link = await transaktion(pool, (db) =>
+          resetAnfordern(db, origin(), req.body.email),
         );
+        if (link) await mail.senden(link.email, "reset", link.url);
       } catch {
         console.error("Passwortmail konnte nicht versendet werden.");
       }

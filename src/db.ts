@@ -28,6 +28,7 @@ export function voruebergehendNichtVerfuegbar(
   return (
     [
       "55P03",
+      "25P03",
       "57014",
       "57P01",
       "57P02",
@@ -64,9 +65,18 @@ export async function transaktion<T>(
 ): Promise<T> {
   const db = await pool.connect();
   let verwerfen = false;
+  let verbindungsfehler: Error | undefined;
+  // Ausgeliehene Clients gehören nicht zum Errorhandler des Pools.
+  // Ein Abbruch während eines await muss die Anfrage, nicht den Prozess beenden.
+  const abgebrochen = (error: Error) => {
+    verbindungsfehler ??= error;
+    verwerfen = true;
+  };
+  db.on("error", abgebrochen);
   try {
     await db.query("BEGIN");
     const wert = await run(db);
+    if (verbindungsfehler) throw verbindungsfehler;
     await db.query("COMMIT");
     return wert;
   } catch (err) {
@@ -77,8 +87,9 @@ export async function transaktion<T>(
       // nächste Konto ausgeliehen werden. Der ursprüngliche Fehler bleibt erhalten.
       verwerfen = true;
     }
-    throw err;
+    throw verbindungsfehler ?? err;
   } finally {
     db.release(verwerfen);
+    db.removeListener("error", abgebrochen);
   }
 }
