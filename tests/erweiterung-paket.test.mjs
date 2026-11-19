@@ -41,6 +41,27 @@ test("Edge-Upload-ZIP entfernt Entwicklungsfelder und enthält das Manifest dire
     assert.equal(Object.hasOwn(manifest, "update_url"), false);
     assert.equal(manifest.manifest_version, 3);
     assert.equal(manifest.version, source.version);
+    assert.equal(manifest.action.default_title, "Timereal");
+    assert.deepEqual(manifest.icons, {
+      16: "icons/timereal-16.png",
+      32: "icons/timereal-32.png",
+      48: "icons/timereal-48.png",
+      128: "icons/timereal-128.png",
+    });
+    assert.deepEqual(manifest.action.default_icon, {
+      16: "icons/timereal-16.png",
+      32: "icons/timereal-32.png",
+    });
+    for (const [size, path] of Object.entries(manifest.icons)) {
+      const png = execFileSync("unzip", ["-p", zip, path]);
+      assert.deepEqual(
+        [...png.subarray(0, 8)],
+        [137, 80, 78, 71, 13, 10, 26, 10],
+      );
+      assert.equal(png.readUInt32BE(16), Number(size));
+      assert.equal(png.readUInt32BE(20), Number(size));
+      assert.deepEqual(png, await readFile(resolve(root, "web", path)));
+    }
     assert.deepEqual(manifest.permissions, ["storage", "identity"]);
     assert.deepEqual(
       manifest.optional_host_permissions,

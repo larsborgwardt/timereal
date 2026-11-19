@@ -1,5 +1,12 @@
 # Änderungen
 
+## 0.9.2 — 19. November 2026
+
+- Gemeinsames freigegebenes Timereal-Symbol als Favicon der Web-App, im Anmeldefenster und in der Browsererweiterung.
+- PNG-Symbole für Browserleiste und Erweiterungsverwaltung; ICO für Browser-Tabs und Touch-Symbol für Lesezeichen.
+- Separates 300-Pixel-Logo für das Feld „Extension logo“ im Microsoft Partner Center.
+- Edge-Upload-ZIP weiterhin ohne `key` und `update_url`. Serverupdate und Erweiterungspaket werden getrennt installiert; Schema 10 und API 1 bleiben unverändert. [Prüfbelege](nachweise/0.9.2.md).
+
 ## 0.9.1 — 19. November 2026
 
 - Anmeldung der offiziellen Microsoft-Edge-Erweiterung anhand ihrer konkreten CRX-ID freigeschaltet; Entwicklungskennung bleibt unterstützt.

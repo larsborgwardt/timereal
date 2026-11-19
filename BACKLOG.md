@@ -8,9 +8,13 @@ Die freigegebenen Bilder 13/14 sind umgesetzt: Anzeigename, bestätigte E-Mail-�
 
 Das getrennte Edge-Upload-Paket enthält kein `key`. Die von Lars gelieferte Microsoft-CRX-ID ist ab Server 0.9.1 konkret für CORS und PKCE-Anmelderücksprung freigegeben. Fremde Kennungen und vertauschte Rücksprünge bleiben gesperrt. Die Browserprobe lädt eine Wegwerfkopie des Upload-ZIPs mit dem öffentlichen Microsoft-Schlüssel und prüft damit die echte CRX-ID. **Offen bleibt die Veröffentlichung im Partner Center und die Installation des von Microsoft signierten Store-Pakets.** [Upload-Anleitung](erweiterung/README.md#microsoft-partner-center). Firefox-Erweiterung und Safari/WebKit bleiben gesondert offen.
 
+## Favicon und Erweiterungssymbol in 0.9.2
+
+Entwurf 16 ist von Lars freigegeben und eingebunden: Web-Favicon, Erweiterungssymbol und separates Store-Logo. [Prüfbelege](nachweise/0.9.2.md). Store-Einreichung und Installation erfolgen durch Lars; eine Microsoft-Zertifizierung ist damit nicht belegt.
+
 ## Mailversand im Adminbereich
 
-Von Lars beauftragt; Bildentwurf 15 freigegeben. SMTP ist bis Release 0.9.1 bisher nur über `betrieb/mail-einrichten.sh` einrichtbar, obwohl die Web-App bereits Einladungen und E-Mail-Bestätigung verwendet. **Verwaltung → Mailversand** mit sicherer Passwortspeicherung, Prüfen vor Übernahme und Testmail ist in Arbeit und noch nicht ausgeliefert.
+Von Lars beauftragt; Bildentwurf 15 freigegeben. SMTP ist bis Release 0.9.2 bisher nur über `betrieb/mail-einrichten.sh` einrichtbar, obwohl die Web-App bereits Einladungen und E-Mail-Bestätigung verwendet. **Verwaltung → Mailversand** mit sicherer Passwortspeicherung, Prüfen vor Übernahme und Testmail ist in Arbeit und noch nicht ausgeliefert.
 
 ## Umfang von 0.7.0
 

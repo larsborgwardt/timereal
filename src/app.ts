@@ -197,6 +197,20 @@ export function createApp(
         .send(await readFile(new URL("../web/" + file, import.meta.url))),
     );
   }
+  for (const [url, file, mime] of [
+    ["/favicon.ico", "favicon.ico", "image/vnd.microsoft.icon"],
+    ...[16, 32, 48, 128, 180].map((size) => [
+      `/icons/timereal-${size}.png`,
+      `icons/timereal-${size}.png`,
+      "image/png",
+    ]),
+  ]) {
+    app.get(url, async (_, reply) =>
+      reply
+        .type(mime)
+        .send(await readFile(new URL("../web/" + file, import.meta.url))),
+    );
+  }
   app.get("/health", async () => {
     await pool.query("select 1");
     return { status: "ok" };
