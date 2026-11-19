@@ -48,6 +48,11 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npx playwright-core install --with-deps chromium
+      - name: Edge-Upload-Paket bauen und prüfen
+        run: |
+          node --test tests/erweiterung-paket.test.mjs
+          node scripts/erweiterung-bauen.mjs --target edge-store --zip
+          node tests/erweiterung-store-browser.mjs
       - name: Datenbank, API, Browser und Erweiterung prüfen
         run: npm test
         env:
@@ -70,4 +75,12 @@ jobs:
         with:
           name: timereal-erweiterung
           path: dist/erweiterung/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: matrix.postgres == 18
+        with:
+          name: timereal-edge-store
+          path: |
+            dist/timereal-erweiterung-*-edge-store.zip
+            dist/timereal-erweiterung-*-edge-store.zip.sha256
           if-no-files-found: error

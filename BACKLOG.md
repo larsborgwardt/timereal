@@ -6,7 +6,11 @@ Lars hat am 19. November 2026 die Umsetzung der Designprüfung und der offenen P
 
 Die freigegebenen Bilder 13/14 sind umgesetzt: Anzeigename, bestätigte E-Mail-Änderung, Authenticator, Wiederherstellungscodes und Faktorverwaltung. Die Chromium-Erweiterung verwendet die neue vollständige Anmeldung und besitzt weiterhin eine separat widerrufbare Sitzung. [Vertrag](KONTOSICHERHEIT.md) · [Prüfbelege](nachweise/0.9.0.md).
 
-Die Erweiterung wird als ZIP zum entpackten Laden veröffentlicht. Firefox-Erweiterung, Safari/WebKit, weiterer Vertriebsweg und Store-Veröffentlichung bleiben gesondert offen; daraus wird keine bereits fertige Unterstützung abgeleitet.
+Die Erweiterung wird als ZIP zum entpackten Laden veröffentlicht. Ein getrenntes Edge-Upload-Paket entfernt die im Partner Center abgelehnten Entwicklungsfelder. **Die Edge-Store-Veröffentlichung ist beauftragt und noch nicht fertig:** Nach dem Upload fehlen die von Microsoft vergebene Erweiterungs-ID, ihre konkrete Serverfreigabe für CORS und Anmelderücksprung sowie ein Anmeldetest der Store-Ausgabe. Es gibt keine pauschale Freigabe fremder Erweiterungs-IDs. [Upload-Anleitung](erweiterung/README.md#microsoft-partner-center). Firefox-Erweiterung und Safari/WebKit bleiben gesondert offen.
+
+## Mailversand im Adminbereich
+
+Von Lars beauftragt; Bildentwurf 15 freigegeben. SMTP ist im Release 0.9.0 bisher nur über `betrieb/mail-einrichten.sh` einrichtbar, obwohl die Web-App bereits Einladungen und E-Mail-Bestätigung verwendet. **Verwaltung → Mailversand** mit sicherer Passwortspeicherung, Prüfen vor Übernahme und Testmail ist in Arbeit und noch nicht ausgeliefert.
 
 ## Umfang von 0.7.0
 
