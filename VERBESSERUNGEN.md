@@ -28,3 +28,8 @@ Das Ziel ist eine ruhige Zeiterfassung: Der laufende Arbeitstag bleibt zentral, 
 | D03: Laden, deaktivierte Prüfung, Fehler und veralteter Abruf dürfen nicht dieselbe Erfolgsmeldung zeigen. | `feedback.md`, `loading.md` und `writing.md`: Rückmeldung im Kontext; Arbeiten bleibt möglich. | Eigenständiges Footer-Modul, konkrete Zustandsmeldungen, Test mit abgebrochener Updateanfrage und weiterhin bedienbarer Anmeldung. |
 
 D02/D03 sind Anforderungen an die neue Oberfläche; sie werden nicht als zuvor vorhandene Produktfehler dargestellt. Die automatisierten Proben stehen in `tests/footer-browser.mjs` und `tests/updates.test.mjs`. Tatsächlich ausgeführte Prüfungen, Kontraste, Screenshots und Grenzen werden im [Versionsnachweis](nachweise/0.6.2.md) festgehalten.
+
+## Zusätzliche Betriebsbefunde aus der Integration
+
+- E01: Die Erweiterung ließ frühes Absenden und Eingeben vor Abschluss ihres asynchronen Starts zu. Adressfeld und Verbindungsbutton werden jetzt erst nach Laden des gespeicherten Zustands bedienbar. Der verzögerte Start und die anschließende echte Anmeldung sind geprüft.
+- B01: Geplante schnelle Proxy-Wechsel konnten die systemd-Startsperre erreichen und den Rückbau verhindern. Proxy-Patch 2 setzt die Zähler vor dem geplanten Neustart zurück; echte Dienst- und HTTPS-Prüfungen bleiben maßgeblich. Die native Probe erzwingt eine Startsperre und prüft auch den Rückbau nach einem einmaligen Neustartfehler.
