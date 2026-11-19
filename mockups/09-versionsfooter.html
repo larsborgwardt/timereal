@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Zeitnachweis · Timereal</title>
+    <style>:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #102542;
+  background: #f8fafb;
+  font-size: 16px;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  border-bottom: 1px solid #c7d4da;
+  background: white;
+}
+.kopf,
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 0 32px;
+}
+.kopf,
+.zeile,
+.aktionen,
+.register,
+.daten {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.kopf {
+  min-height: 72px;
+  gap: 36px;
+}
+.kopf strong {
+  font-size: 1.5rem;
+  letter-spacing: -0.04em;
+}
+.kopf nav {
+  align-self: stretch;
+  display: flex;
+}
+.kopf nav button,
+.register button,
+.text {
+  background: none;
+  color: #27405a;
+  border-radius: 0;
+}
+.kopf nav button[aria-current],
+.register button[aria-pressed="true"] {
+  color: #00766a;
+  box-shadow: inset 0 -3px #00766a;
+}
+.kopf #logout {
+  margin-left: auto;
+}
+.zeile {
+  justify-content: space-between;
+}
+main {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: -0.045em;
+  margin: 14px 0 24px;
+}
+h2 {
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+}
+.karte,
+dialog {
+  border: 1px solid #c2ced6;
+  border-radius: 12px;
+  padding: 24px;
+  background: #fff;
+}
+.karte {
+  margin-bottom: 18px;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  background: #08796f;
+  color: white;
+  font-weight: 650;
+  border: 0;
+  padding: 11px 17px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 44px;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.sek {
+  color: #086e66;
+  border: 1px solid #08796f;
+  background: white;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #568dd3;
+  outline-offset: 2px;
+}
+input,
+select,
+textarea {
+  background: white;
+  border: 1px solid #8499a7;
+  border-radius: 6px;
+  padding: 10px;
+  color: inherit;
+  width: 100%;
+  margin-top: 5px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin: 12px 0;
+}
+.check input {
+  width: auto;
+}
+.suche {
+  font-size: 0.9rem;
+}
+.ziel,
+.eintrag {
+  border-top: 1px solid #dce4e8;
+  padding: 14px 0;
+}
+.ziel:last-child,
+.eintrag:last-child {
+  padding-bottom: 0;
+}
+.ziel strong,
+.eintrag strong {
+  display: block;
+}
+small,
+.neben {
+  color: #4b6475;
+}
+.timerzeit {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 740;
+  letter-spacing: -0.04em;
+}
+.filter {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.filter label {
+  flex: 1;
+  min-width: 145px;
+  margin: 0;
+}
+.register {
+  margin-bottom: 12px;
+}
+.login {
+  max-width: 420px;
+}
+dialog {
+  color: inherit;
+  width: min(92vw, 480px);
+}
+dialog::backdrop {
+  background: #15294166;
+}
+.aktionen {
+  margin-top: 14px;
+}
+.daten {
+  justify-content: space-between;
+}
+.eintrag p {
+  white-space: pre-line;
+}
+.meldung,
+#meldung {
+  background: #fff6dc;
+  color: #483719;
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+.notizzeile {
+  white-space: pre-wrap;
+}
+.stand {
+  border-left: 3px solid #8ca8a6;
+  padding-left: 12px;
+}
+[hidden] {
+  display: none !important;
+}
+@media (max-width: 640px) {
+  .kopf,
+  main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .kopf {
+    gap: 8px;
+    flex-wrap: nowrap;
+    min-height: 60px;
+  }
+  .kopf strong {
+    font-size: 1.15rem;
+  }
+  .kopf button {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+  .karte {
+    padding: 16px;
+  }
+  .ziel button {
+    margin-left: 0;
+  }
+  .zeile {
+    gap: 8px;
+  }
+  .filter label {
+    min-width: 110px;
+  }
+  .text {
+    padding: 4px;
+  }
+}
+
+.kopf {
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.kopf nav {
+  flex-wrap: wrap;
+}
+#mailhinweis {
+  flex-basis: 100%;
+  margin: 0;
+}
+#verwaltung .neben,
+#einstellungen .neben {
+  display: block;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .kopf nav {
+    order: 3;
+    width: 100%;
+  }
+  .kopf #logout {
+    margin-left: auto;
+  }
+}
+
+.zeitfelder,
+.vergleich,
+.kennzahlen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.kennzahlen {
+  margin: 24px 0;
+}
+.kennzahlen > div {
+  padding: 20px;
+  background: #e4f6f1;
+  border-radius: 10px;
+}
+.kennzahlen strong {
+  display: block;
+  font-size: 2rem;
+}
+.tabelle {
+  overflow: auto;
+  margin: 20px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #dce4e8;
+}
+td {
+  overflow-wrap: anywhere;
+}
+dt {
+  font-weight: 600;
+  margin-top: 12px;
+}
+dd {
+  margin: 3px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.geaendert {
+  background: #fff6dc;
+  padding: 5px;
+}
+#vergleichfenster {
+  width: min(94vw, 850px);
+}
+#zeitfenster {
+  width: min(94vw, 660px);
+}
+#eintraege {
+  margin-top: 18px;
+}
+@media (max-width: 640px) {
+  .zeitfelder,
+  .vergleich {
+    grid-template-columns: 1fr;
+  }
+  .kennzahlen {
+    gap: 8px;
+  }
+  .kennzahlen > div {
+    padding: 12px;
+  }
+  th,
+  td {
+    padding: 8px;
+  }
+}
+
+body{min-height:100vh;display:flex;flex-direction:column}main{width:100%;flex:1}.versionsfooter{width:100%;max-width:1120px;margin:0 auto;padding:16px 32px;border-top:1px solid #c7d4da;display:flex;gap:8px 24px;align-items:center;flex-wrap:wrap;color:#4b6475;font-size:.875rem;line-height:1.5}.versionsfooter a{color:#086e66;display:inline-flex;align-items:center;min-height:44px;text-underline-offset:4px}.versionsfooter .update{margin-left:auto;font-weight:650}.hinweis{flex-basis:100%;text-align:right}.versionsfooter a:focus-visible{outline:3px solid #568dd3;outline-offset:3px}@media(max-width:600px){.versionsfooter{padding:16px;gap:4px 20px}.versionsfooter .update{margin-left:0;flex-basis:100%}.hinweis{text-align:left}}</style>
+
+  </head>
+  <body>
+    <header>
+      <div class="kopf">
+        <strong>Zeitnachweis</strong>
+        <nav aria-label="Hauptnavigation" hidden>
+          <button data-page="heute">Heute</button
+          ><button data-page="woche">Woche</button
+          ><button data-page="nachweise">Nachweise</button
+          ><button data-page="einstellungen">Einstellungen</button
+          ><button data-page="verwaltung" id="admin-nav" hidden>
+            Verwaltung
+          </button>
+        </nav>
+        <button id="logout" class="text" hidden>Abmelden</button>
+      </div>
+    </header>
+    <main>
+      <p id="meldung" role="status" hidden></p>
+      <section id="verbindung" class="karte" hidden>
+        <h2>Keine Verbindung</h2>
+        <p>
+          Eine Antwort fehlt. Lade den aktuellen Stand und bestätige danach
+          deinen Wechsel.
+        </p>
+        <button id="verbindung-laden">Aktuellen Stand laden</button>
+      </section>
+      <section id="login">
+        <h1>Anmelden</h1>
+        <form id="anmelden" class="karte login">
+          <label
+            >Anmeldename<input
+              name="login"
+              required
+              autocomplete="username" /></label
+          ><label
+            >Passwort<input
+              type="password"
+              name="passwort"
+              required
+              autocomplete="current-password" /></label
+          ><button>Anmelden</button>
+        </form>
+        <button id="vergessen" class="text">Passwort vergessen?</button>
+      </section>
+      <section id="heute" hidden>
+        <div class="zeile">
+          <h1>Heute</h1>
+          <div class="aktionen">
+            <button id="sofort">Sofort starten</button
+            ><button id="intern" class="sek">Interne Zeit</button>
+          </div>
+        </div>
+        <section class="karte" id="timer" aria-label="Timer"></section>
+        <section class="karte">
+          <div class="zeile">
+            <h2>Buchungsziel wählen</h2>
+            <button id="neu">+ Neues Buchungsziel</button>
+          </div>
+          <label class="suche"
+            >Suchen<input
+              id="suche"
+              type="search"
+              placeholder="Kunde, Ticket oder Termin"
+          /></label>
+          <div id="ziele"></div>
+        </section>
+        <section class="karte">
+          <div class="zeile">
+            <h2>Tagesverlauf</h2>
+            <button type="button" data-arbeit="nachtrag">
+              Zeit nachtragen
+            </button>
+          </div>
+          <div id="tageseintraege"></div>
+        </section>
+      </section>
+      <section id="woche" hidden>
+        <h1>Wochenübersicht</h1>
+        <p>
+          Erfasste Minuten einschließlich des laufenden Timers. Stornierte
+          Abschnitte zählen nicht mit.
+        </p>
+        <div class="karte">
+          <div class="zeile">
+            <button id="woche-vorher" class="sek">← Vorherige Woche</button
+            ><strong id="wochentitel"></strong
+            ><button id="woche-nachher" class="sek">Nächste Woche →</button>
+          </div>
+          <div class="kennzahlen">
+            <div><span>Erfasst</span><strong id="wochensumme"></strong></div>
+            <div>
+              <span>Abrechenbar</span><strong id="wochenabrechenbar"></strong>
+            </div>
+          </div>
+          <div class="tabelle">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tag</th>
+                  <th>Kunde</th>
+                  <th>Projekt</th>
+                  <th>Dauer</th>
+                </tr>
+              </thead>
+              <tbody id="wochenzeilen"></tbody>
+            </table>
+          </div>
+          <button id="wochennacharbeit">Offene Nacharbeiten</button>
+        </div>
+      </section>
+      <section id="nachweise" hidden>
+        <h1>Stundennachweise</h1>
+        <div class="register">
+          <button id="liste">Übernahme</button
+          ><button id="historie">Historie</button>
+        </div>
+        <form id="filter" class="karte filter">
+          <label>Von<input type="date" name="von" required /></label
+          ><label>Bis<input type="date" name="bis" required /></label
+          ><label
+            >Kunde oder Buchungsziel<input name="suche" type="search" /></label
+          ><button>Filtern</button>
+        </form>
+        <button type="button" class="sek" id="filter-reset">
+          Filter zurücksetzen</button
+        ><button type="button" data-arbeit="nachtrag">Zeit nachtragen</button>
+        <div id="eintraege" class="karte"></div>
+      </section>
+      <section id="verwaltung" hidden>
+        <h1>Verwaltung</h1>
+        <p>
+          Berater einladen und Zugänge verwalten. Jeder erfasst seine eigenen
+          Kunden und Zeiten.
+        </p>
+        <form id="einladen" class="karte filter">
+          <label
+            >E-Mail-Adresse<input
+              name="email"
+              type="email"
+              required
+              maxlength="250" /></label
+          ><button>Berater einladen</button>
+          <p id="mailhinweis"></p>
+        </form>
+        <section class="karte">
+          <h2>Beraterkonten</h2>
+          <div id="kontoliste"></div>
+        </section>
+        <section class="karte">
+          <h2>Einladungen</h2>
+          <div id="einladungsliste"></div>
+        </section>
+      </section>
+      <section id="einstellungen" hidden>
+        <h1>Einstellungen</h1>
+        <p id="kontoname"></p>
+        <form id="grundeinstellungen" class="karte">
+          <h2>Zeiterfassung</h2>
+          <label
+            >Nachkommastellen<select name="nachkommastellen">
+              <option value="2">2 Nachkommastellen</option>
+              <option value="3">3 Nachkommastellen</option>
+            </select></label
+          >
+          <p>
+            Die erfassten Minuten bleiben unverändert. Eine andere Ausgabe kann
+            bereits übertragene Nachweise zur erneuten Prüfung markieren.
+          </p>
+          <label
+            >Lange Buchungen ab (Minuten)<input
+              name="pruefminuten"
+              type="number"
+              min="1"
+              max="1440"
+              step="1"
+              required /></label
+          ><button>Einstellungen speichern</button>
+        </form>
+        <form class="karte" id="profilform">
+          <h2>Mein Konto</h2>
+          <label
+            >E-Mail-Adresse für die Passwortzurücksetzung<input
+              name="email"
+              type="email"
+              required
+              maxlength="250"
+              autocomplete="email" /></label
+          ><button>Adresse speichern</button>
+        </form>
+        <form class="karte" id="passwortform">
+          <h2>Passwort ändern</h2>
+          <label
+            >Bisheriges Passwort<input
+              type="password"
+              name="alt"
+              required
+              autocomplete="current-password"
+              maxlength="512" /></label
+          ><label
+            >Neues Passwort · mindestens 12 Zeichen<input
+              type="password"
+              name="neu"
+              required
+              minlength="12"
+              maxlength="512"
+              autocomplete="new-password" /></label
+          ><button>Passwort ändern und abmelden</button>
+        </form>
+        <section class="karte">
+          <h2>Angemeldete Geräte</h2>
+          <p>Du kannst Browser und Erweiterung einzeln abmelden.</p>
+          <div id="sitzungsliste"></div>
+        </section>
+        <p id="versionsnummer" class="neben"></p>
+      </section>
+    </main>
+    <dialog id="zielfenster">
+      <form id="zielform">
+        <h2>Neues Buchungsziel</h2>
+        <label
+          >Kunde<input
+            name="kunde"
+            list="kunden"
+            maxlength="150"
+            required /><datalist id="kunden"></datalist></label
+        ><label
+          >Art<select name="art">
+            <option>Ticket</option>
+            <option>Termin</option>
+            <option>Projekt</option>
+          </select></label
+        ><label
+          >Bezeichnung<input
+            name="bezeichnung"
+            required
+            maxlength="240" /></label
+        ><label>Projekt (optional)<select name="projektId"></select></label
+        ><label class="check"
+          ><input name="abrechenbar" type="checkbox" checked />
+          Abrechenbar</label
+        >
+        <div class="aktionen">
+          <button id="zielspeichern">Speichern und starten</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="notizfenster">
+      <form id="notizform">
+        <h2>Leistungstext</h2>
+        <label id="notizbez" for="notiz">Tätigkeit</label
+        ><textarea id="notiz" rows="5" maxlength="4000"></textarea>
+        <div class="aktionen">
+          <button>Speichern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="resetfenster">
+      <form id="resetform">
+        <h2>Passwort vergessen?</h2>
+        <label
+          >E-Mail-Adresse<input
+            type="email"
+            name="email"
+            required
+            maxlength="250"
+            autocomplete="email"
+        /></label>
+        <div class="aktionen">
+          <button>Rücksetzlink anfordern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="linkfenster">
+      <form id="linkform">
+        <h2 id="linktitel">Passwort festlegen</h2>
+        <label
+          >Passwort · mindestens 12 Zeichen<input
+            type="password"
+            name="passwort"
+            required
+            minlength="12"
+            maxlength="512"
+            autocomplete="new-password" /></label
+        ><label
+          >Passwort wiederholen<input
+            type="password"
+            name="wiederholung"
+            required
+            minlength="12"
+            maxlength="512"
+            autocomplete="new-password"
+        /></label>
+        <div class="aktionen">
+          <button>Passwort speichern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="sofortfenster">
+      <form id="sofortform">
+        <h2>Sofort starten</h2>
+        <label>Kunde (optional)<select name="kundeId"></select></label>
+        <p>
+          Ticket oder Termin ordnest du später zu. Ein laufender Abschnitt wird
+          beim Start beendet.
+        </p>
+        <div class="aktionen">
+          <button>Timer starten</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="zeitfenster">
+      <form id="zeitform">
+        <h2 id="zeittitel">Zeit nachtragen</h2>
+        <p id="grenzenhinweis">
+          Gemeinsame Grenzen werden zusammen mit den angrenzenden Abschnitten
+          verschoben. Echte Pausen bleiben erhalten.
+        </p>
+        <p>Uhrzeiten in Europe/Berlin.</p>
+        <div class="zeitfelder">
+          <label
+            >Von<input type="datetime-local" name="beginn" required /></label
+          ><label
+            >Bis<input type="datetime-local" name="ende" required
+          /></label>
+        </div>
+        <label hidden
+          >Beginn bei Zeitumstellung<select name="beginnOffset"></select></label
+        ><label hidden
+          >Ende bei Zeitumstellung<select name="endeOffset"></select
+        ></label>
+        <label>Tätigkeit<select name="auswahl"></select></label
+        ><label>Kunde (optional)<select name="kundeId"></select></label
+        ><label
+          >Leistungstext<textarea
+            name="leistungstext"
+            maxlength="4000"
+            rows="3"
+          ></textarea></label
+        ><label class="check"
+          ><input name="abrechenbar" type="checkbox" /> Abrechenbar</label
+        >
+        <div id="zeitvorschau"></div>
+        <div class="aktionen">
+          <button>Übernehmen</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="vergleichfenster">
+      <h2>Buchung vergleichen</h2>
+      <div id="vergleichinhalt"></div>
+      <button type="button" class="sek" data-close>Schließen</button>
+    </dialog>
+    <dialog id="zielpflegefenster">
+      <form id="zielpflegeform">
+        <h2>Buchungsziel bearbeiten</h2>
+        <label>Kundenname<input name="kunde" maxlength="150" required /></label>
+        <p>
+          Ein geänderter Kundenname gilt für seine Buchungsziele und Nachweise.
+          Der zuletzt übertragene Stand bleibt erhalten.
+        </p>
+        <label
+          >Bezeichnung<input
+            name="bezeichnung"
+            required
+            maxlength="240" /></label
+        ><label>Projekt (optional)<select name="projektId"></select></label
+        ><label class="check"
+          ><input type="checkbox" name="abrechenbar" /> Abrechenbar bei neuen
+          Abschnitten</label
+        >
+        <div class="aktionen">
+          <button>Änderungen speichern</button
+          ><button type="button" class="sek" data-close>Abbrechen</button>
+        </div>
+      </form>
+    </dialog>
+  <footer class="versionsfooter" aria-label="Version und Aktualisierungen"><span>Timereal <strong>v0.6.2</strong></span><a href="https://github.com/larsborgwardt/timereal">GitHub</a><a class="update" href="https://github.com/larsborgwardt/timereal/releases">Update verfügbar: v0.6.3 <span aria-hidden="true">↗</span></a><span class="hinweis">Updates werden durch den Administrator installiert.</span></footer></body>
+</html>

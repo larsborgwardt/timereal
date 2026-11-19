@@ -8,6 +8,9 @@ await mkdir(ziel, { recursive: true });
 await cp(resolve(root, "web"), ziel, { recursive: true });
 await cp(resolve(root, "erweiterung"), ziel, { recursive: true });
 const html = (await readFile(resolve(root, "web/index.html"), "utf8"))
+  // Der Server-Footer gehört zur Web-App. Die Erweiterung behält ihre eigene Paketversion.
+  .replace(/\s*<script type="module" src="\/version\.js"><\/script>/, "")
+  .replace(/\s*<footer class="versionsfooter"[\s\S]*?<\/footer>/, "")
   .replaceAll('href="/', 'href="')
   .replaceAll('src="/', 'src="');
 await writeFile(resolve(ziel, "index.html"), html);

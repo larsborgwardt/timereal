@@ -48,8 +48,40 @@ const errors = [];
 ctx.on("page", (p) => p.on("pageerror", (e) => errors.push(e.message)));
 try {
   settings = await ctx.newPage();
+  await settings.addInitScript(() => {
+    if (location.pathname !== "/einstellungen.html") return;
+    const get = chrome.storage.local.get.bind(chrome.storage.local);
+    chrome.storage.local.get = async (...args) => {
+      chrome.storage.local.get = get;
+      const result = await get(...args);
+      await new Promise((resolve) => {
+        window.releaseSettingsLoad = resolve;
+      });
+      return result;
+    };
+  });
   await settings.goto(origin + "/einstellungen.html");
+  await settings.waitForFunction(
+    () => typeof window.releaseSettingsLoad === "function",
+  );
+  assert.equal(
+    await settings
+      .getByRole("button", { name: "Verbinden", exact: true })
+      .isDisabled(),
+    true,
+    "Vor Abschluss des Modulstarts darf Verbinden kein Formular absenden.",
+  );
+  assert.equal(
+    await settings.getByLabel("Timereal-Adresse").isDisabled(),
+    true,
+    "Frühe Eingaben dürfen nicht vom geladenen Stand überschrieben werden.",
+  );
+  await settings.evaluate(() => window.releaseSettingsLoad());
   await settings.getByLabel("Timereal-Adresse").fill(addr);
+  // Der Modulstart liest gespeicherte Einstellungen asynchron.
+  await settings.waitForFunction(
+    () => typeof document.querySelector("form").onsubmit === "function",
+  );
   const authWait = ctx.waitForEvent("page", { timeout: 15000 });
   await settings
     .getByRole("button", { name: "Verbinden", exact: true })

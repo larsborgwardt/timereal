@@ -10,7 +10,7 @@ Führe in der **Root-Konsole des neuen Containers** aus:
 
 ```bash
 apt-get update && apt-get install -y git ca-certificates &&
-git clone --branch v0.6.1 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
+git clone --branch v0.6.2 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
 bash /opt/timereal/betrieb/install.sh
 ```
 
@@ -18,7 +18,7 @@ Das Skript fragt den Anmeldenamen und das Passwort für dein erstes Konto ab und
 
 Bestehende Installationen aktualisierst du über den [versionierten Updateweg](betrieb/README.md#versioniert-aktualisieren-ab-02), einschließlich Sicherung. Verwende dafür nicht erneut den Installer. Dienststatus und Startfehler zeigt `journalctl -u timereal -u timereal-https -b`.
 
-Version **0.6.1** enthält Verwaltung und Einladungen, Tageskorrekturen, Wochenübersicht, Einstellungen und eine [Browsererweiterung für Chrome/Edge](erweiterung/README.md). Der direkte Updateweg vom ursprünglichen Pilot benötigt keine Installation der Zwischenversionen. Öffentlichen HTTPS-Zugang, SMTP und externe Sicherungen richtest du mit deinen eigenen Zugangsdaten nach der [Betriebsanleitung](betrieb/README.md) ein.
+Version **0.6.2** enthält Verwaltung und Einladungen, Tageskorrekturen, Wochenübersicht, Einstellungen und eine [Browsererweiterung für Chrome/Edge](erweiterung/README.md). Der direkte Updateweg vom ursprünglichen Pilot benötigt keine Installation der Zwischenversionen. Öffentlichen HTTPS-Zugang, SMTP und externe Sicherungen richtest du mit deinen eigenen Zugangsdaten nach der [Betriebsanleitung](betrieb/README.md) ein.
 
 ## Ein Vormittag zum Ausprobieren
 
@@ -44,3 +44,7 @@ Node.js 24 und PostgreSQL 17 oder 18. Mit `npm ci && npm test` starten die Integ
 Unter **Heute** beginnt „Sofort starten“ eine vorläufige Zeit, wahlweise mit Kunde. „Interne Zeit“ erfasst eine nicht abrechenbare Tätigkeit. Im Tagesverlauf und unter Nachweise lassen sich abgeschlossene Zeiten nachtragen, korrigieren, teilen oder stornieren. Beim Verschieben einer gemeinsamen Grenze wird der direkt anschließende Abschnitt mit angepasst.
 
 „Buchung vergleichen“ zeigt den zuletzt bestätigten Übertragungsstand neben den aktuellen Werten. Korrigiere deinen externen Stundennachweis und bestätige danach die Übernahme. Die Wochenansicht summiert Minuten; Filter zurücksetzen leert lediglich die Suchfilter. Kundenname und Buchungsziel bearbeitest du über „Bearbeiten“ beim jeweiligen Ziel.
+
+## Version und Updates
+
+Der Footer zeigt die installierte Version, den Repository-Link und verfügbare stabile Updates. Die [Betriebsanleitung](betrieb/README.md#versionsfooter-und-updateprüfung-ab-062) beschreibt Prüfung, Abschaltung und Installation. Die Erkenntnisse aus den Vergleichsprojekten und dem Apple-Design-Skill stehen in [Verbesserungen](VERBESSERUNGEN.md); spätere Themen im [Backlog](BACKLOG.md).

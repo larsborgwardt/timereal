@@ -1,5 +1,15 @@
 # Änderungen
 
+## 0.6.2 — 19. November 2026
+
+- Footer mit installierter Version, GitHub-Link und Hinweis auf neuere stabile Releases.
+- Serverseitige Updateprüfung mit gemeinsamem Cache, Zeitlimit, Fehlerzustand und Abschaltmöglichkeit.
+- Domainneutraler Konfigurationspatch für vorhandene externe Nginx-Proxys; Prüfmodus, Sicherung und Rückkehr bei Fehlern.
+- Anmeldeüberschrift bleibt bei schmaler Ansicht und vergrößerter Schrift im sichtbaren Bereich.
+- Erweiterungsanmeldung wird erst bedienbar, wenn ihre gespeicherten Einstellungen geladen sind; frühe Eingaben werden nicht überschrieben.
+- Vergleich mit Gotify, Uptime Kuma, Paperless-ngx und BookStack dokumentiert; weitere Benutzer-/Rollen-, Audit-, Systemlog-, Konto-/2FA- und Erweiterungsthemen im Backlog.
+- API-Version 1 und Datenbankschema 6 bleiben unverändert.
+
 ## 0.6.1 — 19. November 2026
 
 - Installation und Update zeigen die Browser-Adresse mit ausdrücklichem Port; HTTPS-Port 443 und interner Port 3040 werden erklärt.

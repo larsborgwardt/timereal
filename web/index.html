@@ -6,6 +6,7 @@
     <title>Zeitnachweis · Timereal</title>
     <link rel="stylesheet" href="/app.css" />
     <script type="module" src="/app.js"></script>
+    <script type="module" src="/version.js"></script>
   </head>
   <body>
     <header>
@@ -389,5 +390,27 @@
         </div>
       </form>
     </dialog>
+    <footer class="versionsfooter" aria-label="Version und Aktualisierungen">
+      <span
+        >Timereal
+        <strong id="footer-version">Version wird geladen…</strong></span
+      >
+      <a
+        href="https://github.com/larsborgwardt/timereal"
+        target="_blank"
+        rel="noopener noreferrer"
+        >GitHub</a
+      >
+      <div class="updatestand" role="status">
+        <a
+          id="update-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          hidden
+        ></a>
+        <span id="update-status">Updates werden geprüft…</span>
+      </div>
+      <span id="update-detail" class="updatehinweis"></span>
+    </footer>
   </body>
 </html>

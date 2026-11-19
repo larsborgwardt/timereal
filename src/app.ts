@@ -14,6 +14,7 @@ import { readFile } from "node:fs/promises";
 import { Fehler, transaktion, voruebergehendNichtVerfuegbar } from "./db.js";
 import { bindSession, digest, issueSession, verify } from "./session.js";
 import { release } from "./version.js";
+import { updateChecker, type UpdateStatus } from "./updates.js";
 import { ausfuehren, timer, type Auftrag } from "./timer.js";
 import { anlegen, kundenLesen, zieleLesen, type NeuesZiel } from "./ziele.js";
 import {
@@ -49,7 +50,12 @@ function webToken(req: FastifyRequest) {
 }
 export function createApp(
   pool: Pool,
-  options: { secure: boolean; origin?: string; smtp?: MailConfig },
+  options: {
+    secure: boolean;
+    origin?: string;
+    smtp?: MailConfig;
+    updateCheck?: () => Promise<UpdateStatus>;
+  },
 ) {
   const app = Fastify({
     bodyLimit: 32768,
@@ -146,6 +152,7 @@ export function createApp(
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
     ["/app.js", "app.js", "text/javascript"],
+    ["/version.js", "version.js", "text/javascript"],
     ["/konten.js", "konten.js", "text/javascript"],
     ["/zeit.js", "zeit.js", "text/javascript"],
     ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
@@ -166,6 +173,10 @@ export function createApp(
     return { status: "ok" };
   });
   app.get("/api/v1/version", async () => release);
+  const checkUpdates =
+    options.updateCheck ??
+    updateChecker({ version: release.version, enabled: false });
+  app.get("/api/v1/updates", async () => checkUpdates());
   app.post<{ Body: { login: string; passwort: string } }>(
     "/api/v1/anmeldung",
     {

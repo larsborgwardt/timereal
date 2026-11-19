@@ -4,8 +4,14 @@ import {
 } from "./erweiterung-vertrag.js";
 const form = document.querySelector("form"),
   meldung = document.querySelector("#meldung");
-let gespeicherterServer =
-  (await chrome.storage.local.get("server")).server ?? "";
+let gespeicherterServer;
+try {
+  gespeicherterServer = (await chrome.storage.local.get("server")).server ?? "";
+} catch (error) {
+  meldung.textContent =
+    "Die Einstellungen konnten nicht geladen werden. Bitte dieses Fenster neu öffnen.";
+  throw error;
+}
 form.elements.server.value = gespeicherterServer;
 form.onsubmit = async (ev) => {
   ev.preventDefault();
@@ -106,3 +112,5 @@ form.onsubmit = async (ev) => {
 };
 document.querySelector("#oeffnen").onclick = () =>
   chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
+form.querySelector("button").disabled = false;
+form.elements.server.disabled = false;

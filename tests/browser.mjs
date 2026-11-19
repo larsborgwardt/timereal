@@ -48,6 +48,10 @@ try {
       .waitFor();
   }
   const laptop = await anmelden(1280, 840);
+  await laptop
+    .getByRole("contentinfo")
+    .getByRole("link", { name: "GitHub", exact: true })
+    .waitFor();
   await neu(laptop, "Kunde A", "4711", "Speichern und starten");
   await laptop.getByRole("button", { name: "Leistungstext" }).click();
   await laptop.locator("#notiz").fill("Konfiguration geprüft");

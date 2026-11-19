@@ -13,6 +13,7 @@ Lars beauftragt am 18. November 2026 die Umsetzung der offenen Funktionen mit Ve
 | 0.4.0 | Sofortstart, interne Zeit, Nachtrag/Korrektur, Unterbrechung, Storno, vollständiger Übertragungsvergleich, Wochenübersicht, Kunden-/Zielpflege, Einstellungen und Historienreset | Realer Browserablauf einschließlich 20/12/28-Minuten-Aufteilung, gemeinsam verschobenen Grenzen, Zeitzonen-/Tageswechsel und Änderung eines bereits übertragenen Nachweises |
 | 0.5.0 | Browsererweiterung für Chromium (Chrome/Edge), gemeinsame Timer-/Notizbedienung, eigene widerrufbare Sitzung, bewusste Wiederaufnahme nach Verbindungsverlust; Einrichtung öffentlichen HTTPS-Zugangs und verschlüsselter externer Sicherung | App-Tab geschlossen, Popup wechselt Kunde, Smartphone zeigt Änderung; fremde Rücksprungadresse und wiederholter Autorisierungscode scheitern; Rücksicherung aus externem Sicherungsbestand |
 | 0.6.0 | Betrieb für 100 gleichzeitig aktive Nutzer, endliche Datenbankwartezeiten, reproduzierbarer Lastnachweis und Ressourcenplanung | 100 echte Konten mit 500.000 Abschnitten, parallele Timeraktionen und Fremdzugriffe, Erholung nach Pool-/Sperrengpass; [Abnahmevertrag](KAPAZITAET.md) |
+| 0.6.2 | Versionsfooter, Updatehinweis, konfigurierbare Proxy-Domain und abgesicherter Start der Erweiterungsanmeldung | Cache-/Fehlerproben, mobile und vergrößerte Darstellung, echtes Update von 0.6.1 und Domainwechsel im Prüfgast |
 | 0.6.1 | Verständliche Installations- und Updateausgabe mit Browser-Adresse einschließlich Port | Reale Erstinstallation, Update und Wiederholung im getrennten Debian-Prüfgast; Adresse aus Konfiguration, Fehlerphase, Sicherungspfad und Rückkehr nach Startfehler prüfen |
 
 Die Versionsnummer beschreibt ein geprüftes Lieferpaket. Fehlerkorrekturen erhöhen die dritte Stelle. Ein Git-Tag `vX.Y.Z` wird nach den Prüfungen angelegt und anschließend nicht verschoben. Die API bleibt unter `/api/v1`; ein zusätzlicher Endpunkt ändert nicht deren Hauptversion. Eine spätere inkompatible Schnittstelle bekommt einen eigenen Pfad.
@@ -39,8 +40,14 @@ Die Erweiterung erhält nur die Berechtigung für die konfigurierte Timereal-Adr
 
 Öffentlicher Zugriff und externe Sicherung benötigen die tatsächliche Domain, den erreichbaren Reverse Proxy beziehungsweise Ports sowie SMTP- und Sicherungsziel-Konfiguration. Die Software liefert Einrichtung, Prüfmodus und Diagnose; die Aktivierung auf Lars' Infrastruktur und der Mailversand an echte Berater erfolgen durch Lars.
 
+## Späterer Ausbau
+
+Lars hat am 19. November 2026 die zusätzlichen Themen ausdrücklich für später vorgemerkt. Ihr Umfang und der vorhandene Ausgangsstand stehen im [Backlog](BACKLOG.md).
+
 ## Bildmaßstab und Auslieferungsnachweis
 
 Die Bilder 01–05 und 07 sind freigegeben. Lars hat am 18. November 2026 auch die ergänzenden Bilder 06 und 08 mit „Bildentwürfe freigeben (empfohlen)“ zur Umsetzung freigegeben. Bild 08 zeigt Verwaltung, Woche, Einstellungen und Erweiterung mit ausdrücklich illustrativen Beispieldaten. Keine dieser Abbildungen ist ein Funktionsnachweis.
 
 Pro Version dokumentiert `CHANGELOG.md` den tatsächlich ausgelieferten Umfang. Tests verwenden echte PostgreSQL-Rollen und für Mail einen lokalen SMTP-Empfänger. Sichtprüfungen verwenden die programmierte Oberfläche. Der bestehende LXC ist erst aktualisiert, nachdem Lars den veröffentlichten Updatebefehl dort erfolgreich ausgeführt hat.
+
+Am 19. November 2026 hat Lars die Footerbilder 09 für Laptop und Smartphone mit „Footer wie im Bild umsetzen (empfohlen)“ freigegeben.
