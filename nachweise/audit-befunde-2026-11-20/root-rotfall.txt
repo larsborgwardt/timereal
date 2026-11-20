@@ -1,0 +1,2 @@
+Native Releaseprobe vor dem Verschieben des Root-Tests (20.11.2026): Das Update 0.8.2 → 0.9.0 baut noch der alte Updater als root; der Root-Test im Kandidaten war dort rot.
+"zustand":"fehlgeschlagen","phase":"fehlgeschlagen","tag":"v0.9.0","vorherigeVersion":"0.8.2"

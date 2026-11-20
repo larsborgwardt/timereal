@@ -18,6 +18,7 @@ import { lookup } from "node:dns/promises";
 import { setTimeout as warten } from "node:timers/promises";
 import { Betriebsfehler, domainMuster } from "./auftraege.mjs";
 import { prozess } from "./system.mjs";
+import { tagPruefen } from "./tag-signatur.mjs";
 import { caddyVorlage, caddyVorlagenstand } from "./caddy-vorlage.mjs";
 
 const source = "https://github.com/larsborgwardt/timereal.git";
@@ -395,7 +396,15 @@ async function releasePruefen(tag, aktuell) {
     ],
     { timeout: 120000 },
   );
-  const commit = (
+  // Vertrauensanker ist der Schlüssel der bereits installierten Version,
+  // nicht eine Angabe aus dem neuen Release.
+  const commit = await tagPruefen(
+    (args) => prozess("/usr/bin/git", args),
+    repo,
+    tag,
+    join(scripts, "release-signierer"),
+  );
+  const geschaelt = (
     await prozess("/usr/bin/git", [
       "-C",
       repo,
@@ -404,6 +413,8 @@ async function releasePruefen(tag, aktuell) {
       `refs/tags/${tag}^{commit}`,
     ])
   ).stdout.trim();
+  if (geschaelt !== commit)
+    throw new Error("Signierter Tag und Commit passen nicht zusammen.");
   const manifest = await prozess("/usr/bin/git", [
     "-C",
     repo,

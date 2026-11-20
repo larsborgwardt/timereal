@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.9.6 — 20. November 2026
+
+- Updates: Release-Tags sind ab 0.9.6 mit einem SSH-Schlüssel signiert (`betrieb/release-signierer`). Der Betriebsdienst einer installierten 0.9.6 installiert nur Tags, die mit dem Schlüssel der bereits installierten Version signiert sind; die Prüfung greift deshalb ab dem Update nach 0.9.6. Bau und Tests eines neuen Stands laufen nicht mehr als root, sondern unter `timereal_build`. Für den Konsolenweg prüft `tag-pruefen.mjs` die Signatur. Auf GitHub schützt eine Regel Release-Tags vor Verschieben und Löschen.
+- CI: Format- und Abhängigkeitsprüfung, wöchentliche Abhängigkeitsprüfung, Wächter für HTML-Einfügungen und eine frische Installation mit Proxy- und Domainprobe in einem Debian-13/systemd-Container.
+- Passwörter: Neue und geänderte Passwörter werden mit Argon2id (m=19 MiB, t=2, p=1) gespeichert, der Erstwahl des OWASP Password Storage Cheat Sheet; bisher scrypt mit p=1 unterhalb der OWASP-Empfehlung. Der Hash trägt seine Parameter. Bestehende Passwörter bleiben gültig und werden beim nächsten Passwortwechsel umgestellt. Eine Anmeldung kostet etwa so viel Rechenzeit wie bisher. Benötigt Node.js ab 24.7; Installationen verwenden 24.22.3.
+- Passwort zurücksetzen: Die Anfrage wird beantwortet, bevor die Mail versendet wird. Bisher wartete nur die Anfrage für ein vorhandenes Konto auf den Mailserver; die Antwortzeit verriet so, ob ein Konto existiert.
+- API 1 und Datenbankschema 10 bleiben erhalten. Zuerst den Server aktualisieren; die Erweiterung ändert sich nur in der Versionsnummer. [Prüfbelege](nachweise/0.9.6.md).
+
 ## 0.9.5 — 20. November 2026
 
 - Domainzugriff: Die Domain kommt zur Container-IP hinzu, statt sie zu ersetzen. Die Anmeldung über die lokale Adresse bleibt möglich; Bestätigungsfrist und automatische Rücknahme nach drei Minuten entfallen.

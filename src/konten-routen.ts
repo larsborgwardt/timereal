@@ -254,15 +254,24 @@ export function kontenRouten(
       limit(req, req.body.email.toLowerCase());
       if (!mail.konfiguriert)
         throw new Fehler(503, "Mailversand ist noch nicht eingerichtet.");
+      let link: Awaited<ReturnType<typeof resetAnfordern>> = null;
       try {
-        const link = await transaktion(pool, (db) =>
+        link = await transaktion(pool, (db) =>
           resetAnfordern(db, origin(), req.body.email),
         );
-        if (link) await mail.senden(link.email, "reset", link.url);
       } catch {
-        console.error("Passwortmail konnte nicht versendet werden.");
+        console.error("Passwortlink konnte nicht angelegt werden.");
       }
-      return reply.code(202).send({ angenommen: true });
+      // Erst antworten, dann versenden: Wartete nur die Anfrage für ein
+      // vorhandenes Konto auf SMTP, verriete die Antwortzeit das Konto.
+      await reply.code(202).send({ angenommen: true });
+      if (link)
+        void mail
+          .senden(link.email, "reset", link.url)
+          .catch(() =>
+            console.error("Passwortmail konnte nicht versendet werden."),
+          );
+      return reply;
     },
   );
   app.post<{ Body: { alt: string; neu: string } }>(

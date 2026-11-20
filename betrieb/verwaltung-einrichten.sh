@@ -24,7 +24,7 @@ if [[ $schluessel_neu == true ]]; then
   done
   [[ $gesund == true ]] || { echo 'Anwendung startet nach der Schlüsseleinrichtung nicht.' >&2; exit 1; }
 fi
-hash=$(cd "$release/betrieb" && sha256sum update.sh proxy-einrichten.sh verwaltung-einrichten.sh mfa-schluessel.* timereal-betrieb.service verwaltung/*.mjs | sha256sum | cut -d' ' -f1)
+hash=$(cd "$release/betrieb" && sha256sum update.sh proxy-einrichten.sh verwaltung-einrichten.sh mfa-schluessel.* release-signierer timereal-betrieb.service verwaltung/*.mjs | sha256sum | cut -d' ' -f1)
 target="/opt/timereal-betrieb/$version-$hash"
 install -d -m 755 /opt/timereal-betrieb
 if [[ ! -d $target ]]; then

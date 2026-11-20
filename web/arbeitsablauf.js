@@ -368,7 +368,7 @@ export function arbeitsablaufOberflaeche({
             "</td><td>" +
             esc(r.projekt ?? "—") +
             "</td><td>" +
-            minutenText(r.minuten) +
+            esc(minutenText(r.minuten)) +
             "</td></tr>",
         )
         .join("") ||

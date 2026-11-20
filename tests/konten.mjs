@@ -164,10 +164,13 @@ test("Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und S
       }),
     );
     assert.equal((await q(session, "GET", "/timer")).statusCode, 401);
+    const vorher = mail.nachrichten.length;
     await ok(
       q("", "POST", "/passwort/anfordern", { email: "berater@example.test" }),
       202,
     );
+    // Der Versand läuft nach der Antwort; der Link kommt kurz danach an.
+    await mail.warten(vorher + 1);
     const reset = token();
     assert.ok(reset);
     await ok(
@@ -252,5 +255,58 @@ test("Verwaltung, echte SMTP-Einladung, Einmalannahme, Sitzungen, Passwort und S
     await app.close();
     await db.end();
     await mail.close();
+  }
+});
+
+test("Passwortanforderung antwortet vor dem Mailversand: die Antwortzeit verrät kein Konto", async () => {
+  const db = new pg.Client({ connectionString: process.env.TEST_DATABASE_URL });
+  await db.connect();
+  const mail = await postfach();
+  const adresse = "reset-zeit-" + crypto.randomUUID() + "@example.test";
+  await db.query(
+    "insert into konto(login_referenz,email,passwort_hash) values ($1,$1,$2)",
+    [adresse, await passwordHash("ResetZeitPasswort!1234")],
+  );
+  const url = new URL(process.env.TEST_DATABASE_URL);
+  url.username = "timereal_app";
+  url.password = "nur-fuer-diese-wegwerfdatenbank";
+  const app = createApp(new pg.Pool({ connectionString: url.href }), {
+    secure: true,
+    origin: "https://zeit.test",
+    smtp: mail.config,
+  });
+  const anfordern = async (email) => {
+    const start = Date.now();
+    const r = await app.inject({
+      method: "POST",
+      url: "/api/v1/passwort/anfordern",
+      remoteAddress: "198.51.100." + Math.floor(Math.random() * 250 + 1),
+      headers: { origin: "https://zeit.test", host: "zeit.test" },
+      payload: { email },
+    });
+    return { status: r.statusCode, body: r.json(), ms: Date.now() - start };
+  };
+  try {
+    mail.verzoegern(2500);
+    const bekannt = await anfordern(adresse),
+      unbekannt = await anfordern(
+        "niemand-" + crypto.randomUUID() + "@example.test",
+      );
+    assert.deepEqual(
+      [bekannt.status, bekannt.body, unbekannt.status, unbekannt.body],
+      [202, { angenommen: true }, 202, { angenommen: true }],
+    );
+    // Vorher wartete nur die Anfrage für ein vorhandenes Konto auf SMTP.
+    assert.ok(bekannt.ms < 1500, `Antwort nach ${bekannt.ms} ms`);
+    await mail.warten(1);
+    assert.match(
+      mail.nachrichten[0].replace(/=\r\n/g, "").replace(/=3D/g, "="),
+      /https:\/\/zeit\.test\/#reset=[a-f0-9]{64}/,
+    );
+    assert.equal(mail.nachrichten.length, 1);
+  } finally {
+    await app.close();
+    await mail.close();
+    await db.end();
   }
 });

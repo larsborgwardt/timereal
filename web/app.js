@@ -209,9 +209,9 @@ function zeigeTimer() {
     esc(name) +
     '</h2><span class="neben">' +
     (a
-      ? "Läuft seit " + uhr(a.beginn)
+      ? "Läuft seit " + esc(uhr(a.beginn))
       : p
-        ? "Pause seit " + uhr(p.seit)
+        ? "Pause seit " + esc(uhr(p.seit))
         : "Wähle ein Buchungsziel, um die Zeit zu erfassen.") +
     "</span></div>" +
     (a ? '<strong class="timerzeit" id="dauer"></strong>' : "") +
