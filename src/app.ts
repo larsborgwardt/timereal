@@ -30,6 +30,7 @@ import {
 } from "./korrektur.js";
 import { historie, bestaetigen } from "./nachweise.js";
 import { nachweisExportRouten } from "./nachweis-export.js";
+import { herkunftErlaubt } from "./herkunft.js";
 import { anmeldeDrossel, type AnmeldeGrenzen } from "./anmeldedrossel.js";
 
 const zielSchema = objekt(
@@ -99,9 +100,12 @@ export function createApp(
       req.method !== "GET" &&
       req.method !== "HEAD" &&
       !req.headers.authorization &&
-      req.headers.origin !==
-        (options.origin ??
-          (options.secure ? "https://" : "http://") + req.headers.host)
+      !herkunftErlaubt(
+        req.headers.origin,
+        req.headers.host,
+        options.secure,
+        options.origin,
+      )
     )
       throw new Fehler(403, "Die Herkunft der Anfrage ist ungültig.");
   });

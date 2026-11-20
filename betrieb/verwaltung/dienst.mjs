@@ -30,9 +30,7 @@ export async function dienstStarten(options) {
       geprueft: ["success", "Domainprüfung abgeschlossen."],
       erfolgreich: [
         "complete",
-        job.typ === "update"
-          ? "Update abgeschlossen."
-          : "Domainwechsel bestätigt.",
+        job.typ === "update" ? "Update abgeschlossen." : "Domain eingerichtet.",
       ],
       fehlgeschlagen: ["error", "Betriebsauftrag fehlgeschlagen."],
       vorherige_version_aktiv: ["warn", "Vorherige Version wieder aktiv."],

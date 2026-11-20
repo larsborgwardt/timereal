@@ -106,7 +106,11 @@ docker exec "$guest" /opt/timereal-node/bin/node /opt/timereal-current/tests/mfa
 echo 'MFA-Schlüssel und echte Rücksicherung bestanden.'
 if [[ ${TIMEREAL_NUR_MFA:-0} == 1 ]]; then exit 0; fi
 docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_EINKLICK=1 /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-domain.mjs >"$out/domain-einklick.log" 2>&1
-echo "Domain in einem Auftrag gespeichert; neuer Zugriff und anschließendes Update werden geprüft."
+echo "Domain in einem Auftrag gespeichert; Zugriff über Domain und lokale Adresse ohne Frist geprüft."
+docker exec "$guest" bash /opt/timereal-current/tests/betrieb-proxy.sh /opt/timereal-betrieb-current/proxy-einrichten.sh >"$out/proxy-vorlage.log" 2>&1
+# Die Probe stellt ihre Ausgangskonfiguration mit einem Dienstneustart wieder her.
+docker exec "$guest" bash -c 'for _ in {1..30}; do if curl --fail --silent --max-time 3 http://127.0.0.1:3040/health >/dev/null; then exit 0; fi; sleep 1; done; exit 1'
+echo 'Proxy-Skript am Kandidaten: Fehlerantwort für fremde Hostnamen, kein HTTP/3, lokale Anmeldung neben der Domain bestanden.'
 docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_EINKLICK=1 TIMEREAL_TEST_TAG=v0.9.1 TIMEREAL_TEST_ERGEBNIS=vorherige_version_aktiv /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-update.mjs >"$out/rueckbau.log" 2>&1
 echo 'Startfehler 0.9.1 → wieder erreichbare Version 0.9.0 bestanden.'
 docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_EINKLICK=1 TIMEREAL_TEST_TAG=v0.9.2 /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-update.mjs >"$out/wiederanlauf.log" 2>&1

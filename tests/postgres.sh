@@ -22,6 +22,7 @@ npm run test:db
 node --test tests/nachweise-excel.mjs
 node --test tests/konten.mjs tests/ausbau.mjs tests/erweiterung.mjs tests/mfa.mjs
 node --test tests/betrieb-api.mjs
+node --test tests/herkunft.mjs
 node --test tests/kapazitaet.mjs
 node tests/kapazitaet-stoerungen.mjs
 node --test tests/anmeldedrossel.test.mjs tests/mfa-crypto.test.mjs tests/mfa-schluessel.test.mjs tests/version.test.mjs tests/updates.test.mjs tests/update.test.mjs tests/mail-cli.test.mjs tests/zeit.test.mjs tests/erweiterung-client.test.mjs tests/betrieb.test.mjs

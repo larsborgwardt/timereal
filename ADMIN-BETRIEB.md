@@ -1,5 +1,7 @@
 # Timereal — Betrieb im Adminbereich
 
+**Fortgeschrieben für 0.9.5 am 20. November 2026 (D-RELEASE-015):** Die Domain kommt zur lokalen Adresse hinzu; Zugriffsbestätigung, Dreiminutenfenster und fristgesteuerte Rücknahme entfallen. Abschnitt „Domainwechsel“ beschreibt den neuen Ablauf.
+
 **Fortgeschrieben für 0.9.4 am 20. November 2026 (D-RELEASE-014).** Die Bilder 18 ersetzen den bisherigen Ablauf mit erneuter Passworteingabe und manueller Zugriffsbestätigung. [Aktueller Prüfnachweis](nachweise/0.9.4.md).
 
 Ursprünglicher Implementierungsstand 0.7.0 vom 19. November 2026. Grundlage: veröffentlichte Version 0.6.2, Commit `2e287287df539c8465567f2b9c95ddfb937100e1`. Der Auftrag umfasst Updates und die Einrichtung einer öffentlichen Domain in der Verwaltung. Lars hat die Bildvorlagen für Updates und Domainzugriff einschließlich Fortschritt und Zugriffsbestätigung mit „Bildentwürfe freigeben (empfohlen)“ zur Umsetzung freigegeben. Die bereits abgenommenen Verwaltungs- und Footerbilder bleiben der Gestaltungsmaßstab. Die Implementierung und ihre tatsächlich ausgeführten Prüfungen sind im [Auslieferungsnachweis](nachweise/0.7.0.md) getrennt von offenen Messungen dokumentiert.
@@ -27,7 +29,7 @@ Der Journalabruf ist auf die jüngsten 500 Einträge innerhalb von 24 Stunden be
 | `info` | Journalpriorität 5–6, Startmeldungen oder unbekannte Priorität |
 | `debug` | Journalpriorität 7 oder strukturierte Diagnosemeldung |
 | `success` | Eigenes Timereal-Ereignis nach erfolgreicher Vorbereitung/Prüfung |
-| `complete` | Eigenes Timereal-Ereignis nach abgeschlossenem Update bzw. bestätigtem Domainwechsel |
+| `complete` | Eigenes Timereal-Ereignis nach abgeschlossenem Update bzw. eingerichteter Domain |
 
 Es gibt keine Befehlszeile zur Ausführung eigener Kommandos. Filter ändern keine Prozessargumente. Die Web-App erhält keine Journalgruppe oder sudo-Rechte; ausschließlich der vorhandene Betriebsdienst ruft `journalctl` mit festen Dienstnamen auf. Strukturierte Meldungen liefern nur `msg` und einen geprüften Level; Request-, Header-, Body- und Stackfelder werden verworfen. Bekannte Passwort-/Token-/Cookie-/URL-Muster, Terminalsteuerung und private Schlüssel werden bereinigt. Das ist keine Garantie, beliebige Geheimnisse in frei formulierten Fremdmeldungen erkennen zu können. Eigene Start-/Abschlussmeldungen enthalten keine Nutzereingaben. Anzeige und Download verwenden denselben bereinigten Snapshot, ohne dauerhafte Speicherung im Browser.
 
@@ -47,9 +49,9 @@ Technische Grundlagen: [journalctl, Matching und JSON-Ausgabe](https://www.freed
 1. **Verwaltung → Domainzugriff** zeigt die tatsächlich konfigurierte öffentliche Adresse und das erkannte Proxy-Ziel. Die Domain wird ohne Protokoll oder Pfad eingetragen. Keine Festverdrahtung auf Lars' Domain.
 2. **Domain speichern** validiert Namen und vorhandene Caddy-Konfiguration. Vorhandene Konfiguration muss einer unterstützten Vorlage entsprechen; eigene Änderungen werden nicht überschrieben. Containeradresse und Port werden aus dem Bestand abgeleitet, nicht als beliebige Netzwerkziele vom Browser übernommen.
 3. Angezeigt wird, was der Betreiber am externen Proxy benötigt: HTTPS-Ziel samt Port, öffentlicher Host-Header und gültiges öffentliches Zertifikat. Timereal richtet keine fremden DNS-/Router-/Nginx-Konten ein. Eine lokale Probe wird nicht als externer Erreichbarkeitsnachweis ausgegeben.
-4. Nach erfolgreicher Prüfung übernimmt derselbe Auftrag die Domain ohne weitere Passworteingabe. Der Betriebsdienst sichert Caddy-Konfiguration und `PUBLIC_ORIGIN`, übernimmt beide gemeinsam und prüft echte HTTPS-Antworten einschließlich nichtleerer Startseite und korrekter Health-Antwort.
-5. Der Betreiber öffnet die neue Adresse über den angezeigten Link und meldet sich mit Betriebsberechtigung an. Timereal erkennt den Zugriff automatisch, auch beim Einstieg auf Heute oder Updates. Ein zusätzlicher Bestätigungsklick entfällt. Die Sitzung wird nicht zwischen Domains übertragen; die Anerkennung ist nur über die neue konfigurierte Origin zulässig.
-6. Wird der Zugriff innerhalb von drei Minuten nach erfolgreichem lokalen Neustart nicht bestätigt, stellt der Betriebsdienst die vorherige Konfiguration wieder her. Das gilt auch bei geschlossenem Browser. Ein Neustart des Betriebsdienstes erkennt abgelaufene Fristen aus dem dauerhaft gespeicherten Auftrag. Die alte Adresse und das Dreiminutenfenster stehen im Wechselbild. Die Serveruhr entscheidet über die Frist; die Geräteuhr sperrt keine Aktion. Mehrere angemeldete Tabs können denselben Zugang ohne erneute Zustandsänderung erkennen.
+4. Nach erfolgreicher Prüfung übernimmt derselbe Auftrag die Domain ohne weitere Passworteingabe. Der Betriebsdienst sichert Caddy-Konfiguration und `PUBLIC_ORIGIN`, übernimmt beide gemeinsam und prüft echte HTTPS-Antworten einschließlich nichtleerer Startseite, korrekter Health-Antwort und der Fehlerantwort 421 für einen nicht eingerichteten Hostnamen. Scheitert eine dieser lokalen Prüfungen, wird die vorherige Konfiguration wiederhergestellt.
+5. Nach der Übernahme ist der Auftrag abgeschlossen. Timereal ist zusätzlich über die Domain erreichbar; schreibende Anfragen einer Websitzung sind von der eingerichteten Adresse und von der eigenen IPv4-Adresse zulässig (Herkunft und angefragter Host müssen dort übereinstimmen). Die Sitzung wird nicht zwischen den Adressen übertragen. Mail-Links verwenden die eingerichtete Adresse.
+6. Eine Zugriffsbestätigung, das Dreiminutenfenster und die fristgesteuerte Rücknahme entfallen: Weil der lokale Zugang erhalten bleibt, kann ein Domainwechsel niemanden aussperren. Aufträge, die eine Version bis 0.9.4 im Zustand „Bestätigung ausstehend“ hinterlassen hat, behalten ihr bisheriges Verhalten einschließlich Rücknahme.
 
 Der erste Umfang unterstützt den vorhandenen Timereal-LXC mit externem HTTPS-Proxy und lokaler IPv4-Adresse auf Port 443. Abweichende eigene Caddy-Konfigurationen werden als nicht unterstützt angezeigt. Ein neuer öffentlicher Direktbetrieb ohne vorgeschalteten Proxy bleibt über das bestehende HTTPS-Einrichtungsskript möglich und wird nicht still in einen anderen Betriebsmodus umgeschaltet.
 
@@ -91,7 +93,7 @@ Implementierte Endpunkte; bis auf die reine Versionsprüfung muss der Unix-Betri
 | `POST /domain/pruefen` | Domain gegen Konfiguration prüfen; unveränderlichen Prüfvorgang erzeugen |
 | `POST /domain/:id/uebernehmen` | Geprüfte Konfiguration anwenden; ab 0.9.4 ohne erneutes Passwort |
 | `POST /domain/:id/bestaetigen` | Neuen Zugriff mit Betriebsberechtigung über die neue Origin anerkennen; ab 0.9.4 automatisch aus der Web-App |
-| `POST /domain/:id/zuruecknehmen` | Noch unbestätigten Wechsel auf die gesicherte Konfiguration zurücknehmen |
+| `POST /domain/:id/zuruecknehmen` | Nur für Altaufträge im Zustand „Bestätigung ausstehend“: Wechsel auf die gesicherte Konfiguration zurücknehmen |
 | `GET /auftraege/:id` | Persistierten Fortschritt und begrenzten Ergebnisbericht lesen |
 
 Aufträge haben UUID, Typ, Konto-ID, Ausgangs-/Zielstand, Auftragsschlüssel, Konfigurationsfingerabdruck, Zustand, Phase und Zeitpunkte. Für den Domainwechsel kommen Bestätigungsfrist und Referenz auf die gesicherte Konfiguration hinzu. Passwörter, Cookies und SMTP-Zugangsdaten werden nicht in den Auftrag geschrieben. Statusausgaben enthalten keine rohen Prozesslogs oder beliebigen Dateiinhalte.
@@ -108,7 +110,7 @@ Aufträge und Wiederholungsschlüssel werden nicht automatisch gelöscht. Bei de
 
 1. Bildfreigabe; danach Betriebsdienst und HTTP-Vertrag mit zuerst roten Verhaltenstests bauen.
 2. Webupdate einschließlich automatischer Vorbereitung/Installation, Sitzungs- und Rollenprüfung, Idempotenz und Neustart verbinden.
-3. Domainzugriff mit echtem Caddy/TLS, neuer Anmeldung, automatischer Zugangserkennung und fristgesteuertem Rückbau verbinden.
+3. Domainzugriff mit echtem Caddy/TLS: Anmeldung über Domain und lokale Adresse, Fehlerantwort für fremde Hostnamen, keine HTTP/3-Ankündigung, Rückbau bei fehlgeschlagener lokaler Prüfung.
 4. Erstinstallation und Bootstrap aus 0.6.2 sowie Folgesprung im eigenen Debian-13/systemd-Prüfgast ausführen. Der Testgast ist getrennt von Lars' LXC.
 5. Gegen das freigegebene Bild auf Laptop und Smartphone prüfen; Links, Tastatur, Fehler, Verbindungsverlust und 200 % Textgröße einschließen. Release erst nach grüner Prüfung veröffentlichen.
 

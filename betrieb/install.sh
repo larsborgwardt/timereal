@@ -85,18 +85,8 @@ schritt 5 'HTTPS und tägliche Sicherung einrichten'
 install -d -m 755 /etc/timereal
 bash /opt/timereal/betrieb/mfa-schluessel.sh anlegen
 printf 'PUBLIC_ORIGIN=https://%s\n' "$adresse" > /etc/timereal/dienst.conf
-cat > /etc/timereal/Caddyfile <<EOF
-{
-  admin off
-  auto_https disable_redirects
-  default_sni $adresse
-  skip_install_trust
-}
-https://$adresse {
-  tls internal
-  reverse_proxy 127.0.0.1:3040
-}
-EOF
+# Dieselbe Vorlage wie im Betriebsdienst: lokaler Zugang, Fehlerantwort für fremde Hostnamen.
+/opt/timereal-node/bin/node --input-type=module -e 'import { caddyVorlage } from "/opt/timereal/betrieb/verwaltung/caddy-vorlage.mjs"; process.stdout.write(caddyVorlage(process.argv[1]));' "$adresse" > /etc/timereal/Caddyfile
 /usr/bin/caddy validate --config /etc/timereal/Caddyfile --adapter caddyfile
 install -m 644 betrieb/*.service betrieb/*.timer /etc/systemd/system/
 systemctl daemon-reload

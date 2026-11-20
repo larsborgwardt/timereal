@@ -110,7 +110,9 @@ Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Sende
 
 ## Vorhandener Nginx / Nginx Proxy Manager
 
-Ab 0.9.4 wird die Domain unter **Verwaltung → Domainzugriff → Domain speichern** geprüft und übernommen. Die aktive Betriebs-Websitzung genügt; eine erneute Passworteingabe entfällt. Öffne danach die neue Adresse innerhalb von drei Minuten und melde dich an. Der Zugriff wird automatisch erkannt, auch wenn du zuerst Heute oder Updates öffnest. Ein Bestätigungsklick und ein von der Geräteuhr abhängiger Countdown entfallen. Ohne erfolgreichen Zugriff wird die vorherige Konfiguration serverseitig wiederhergestellt, auch bei geschlossenem Tab oder nach Dienstneustart.
+Ab 0.9.5 gilt: Die Domain wird unter **Verwaltung → Domainzugriff → Domain speichern** geprüft und übernommen. Die aktive Betriebs-Websitzung genügt. Danach ist Timereal zusätzlich über die Domain erreichbar; die Anmeldung über die Container-IP bleibt möglich. Eine Zugriffsbestätigung, eine Frist und die automatische Rücknahme entfallen (bis 0.9.4: drei Minuten). Scheitert die lokale HTTPS-Prüfung bei der Übernahme, stellt der Betriebsdienst weiterhin die vorherige Konfiguration wieder her.
+
+Die HTTPS-Vorlage beantwortet nicht eingerichtete Hostnamen mit 421 und `Cache-Control: no-store` und kündigt kein HTTP/3 an. Installationen bis 0.9.4 behalten ihre bisherige Vorlage, bis die Domain erneut gespeichert wird; beide Vorlagen werden erkannt. Am Nginx Proxy Manager „Cache Assets“ ausgeschaltet lassen: Die Option ignoriert `Cache-Control` und kann leere oder alte Antworten bis zu 30 Minuten ausliefern.
 
 **Wenn eine ältere Version Updates wegen eines Domainauftrags sperrt:** Unter Domainzugriff **Änderung zurücknehmen** wählen. Nach erfolgreicher Rücknahme die dort angezeigte bisherige Adresse öffnen, anmelden und das Update starten. Anschließend die Domain erneut speichern und die neue Adresse öffnen. Keine Auftragsdateien oder Sperren von Hand löschen. Steht dort stattdessen „Wiederherstellung prüfen“, den konkreten Hinweis aus Domainzugriff/Systemlogs auswerten; eine laufende Wiederherstellung nicht umgehen.
 

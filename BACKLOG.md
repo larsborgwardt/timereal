@@ -10,6 +10,10 @@ Entwurf 17 ist nach D-RELEASE-012 freigegeben. Persönliche Nachweise werden mit
 
 Lars meldet unter 0.9.2 einen Rückbau direkt nach „Übernehmen“. Sein Journal zeigt Dienststarts, danach nur die allgemeine Warnung. Der Standardwechsel mit seiner Domain funktioniert im isolierten Debian-Prüfgast. 0.9.3 zeigt deshalb den fehlgeschlagenen Schritt und feste Diagnosehinweise im Auftrag und im Journal; die konkrete Ursache auf Lars’ LXC ist noch nicht belegt. Die spätere Meldung zur Updatesperre wird in 0.9.4 durch automatische Zugangserkennung und eine Erklärung der Sperre bearbeitet. Eine abweichende Geräteuhr ist als Fehlerklasse reproduziert; die Uhrabweichung auf Lars’ Gerät ist nicht gemessen. Für den früheren unmittelbaren Domainrückbau bleibt der konkrete Diagnosehinweis der Instanz erforderlich. Die automatische Rücknahme bleibt bestehen.
 
+## Domainzugriff ohne Frist in 0.9.5
+
+Auftrag von Lars am 20. November 2026 nach der Diagnose der leeren Antworten: Die Domain kommt zur Container-IP hinzu, Bestätigungsfrist und automatische Rücknahme entfallen, nicht eingerichtete Hostnamen erhalten 421, HTTP/3 wird nicht angekündigt. Gemessen im Prüfgast und mit Caddy 2.6.2; auf Lars’ LXC und über den öffentlichen Proxy noch nicht. [Prüfbelege](nachweise/0.9.5.md). Dasselbe Release begrenzt Anmeldeversuche je Absender statt für alle gemeinsam. Offen: Messung von außerhalb des lokalen Netzes; ein Weg, eine eingerichtete Domain in der Verwaltung wieder zu entfernen; Hinweis in der Oberfläche, wenn eine Installation noch die HTTPS-Vorlage bis 0.9.4 trägt.
+
 ## Kontosicherheit und Chromium-Erweiterung in 0.9.0
 
 Die freigegebenen Bilder 13/14 sind umgesetzt: Anzeigename, bestätigte E-Mail-Änderung, Authenticator, Wiederherstellungscodes und Faktorverwaltung. Die Chromium-Erweiterung verwendet die neue vollständige Anmeldung und besitzt weiterhin eine separat widerrufbare Sitzung. [Vertrag](KONTOSICHERHEIT.md) · [Prüfbelege](nachweise/0.9.0.md).
@@ -47,7 +51,7 @@ Speicherknappheit, ein echter `pg_dump`-Fehler und ein nicht startbarer Vorgäng
 | Thema | Abgrenzung / nächster Nachweis |
 |---|---|
 | Systemlogs auf Lars’ v0.8.2 | Gemeldet: „Verbindung unterbrochen“ über die Container-IP. Der ergänzende Fehlertext fehlt; die Ursache auf dieser Instanz ist nicht belegt. Native Journalprüfungen ersetzen diese Diagnose nicht. |
-| Erweiterung: sporadischer Timeout nach Pausieren | CI-Lauf 44594040098 scheiterte einmal; Wiederholung am unveränderten Commit bestand. Ursache nicht belegt. [Issue #10](https://github.com/larsborgwardt/timereal/issues/10). |
+| Erweiterung: sporadischer Timeout nach Pausieren | CI-Lauf 44594040098 scheiterte einmal; Wiederholung am unveränderten Commit bestand. Ursache nicht belegt. [Issue #10](https://github.com/larsborgwardt/timereal/issues/10). Erneut am 20.11.2026 im CI-Lauf 44707793870 (PostgreSQL 17, Commit `de18594`): Zeitüberschreitung beim Timerwechsel im Erweiterungsfenster; Wiederholung am unveränderten Commit bestand. Ursache weiter nicht belegt. |
 | Diagnose vorübergehender 503 unter Last | Hauptzweig-CI 44553467620: erster Kapazitätsjob scheiterte beim Arbeitsstand, Wiederholung am unveränderten Commit bestand; Ursache nicht belegt. Fehlerpfad mit geheimnisfreiem Fehlercode und Zeitbezug sowie Ausgabebeleg bei vorzeitigem Lasttestabbruch ergänzen und den nächsten Fehler damit einordnen. [Releasebeleg](nachweise/0.8.2.md). |
 | Absenderadresse hinter vorgeschaltetem Proxy | Die Anmeldegrenzen zählen je Absenderadresse. Welche Adresse Timereal hinter einem vorgeschalteten Nginx sieht, ist nicht gemessen; sieht es nur die des Proxys, teilen sich alle Domainnutzer ein Kontingent. Nächster Nachweis: Prüfgast mit vorgeschaltetem Nginx. |
 | Proxmox-LXC-Pilot | Neue 0.7.0-Betriebsfunktionen wurden im eigenen Debian-13/systemd-Prüfgast gemessen. Update auf Lars' LXC und externer Domainaufruf erfolgen durch Lars. |

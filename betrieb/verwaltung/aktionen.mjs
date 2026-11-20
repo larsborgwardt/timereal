@@ -18,6 +18,7 @@ import { lookup } from "node:dns/promises";
 import { setTimeout as warten } from "node:timers/promises";
 import { Betriebsfehler, domainMuster } from "./auftraege.mjs";
 import { prozess } from "./system.mjs";
+import { caddyVorlage, caddyVorlagenstand } from "./caddy-vorlage.mjs";
 
 const source = "https://github.com/larsborgwardt/timereal.git";
 const api =
@@ -27,17 +28,6 @@ const repo = "/opt/timereal";
 const daten = "/var/lib/timereal-betrieb";
 const configDir = "/etc/timereal";
 const ca = "/var/lib/timereal-https/caddy/pki/authorities/local/root.crt";
-const caddyVorlage = (ip, domain = "") => `{
-  admin off
-  auto_https disable_redirects
-  default_sni ${ip}
-  skip_install_trust
-}
-https://${ip}${domain ? `, https://${domain}` : ""} {
-  tls internal
-  reverse_proxy 127.0.0.1:3040
-}
-`;
 const fingerprint = (caddy, env) =>
   createHash("sha256").update(caddy).update("\0").update(env).digest("hex");
 export const konfigurationsHash = fingerprint;
@@ -66,13 +56,13 @@ export function proxyKonfiguration(caddy, env) {
   const origins = env
     .split(/\r?\n/)
     .filter((s) => /^\s*PUBLIC_ORIGIN\s*=/.test(s));
+  const vorlage =
+    ip && isIPv4(ip) && hosts[0] === ip
+      ? caddyVorlagenstand(caddy, ip, domain)
+      : 0;
   if (
-    !ip ||
-    !isIPv4(ip) ||
-    hosts[0] !== ip ||
+    !vorlage ||
     (domain && !domainMuster.test(domain)) ||
-    caddy.replace(/\s+/g, "") !==
-      caddyVorlage(ip, domain).replace(/\s+/g, "") ||
     origins.length !== 1 ||
     ![
       `PUBLIC_ORIGIN=https://${ip}`,
@@ -88,6 +78,7 @@ export function proxyKonfiguration(caddy, env) {
     origin: origins[0].slice("PUBLIC_ORIGIN=".length),
     proxyZiel: `https://${ip}:443`,
     fingerprint: fingerprint(caddy, env),
+    vorlage,
   };
 }
 
@@ -610,10 +601,12 @@ export async function betriebsAktion(aktion, job, buch, lock) {
       await shell("proxy-einrichten.sh", [job.domain, job.ip]);
       phase = "https";
       await httpsGesund(job.domain);
+      // Die bisherige Adresse bleibt zulässig (src/herkunft.ts). Ein Wechsel
+      // sperrt deshalb niemanden aus und braucht weder Frist noch Rücknahme.
       await buch.fortschreiben(job.id, {
-        zustand: "bestaetigung_ausstehend",
-        phase: "bestaetigung_ausstehend",
-        frist: Date.now() + 180000,
+        zustand: "erfolgreich",
+        phase: "erfolgreich",
+        meldung: `Die Anmeldung über https://${job.ip} bleibt möglich.`,
       });
     } catch (error) {
       await domainZurueck(job, buch, domainFehlerhinweis(phase, error));
