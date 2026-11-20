@@ -179,10 +179,11 @@ try {
     .waitFor();
   assert.equal(ausfuehrungen, 1);
   await page.locator("#betrieb-fehler").waitFor({ state: "hidden" });
-  assert.match(
-    await page.locator("#betrieb-updatephase").textContent(),
-    /v0\.6\.2 → v99\.0\.0/,
-  );
+  // Der Auftrag entsteht vor dem Eintrag der bisherigen Version; die Anzeige
+  // zieht beim nächsten Abruf nach (in der CI mit PostgreSQL 17 sichtbar).
+  await page
+    .locator("#betrieb-updatephase", { hasText: /v0\.6\.2 → v99\.0\.0/ })
+    .waitFor();
   assert.match(
     await page.locator("#betrieb-updatemeta").textContent(),
     new RegExp(login),
