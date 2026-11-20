@@ -1,0 +1,5 @@
+Frische Installation mit HTTPS, PostgreSQL und Betriebsdienst bestanden.
+Proxy-Skript: Fehlerantwort für fremde Hostnamen, kein HTTP/3, Herkunft Domain und lokale Adresse, Rückbau bestanden.
+Domain über den Betriebsdienst ohne Frist eingerichtet; Anmeldung über Domain und lokale Adresse bestanden.
+Prüfbelege: <ablage>/ci-native-2
+exit=0

@@ -52,9 +52,10 @@ fi
 git -C "$out/kandidat" rm -qrf .
 tar -xf "$out/kandidat.tar" -C "$out/kandidat"
 printf 'timereal-release namespaces="git" %s\n' "$(cat "$out/signatur.pub")" > "$out/kandidat/betrieb/release-signierer"
-# Läuft beim Bau jedes Kandidaten mit: unter root schlägt der Bau fehl.
-printf '\ntest("Prüfkandidat wird nicht als root gebaut", () => {\n  if (process.getuid() === 0) throw new Error("Bau läuft als root");\n});\n' >> "$out/kandidat/tests/version.test.mjs"
 version 0.9.0
+# Ab hier baut der Updater des Kandidaten. Unter root schlägt der Bau fehl;
+# 0.9.0 selbst baut noch der alte Updater als root (dort wäre der Test rot).
+printf '\ntest("Prüfkandidat wird nicht als root gebaut", () => {\n  if (process.getuid() === 0) throw new Error("Bau läuft als root");\n});\n' >> "$out/kandidat/tests/version.test.mjs"
 # Ein baubarer, aber beim Start fehlerhafter Folgekandidat prüft den Rückbau.
 printf '\nthrow new Error("Absichtlicher Startfehler im isolierten Prüfkandidaten");\n' >> "$out/kandidat/src/server.ts"
 version 0.9.1
