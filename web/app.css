@@ -134,7 +134,7 @@ dialog {
 .logkarte .filter {
   gap: 16px;
 }
-.logkarte .filter label:first-child {
+.logkarte .filter > :first-child {
   flex: 1.5;
 }
 .logaktionen {
@@ -228,7 +228,7 @@ dialog {
   .logkarte {
     padding: 16px;
   }
-  .logkarte .filter label {
+  .logkarte .filter :is(label, md-outlined-text-field, md-outlined-select) {
     flex: 1 1 100%;
     min-width: 0;
   }
@@ -291,6 +291,7 @@ dialog {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 16px;
+  align-items: start;
 }
 .mailseite {
   display: grid;
@@ -374,6 +375,18 @@ label {
   font-weight: 600;
   margin: 12px 0;
 }
+/* Material-Felder tragen ihre Beschriftung selbst und stehen wie bisher die
+   beschrifteten Felder untereinander in voller Breite. */
+md-outlined-text-field,
+md-outlined-select {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  margin: 12px 0;
+}
+input[type="checkbox"] {
+  accent-color: var(--md-sys-color-primary);
+}
 .check input {
   width: auto;
   min-height: auto;
@@ -441,7 +454,7 @@ small,
   align-items: end;
   flex-wrap: wrap;
 }
-.filter label {
+.filter :is(label, md-outlined-text-field, md-outlined-select) {
   flex: 1;
   min-width: 145px;
   margin: 0;
@@ -563,7 +576,7 @@ dialog .aktionen {
   .zeile {
     gap: 8px;
   }
-  .filter label {
+  .filter :is(label, md-outlined-text-field, md-outlined-select) {
     min-width: 110px;
   }
   .text {
@@ -751,7 +764,7 @@ h2:focus-visible {
   gap: 24px;
   align-items: start;
 }
-.konto label {
+.konto :is(label, md-outlined-text-field, md-outlined-select) {
   width: 200px;
   max-width: 100%;
 }

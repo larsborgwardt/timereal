@@ -8,6 +8,7 @@ import { passwordHash } from "../dist/session.js";
 import { totp } from "../dist/mfa-crypto.js";
 import { postfach } from "./hilfe/smtp.mjs";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
+import { waehle } from "./hilfe/material.mjs";
 
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
@@ -91,7 +92,7 @@ try {
     .click();
   await page.locator("#passwortfenster").waitFor({ state: "hidden" });
   await click("Einrichten");
-  await page.locator("#mfa-passwort").fill(password);
+  await page.locator("#mfa-passwort input").fill(password);
   const response = page.waitForResponse(
     (r) => r.url().endsWith("/mfa/einrichtung") && r.status() === 200,
   );
@@ -117,7 +118,7 @@ try {
     .join("");
   const seed = Buffer.from(bits.match(/.{8}/g).map((s) => parseInt(s, 2)));
   await page
-    .locator("#mfa-code")
+    .locator("#mfa-code input")
     .fill(totp(seed, Math.floor(Date.now() / 30000)));
   const activation = page.waitForResponse(
     (r) => r.url().endsWith("/mfa/aktivieren") && r.status() === 200,
@@ -139,23 +140,23 @@ try {
   await click("Anmelden");
   await page.getByRole("heading", { name: "Anmeldung bestätigen" }).waitFor();
   await proof("anmeldung-390");
-  await page.locator("#login-faktor-code").fill("000000");
+  await page.locator("#login-faktor-code input").fill("000000");
   await click("Anmelden");
   await page.locator("#login-faktor-fehler").waitFor();
   assert(await page.locator("#login-faktor").isVisible());
   await click("Wiederherstellungscode verwenden");
   await proof("wiederherstellung-390");
-  await page.locator("#login-faktor-code").fill(codes[0]);
+  await page.locator("#login-faktor-code input").fill(codes[0]);
   await click("Anmelden");
   await page.getByRole("heading", { name: "Heute", exact: true }).waitFor();
   await click("Einstellungen");
   await click("Verwalten");
   await proof("verwaltung-390");
   await click("Zwei-Faktor-Anmeldung ausschalten");
-  await page.locator("#mfa-passwort").fill(password);
+  await page.locator("#mfa-passwort input").fill(password);
   await proof("ausschalten-390");
-  await page.locator("#mfa-art").selectOption("recovery");
-  await page.locator("#mfa-bestaetigung").fill(codes[1]);
+  await waehle(page.locator("#mfa-art"), "recovery");
+  await page.locator("#mfa-bestaetigung input").fill(codes[1]);
   await click("Ausschalten");
   await page.getByText("Noch nicht eingeschaltet", { exact: true }).waitFor();
   assert.deepEqual(errors, []);

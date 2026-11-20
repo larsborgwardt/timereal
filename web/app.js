@@ -556,16 +556,16 @@ document.addEventListener("click", (ev) => {
 function projekte() {
   const f = $("#zielform").elements;
   f.projektId.innerHTML =
-    '<option value="">Ohne Projekt</option>' +
+    '<md-select-option value=""><div slot="headline">Ohne Projekt</div></md-select-option>' +
     ziele
       .filter((z) => z.art === "Projekt" && z.kunde === f.kunde.value)
       .map(
         (z) =>
-          '<option value="' +
+          '<md-select-option value="' +
           esc(z.id) +
-          '">' +
+          '"><div slot="headline">' +
           esc(z.bezeichnung) +
-          "</option>",
+          "</div></md-select-option>",
       )
       .join("");
   f.projektId.disabled = f.art.value === "Projekt";

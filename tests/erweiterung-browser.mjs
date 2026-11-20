@@ -226,7 +226,7 @@ try {
       exact: true,
     })
     .click();
-  await auth.locator("#login-faktor-code").fill(recovery);
+  await auth.locator("#login-faktor-code input").fill(recovery);
   await auth.getByRole("button", { name: "Anmelden", exact: true }).click();
   await auth
     .getByRole("button", { name: "Erweiterung verbinden", exact: true })
@@ -305,7 +305,7 @@ try {
   await popup
     .getByRole("button", { name: "Leistungstext", exact: true })
     .click();
-  await popup.locator("#notiz").fill("Direkt aus der Browserleiste");
+  await popup.locator("#notiz textarea").fill("Direkt aus der Browserleiste");
   assert.deepEqual(
     await pruefeAnsicht(popup, "erweiterung-notiz", { widths: [380] }),
     [],

@@ -147,9 +147,9 @@ try {
     () => button("Bearbeiten").click(),
     "zielpflegefenster",
   );
-  await page.locator("#suche").fill("nicht vorhanden");
+  await page.locator("#suche input").fill("nicht vorhanden");
   await audit("ziele-suche-leer");
-  await page.locator("#suche").fill("");
+  await page.locator("#suche input").fill("");
   await navigate("Woche");
   check(
     await page.evaluate(

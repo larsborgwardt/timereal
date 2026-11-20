@@ -6,7 +6,7 @@ export function faktorAnmeldung({ host, request, erfolgreich, zurueck }) {
     <h2 id="login-faktor-titel">Anmeldung bestätigen</h2><p id="login-faktor-konto"></p>
     <p id="login-faktor-hilfe">Gib den aktuellen Code aus deiner Authenticator-App ein.</p>
     <p id="login-faktor-fehler" role="alert" hidden></p>
-    <label><span id="login-faktor-label">Sechsstelliger Code</span><input id="login-faktor-code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"></label>
+    <md-outlined-text-field label="Sechsstelliger Code" id="login-faktor-code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"></md-outlined-text-field>
     <div class="aktionen"><md-filled-button>Anmelden</md-filled-button><md-outlined-button type="button" id="login-faktor-zurueck">Zurück zur Anmeldung</md-outlined-button><md-outlined-button type="button" id="login-faktor-wechsel">Wiederherstellungscode verwenden</md-outlined-button></div>
     <p class="neben">Die Bestätigung ist für fünf Minuten gültig. Danach meldest du dich erneut mit deinem Passwort an.</p>
     </form>`;
@@ -21,7 +21,7 @@ export function faktorAnmeldung({ host, request, erfolgreich, zurueck }) {
     input.inputMode = recovery ? "text" : "numeric";
     input.maxLength = recovery ? 39 : 6;
     input.pattern = recovery ? "[A-Fa-f0-9-]{32,39}" : "[0-9]{6}";
-    $("#login-faktor-label").textContent = recovery
+    $("#login-faktor-code").label = recovery
       ? "Wiederherstellungscode"
       : "Sechsstelliger Code";
     $("#login-faktor-hilfe").textContent = recovery

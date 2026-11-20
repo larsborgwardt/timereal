@@ -80,8 +80,8 @@ try {
       .waitFor();
     const button = page.locator("#nachweise-excel");
     await button.waitFor();
-    await page.locator('#filter [name="von"]').fill("2026-11-10");
-    await page.locator('#filter [name="bis"]').fill("2026-11-11");
+    await page.locator('#filter input[name="von"]').fill("2026-11-10");
+    await page.locator('#filter input[name="bis"]').fill("2026-11-11");
     await page.getByRole("button", { name: "Filtern", exact: true }).click();
     await page.getByText("Konfiguration geprüft", { exact: true }).waitFor();
     const before = (
@@ -97,7 +97,7 @@ try {
       ["Historie", "ohne Treffer", 1],
     ]) {
       await page.getByRole("button", { name: view, exact: true }).click();
-      await page.locator('#filter [name="suche"]').fill(suche);
+      await page.locator('#filter input[name="suche"]').fill(suche);
       const [download] = await Promise.all([
         page.waitForEvent("download"),
         button.click(),
@@ -166,7 +166,7 @@ try {
     assert.equal(downloads, 0);
     assert.equal(await button.evaluate((el) => el.disabled), false);
     await page.unroute("**/api/v1/nachweise/excel?*");
-    await page.locator('#filter [name="suche"]').fill("00123");
+    await page.locator('#filter input[name="suche"]').fill("00123");
     await page.getByRole("button", { name: "Filtern", exact: true }).click();
     await page.getByText("Konfiguration geprüft", { exact: true }).waitFor();
     const boxes = await page

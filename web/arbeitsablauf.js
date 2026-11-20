@@ -22,25 +22,30 @@ export function arbeitsablaufOberflaeche({
     getZiele()
       .map(
         (z) =>
-          '<option value="ziel:' +
+          '<md-select-option value="ziel:' +
           esc(z.id) +
-          '">' +
+          '"><div slot="headline">' +
           esc(z.kunde + " · " + z.art + " " + z.bezeichnung) +
-          "</option>",
+          "</div></md-select-option>",
       )
       .join("") +
-    '<option value="vorlaeufig">Später zuordnen</option><option value="intern">Interne Zeit</option>';
+    '<md-select-option value="vorlaeufig"><div slot="headline">Später zuordnen</div></md-select-option><md-select-option value="intern"><div slot="headline">Interne Zeit</div></md-select-option>';
   const kundenOptionen = () =>
-    '<option value="">Kunde später zuordnen</option>' +
+    '<md-select-option value=""><div slot="headline">Kunde später zuordnen</div></md-select-option>' +
     getKunden()
       .map(
-        (k) => '<option value="' + esc(k.id) + '">' + esc(k.name) + "</option>",
+        (k) =>
+          '<md-select-option value="' +
+          esc(k.id) +
+          '"><div slot="headline">' +
+          esc(k.name) +
+          "</div></md-select-option>",
       )
       .join("");
   function zuordnung() {
     const f = form.elements,
       wert = f.auswahl.value;
-    f.kundeId.closest("label").hidden = wert !== "vorlaeufig";
+    f.kundeId.hidden = wert !== "vorlaeufig";
     f.abrechenbar.disabled = wert === "intern";
     if (wert === "intern") f.abrechenbar.checked = false;
   }
@@ -52,14 +57,14 @@ export function arbeitsablaufOberflaeche({
     select.required = liste.length > 1;
     select.innerHTML =
       (liste.length > 1
-        ? '<option value="">Vorkommen auswählen</option>'
+        ? '<md-select-option value=""><div slot="headline">Vorkommen auswählen</div></md-select-option>'
         : "") +
       liste
         .map(
           (v, i) =>
-            '<option value="' +
+            '<md-select-option value="' +
             esc(v) +
-            '">' +
+            '"><div slot="headline">' +
             (i + 1) +
             ". Vorkommen · " +
             esc(
@@ -70,11 +75,11 @@ export function arbeitsablaufOberflaeche({
                 minute: "2-digit",
               }).format(new Date(v)),
             ) +
-            "</option>",
+            "</div></md-select-option>",
         )
         .join("");
     if (liste.includes(alt)) select.value = alt;
-    select.closest("label").hidden = liste.length < 2;
+    select.hidden = liste.length < 2;
     f[name].setCustomValidity(
       liste.length
         ? ""
@@ -248,7 +253,7 @@ export function arbeitsablaufOberflaeche({
         f.bezeichnung.value = zielEdit.bezeichnung;
         f.abrechenbar.checked = zielEdit.abrechenbar;
         f.projektId.innerHTML =
-          '<option value="">Ohne Projekt</option>' +
+          '<md-select-option value=""><div slot="headline">Ohne Projekt</div></md-select-option>' +
           getZiele()
             .filter(
               (z) =>
@@ -258,11 +263,11 @@ export function arbeitsablaufOberflaeche({
             )
             .map(
               (z) =>
-                '<option value="' +
+                '<md-select-option value="' +
                 esc(z.id) +
-                '">' +
+                '"><div slot="headline">' +
                 esc(z.bezeichnung) +
-                "</option>",
+                "</div></md-select-option>",
             )
             .join("");
         f.projektId.value = zielEdit.projekt_id ?? "";

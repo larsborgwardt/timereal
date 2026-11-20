@@ -13,6 +13,7 @@ import { dienstStarten } from "../betrieb/verwaltung/dienst.mjs";
 import { mailVerwaltung } from "../betrieb/verwaltung/mail.mjs";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
 import { postfach } from "./hilfe/smtp.mjs";
+import { waehle } from "./hilfe/material.mjs";
 
 // Echte Websitzung, Datenbank, Unix-Socket des Betriebsdienstes und ein
 // echter SMTP-Empfänger auf Loopback (Entwurf 15, D-RELEASE-009).
@@ -82,7 +83,10 @@ try {
   const f = panel.locator("#mail-einstellungen");
   await f.getByLabel("SMTP-Server").fill(post.config.host);
   await f.getByLabel("Port").fill(String(post.config.port));
-  await f.getByLabel("Verschlüsselung").selectOption("starttls");
+  await waehle(
+    f.getByRole("combobox", { name: "Verschlüsselung" }),
+    "starttls",
+  );
   await f.getByLabel("Absenderadresse").fill(post.config.from);
   // Ohne Anmeldung am Mailserver bleiben Benutzername und Passwort leer.
   await f.getByLabel("Dein Timereal-Passwort").fill("falsch-" + suffix);

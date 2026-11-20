@@ -79,7 +79,7 @@ export function kontenOberflaeche({
             "</span></div>" +
             (eigenes
               ? ""
-              : '<label>Rolle<select id="rolle-' +
+              : '<md-outlined-select label="Rolle" id="rolle-' +
                 esc(k.id) +
                 '" data-rolle="' +
                 esc(k.id) +
@@ -87,16 +87,16 @@ export function kontenOberflaeche({
                 Object.entries(rollen)
                   .map(
                     ([id, name]) =>
-                      '<option value="' +
+                      '<md-select-option value="' +
                       id +
                       '"' +
                       (id === value ? " selected" : "") +
-                      ">" +
+                      '><div slot="headline">' +
                       name +
-                      "</option>",
+                      "</div></md-select-option>",
                   )
                   .join("") +
-                "</select></label>") +
+                "</md-outlined-select>") +
             "</div>" +
             (eigenes
               ? ""

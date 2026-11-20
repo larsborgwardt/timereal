@@ -23,6 +23,21 @@ const ergebnis = await build({
   banner: { js: banner },
   write: false,
   logLevel: "silent",
+  // lits styleMap schreibt beim ersten Zeichnen ein style-Attribut, das die
+  // Inhaltsrichtlinie verbietet; stattdessen die CSSOM-Fassung einbinden.
+  plugins: [
+    {
+      name: "stil-zuordnung",
+      setup(b) {
+        b.onResolve(
+          { filter: /^lit(-html)?\/directives\/style-map\.js$/ },
+          () => ({
+            path: root + "web/material/stil-zuordnung.js",
+          }),
+        );
+      },
+    },
+  ],
 });
 const inhalt = ergebnis.outputFiles[0].text;
 if (process.argv.includes("--check")) {
