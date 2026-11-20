@@ -194,7 +194,7 @@ try {
     .getByRole("heading", { name: "Update wird vorbereitet", exact: true })
     .waitFor();
   assert.equal(
-    await page.locator('#verwaltung input[type="password"]').count(),
+    await page.locator('#betrieb-bereich input[type="password"]').count(),
     0,
   );
   assert.equal(
