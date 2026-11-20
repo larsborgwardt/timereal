@@ -10,9 +10,9 @@ Entwurf 17 ist nach D-RELEASE-012 freigegeben. Persönliche Nachweise werden mit
 
 Lars meldet unter 0.9.2 einen Rückbau direkt nach „Übernehmen“. Sein Journal zeigt Dienststarts, danach nur die allgemeine Warnung. Der Standardwechsel mit seiner Domain funktioniert im isolierten Debian-Prüfgast. 0.9.3 zeigt deshalb den fehlgeschlagenen Schritt und feste Diagnosehinweise im Auftrag und im Journal; die konkrete Ursache auf Lars’ LXC ist noch nicht belegt. Die spätere Meldung zur Updatesperre wird in 0.9.4 durch automatische Zugangserkennung und eine Erklärung der Sperre bearbeitet. Eine abweichende Geräteuhr ist als Fehlerklasse reproduziert; die Uhrabweichung auf Lars’ Gerät ist nicht gemessen. Für den früheren unmittelbaren Domainrückbau bleibt der konkrete Diagnosehinweis der Instanz erforderlich. Die automatische Rücknahme bleibt bestehen.
 
-## Domainzugriff ohne Frist — unveröffentlicht
+## Domainzugriff ohne Frist in 0.9.5
 
-Auftrag von Lars am 20. November 2026 nach der Diagnose der leeren Antworten: Die Domain kommt zur Container-IP hinzu, Bestätigungsfrist und automatische Rücknahme entfallen, nicht eingerichtete Hostnamen erhalten 421, HTTP/3 wird nicht angekündigt. Gemessen im Prüfgast und mit Caddy 2.6.2; auf Lars’ LXC und über den öffentlichen Proxy noch nicht. Offen: Messung von außerhalb des lokalen Netzes; ein Weg, eine eingerichtete Domain in der Verwaltung wieder zu entfernen; Hinweis in der Oberfläche, wenn eine Installation noch die HTTPS-Vorlage bis 0.9.4 trägt.
+Auftrag von Lars am 20. November 2026 nach der Diagnose der leeren Antworten: Die Domain kommt zur Container-IP hinzu, Bestätigungsfrist und automatische Rücknahme entfallen, nicht eingerichtete Hostnamen erhalten 421, HTTP/3 wird nicht angekündigt. Gemessen im Prüfgast und mit Caddy 2.6.2; auf Lars’ LXC und über den öffentlichen Proxy noch nicht. [Prüfbelege](nachweise/0.9.5.md). Dasselbe Release begrenzt Anmeldeversuche je Absender statt für alle gemeinsam. Offen: Messung von außerhalb des lokalen Netzes; ein Weg, eine eingerichtete Domain in der Verwaltung wieder zu entfernen; Hinweis in der Oberfläche, wenn eine Installation noch die HTTPS-Vorlage bis 0.9.4 trägt.
 
 ## Kontosicherheit und Chromium-Erweiterung in 0.9.0
 

@@ -1,0 +1,32 @@
+Auszüge der roten Läufe vor der jeweiligen Änderung (20. November 2026). Keine vollständigen Protokolle.
+
+1. Anmeldegrenze, Probe mit den echten Grenzen am Stand 0.9.4 (a41af67), 2048 Fehlversuche von 198.51.100.7,
+   danach ein Versuch von 203.0.113.9:
+     2048 Fehlversuche in ms: 16613
+     ✖ Probe: 2048 Namen eines Absenders sperren einen anderen Absender nicht
+       AssertionError [ERR_ASSERTION]: fremder Absender darf nicht gesperrt sein
+       429 !== 401
+   Nach der Änderung: 2048 Fehlversuche in ms: 16199, Probe bestanden.
+
+2. Anmeldegrenze, Verdrahtungstest in tests/kapazitaet.mjs am Stand 0.9.4:
+     ✖ Das Anmeldekontingent eines Absenders sperrt weder andere Absender noch deren Konten
+       401 !== 429
+
+3. Herkunft, tests/herkunft.mjs am Stand 0.9.4:
+     ✖ Mit eingerichteter Domain bleibt die Anmeldung über die eigene IPv4-Adresse zulässig
+       403 !== 401
+     ✔ Fremde Herkünfte bleiben gesperrt: anderer Host, anderer Name, anderes Schema, fehlende Angabe
+     ✖ Ohne HTTPS gilt die IPv4-Regel mit http, nie gemischt
+       403 !== 401
+
+4. Laufender Container 0.9.4, nicht eingerichteter Hostname (nur lesender Abruf):
+     curl -sk -H 'Host: nicht-konfiguriert.example.org' https://<container>/app.js
+     HTTP/2 200, server: Caddy, content-length: 0
+
+5. Caddy 2.6.2 mit der Vorlage bis 0.9.4 und mit der neuen Vorlage:
+     bis 0.9.4:  fremder Host → HTTP 200, 0 Bytes, alt-svc: h3=":443"
+     neu:        fremder Host → HTTP 421, cache-control: no-store, 54 Bytes, kein alt-svc
+
+6. Erster nativer Gesamtlauf nach dem Einfügen der Proxy-Probe: Exit 1 im Folgeschritt
+   (connect ECONNREFUSED 127.0.0.1:3040), weil die Probe beim Aufräumen die Dienste neu startet.
+   Nach Ergänzung der Wartebedingung: Exit 0 (native-gruen.txt).

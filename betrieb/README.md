@@ -110,7 +110,7 @@ Ein Einladungslink gilt 48 Stunden, ein Rücksetzlink 30 Minuten. Erneutes Sende
 
 ## Vorhandener Nginx / Nginx Proxy Manager
 
-Die Domain wird unter **Verwaltung → Domainzugriff → Domain speichern** geprüft und übernommen. Die aktive Betriebs-Websitzung genügt. Danach ist Timereal zusätzlich über die Domain erreichbar; die Anmeldung über die Container-IP bleibt möglich. Eine Zugriffsbestätigung, eine Frist und die automatische Rücknahme entfallen (bis 0.9.4: drei Minuten). Scheitert die lokale HTTPS-Prüfung bei der Übernahme, stellt der Betriebsdienst weiterhin die vorherige Konfiguration wieder her.
+Ab 0.9.5 gilt: Die Domain wird unter **Verwaltung → Domainzugriff → Domain speichern** geprüft und übernommen. Die aktive Betriebs-Websitzung genügt. Danach ist Timereal zusätzlich über die Domain erreichbar; die Anmeldung über die Container-IP bleibt möglich. Eine Zugriffsbestätigung, eine Frist und die automatische Rücknahme entfallen (bis 0.9.4: drei Minuten). Scheitert die lokale HTTPS-Prüfung bei der Übernahme, stellt der Betriebsdienst weiterhin die vorherige Konfiguration wieder her.
 
 Die HTTPS-Vorlage beantwortet nicht eingerichtete Hostnamen mit 421 und `Cache-Control: no-store` und kündigt kein HTTP/3 an. Installationen bis 0.9.4 behalten ihre bisherige Vorlage, bis die Domain erneut gespeichert wird; beide Vorlagen werden erkannt. Am Nginx Proxy Manager „Cache Assets“ ausgeschaltet lassen: Die Option ignoriert `Cache-Control` und kann leere oder alte Antworten bis zu 30 Minuten ausliefern.
 

@@ -1,5 +1,7 @@
 # Timereal — Betrieb im Adminbereich
 
+**Fortgeschrieben für 0.9.5 am 20. November 2026 (D-RELEASE-015):** Die Domain kommt zur lokalen Adresse hinzu; Zugriffsbestätigung, Dreiminutenfenster und fristgesteuerte Rücknahme entfallen. Abschnitt „Domainwechsel“ beschreibt den neuen Ablauf.
+
 **Fortgeschrieben für 0.9.4 am 20. November 2026 (D-RELEASE-014).** Die Bilder 18 ersetzen den bisherigen Ablauf mit erneuter Passworteingabe und manueller Zugriffsbestätigung. [Aktueller Prüfnachweis](nachweise/0.9.4.md).
 
 Ursprünglicher Implementierungsstand 0.7.0 vom 19. November 2026. Grundlage: veröffentlichte Version 0.6.2, Commit `2e287287df539c8465567f2b9c95ddfb937100e1`. Der Auftrag umfasst Updates und die Einrichtung einer öffentlichen Domain in der Verwaltung. Lars hat die Bildvorlagen für Updates und Domainzugriff einschließlich Fortschritt und Zugriffsbestätigung mit „Bildentwürfe freigeben (empfohlen)“ zur Umsetzung freigegeben. Die bereits abgenommenen Verwaltungs- und Footerbilder bleiben der Gestaltungsmaßstab. Die Implementierung und ihre tatsächlich ausgeführten Prüfungen sind im [Auslieferungsnachweis](nachweise/0.7.0.md) getrennt von offenen Messungen dokumentiert.
