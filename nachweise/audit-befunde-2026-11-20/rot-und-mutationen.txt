@@ -1,0 +1,43 @@
+Rotfälle vor den Änderungen und Mutationsproben, 20. November 2026. Auszüge, keine vollständigen Protokolle.
+
+ARC-007 Passwortanforderung
+  Rot am Stand 0.9.5 (SMTP-Zustellung 2,5 s verzögert):
+    ✖ Passwortanforderung antwortet vor dem Mailversand: die Antwortzeit verrät kein Konto
+      AssertionError: Antwort nach 2559 ms
+  Grün nach der Änderung. Die Rotprobe ist zugleich die Mutation „Versand vor der Antwort“.
+
+ARC-008 Passwort-Hash (Argon2id)
+  Rot am Stand 0.9.5: 2 von 3 Tests (neues Format, unbekannte Parameter).
+  Mutationen an dist/session.js gegen tests/passwort-hash.test.mjs:
+    A1 Speicher 8 KiB statt 19 MiB            rot
+    A2 Altformat entfernt                     rot
+    A3 Schlüssellänge nicht geprüft           rot
+    A4 Schutz "hash !== null" entfernt        stumm (der Dummy-Hash trifft nie; zusätzlicher Schutz)
+    A5 Dummy mit scrypt statt Argon2id        rot
+  Zwischenstand scrypt p=5: siehe last-scrypt-p5-auszug.txt (Kapazitätsziel verfehlt, verworfen).
+
+CC-001 HTML-Einfügungen
+  Prototyp am Stand 0.9.5: 15 Meldungen; nach Verfolgung von Parametern, Zahlen und Literal-Tabellen
+  blieben 2 unbeweisbare Werte (Uhrzeit im Timer, Minuten der Wochenübersicht), jetzt maskiert.
+  Rotprobe an der echten Oberfläche: esc(k.login) in web/konten.js entfernt
+    → gemeldet: web/konten.js:72 web/konten.js:66 innerHTML: k.login
+  Eigene Probefälle des Wächters: 20 Fälle (sicher/unsicher) in tests/html-einfuegungen.test.mjs.
+
+CC-002 Format- und Abhängigkeitsprüfung
+  Vorher: Programmcode bis auf .github/workflows/tests.yml formatiert; npm audit 0 Schwachstellen.
+  Rotprobe: unformatierte Datei unter tests/ → prettier --check Exit 1.
+
+ARC-005 Signierte Tags und Bau ohne root
+  tests/tag-signatur.test.mjs mit echten SSH-Signaturen; Referenz git verify-tag:
+    signiert mit hinterlegtem Schlüssel   → Commit;  verify-tag Exit 0
+    fremder Schlüssel                     → abgewiesen; verify-tag ≠ 0
+    annotiert ohne Signatur               → abgewiesen; verify-tag ≠ 0
+    einfacher Tag                         → abgewiesen; verify-tag ≠ 0
+    signiertes Objekt unter fremdem Namen → abgewiesen
+    Inhalt verändert, Typ verändert, Signatur entfernt oder beschädigt, Namensraum "file" → abgewiesen
+  Native Probe: unsigniertes v0.9.4 → Auftrag „fehlgeschlagen“, Meldung „nicht signiert“, 0.9.2 bleibt aktiv.
+  Root-Test im Prüfkandidaten, Gegenprobe in node:24-alpine:
+    als root: fail 1   als Benutzer node: pass 1
+
+ARC-006 Native Probe in der CI
+  Erster lokaler Versuch hing an der Kontoabfrage (Eingabe zu früh eingespeist); behoben.

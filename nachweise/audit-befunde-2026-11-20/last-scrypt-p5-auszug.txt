@@ -1,0 +1,24 @@
+Lasttest tests/last.sh am 20.11.2026 mit scrypt N=2^14, r=8, p=5 (verworfener Zwischenstand, nicht ausgeliefert).
+Ergebnis: Kapazitätsgrenzen nicht eingehalten (Exit 1). Ziel Anmeldung p95 unter 8000 ms.
+
+"anmeldung": {
+      "anzahl": 100,
+      "p50": 7336,
+      "p95": 13540,
+      "p99": 14069,
+      "max": 14193
+    }
+"lesen": {
+      "anzahl": 2400,
+      "p50": 148,
+      "p95": 430,
+      "p99": 634,
+      "max": 678
+    }
+"schreiben": {
+      "anzahl": 1800,
+      "p50": 212,
+      "p95": 445,
+      "p99": 513,
+      "max": 551
+    }

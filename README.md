@@ -51,7 +51,7 @@ Die Daten liegen in deiner PostgreSQL-Datenbank. Stundennachweise lassen sich f�
 
 <img src="docs/images/browsererweiterung.png" width="380" alt="Timereal-Erweiterung mit laufendem Timer, Pause, Stopp und Kundenwechsel">
 
-Die Bilder stammen aus der echten Anwendung mit Testkonten. Die [Erweiterungsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.9.5/erweiterung/README.md) beschreibt Installation und Anmeldung.
+Die Bilder stammen aus der echten Anwendung mit Testkonten. Die [Erweiterungsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.9.6/erweiterung/README.md) beschreibt Installation und Anmeldung.
 
 </details>
 
@@ -64,13 +64,13 @@ Der Installationsweg ist für einen **eigenen unprivilegierten Debian-13-LXC mit
 | Persönlicher Pilot | 2 vCPU · 2 GiB RAM · 8 GiB Speicher |
 | Planung für 100 gleichzeitig aktive Nutzer | 4 vCPU · 4 GiB RAM · 32 GiB SSD |
 
-Der [Kapazitätsnachweis](https://github.com/larsborgwardt/timereal/blob/v0.9.5/KAPAZITAET.md) beschreibt Lastprofil, Messergebnisse und Grenzen. Die Werte sind keine Garantie für jede Hardware oder Datenmenge.
+Der [Kapazitätsnachweis](https://github.com/larsborgwardt/timereal/blob/v0.9.6/KAPAZITAET.md) beschreibt Lastprofil, Messergebnisse und Grenzen. Die Werte sind keine Garantie für jede Hardware oder Datenmenge.
 
 In der **Root-Konsole eines neuen Containers**:
 
 ```bash
 apt-get update && apt-get install -y git ca-certificates &&
-git clone --branch v0.9.5 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
+git clone --branch v0.9.6 --single-branch https://github.com/larsborgwardt/timereal.git /opt/timereal &&
 bash /opt/timereal/betrieb/install.sh
 ```
 
@@ -80,7 +80,7 @@ Der Installer richtet die Dienste ein, fragt das erste Konto ab und zeigt die Br
 - **3040:** interner Anwendungsdienst auf Loopback, kein öffentlicher Zugang.
 - **Lokales HTTPS:** Der Pilot verwendet eine eigene Zertifizierungsstelle. Übertrage nur das öffentliche Zertifikat `/root/timereal-test-ca.crt` über deinen vertrauten Containerzugang auf die Testgeräte und vertraue ihm dort für Websites. Auf dem iPhone zusätzlich das volle Vertrauen für das CA-Profil aktivieren.
 
-SMTP, externe Sicherungen und weitere Installationshinweise stehen in der [Betriebsanleitung für 0.9.5](https://github.com/larsborgwardt/timereal/blob/v0.9.5/betrieb/README.md). Für eine vorhandene Installation verwende den Updateweg.
+SMTP, externe Sicherungen und weitere Installationshinweise stehen in der [Betriebsanleitung für 0.9.6](https://github.com/larsborgwardt/timereal/blob/v0.9.6/betrieb/README.md). Für eine vorhandene Installation verwende den Updateweg.
 
 ## Updates
 
@@ -88,18 +88,20 @@ Die Oberfläche zeigt die installierte Version und weist auf neue stabile Releas
 
 **Einmaliger Umstieg:** Ein älterer Container benötigt zunächst das folgende Konsolenupdate, um den getrennten Betriebsdienst einzurichten.
 
-Als root auf Version **0.9.5** aktualisieren:
+Als root auf Version **0.9.6** aktualisieren:
 
 ```bash
 git -C /opt/timereal fetch --tags origin &&
-git -C /opt/timereal show v0.9.5:betrieb/update.sh > /root/timereal-update.sh &&
-bash /root/timereal-update.sh --check v0.9.5 &&
-bash /root/timereal-update.sh v0.9.5
+git -C /opt/timereal show v0.9.6:betrieb/update.sh > /root/timereal-update.sh &&
+bash /root/timereal-update.sh --check v0.9.6 &&
+bash /root/timereal-update.sh v0.9.6
 ```
+
+Ab einer installierten **0.9.6** sind Release-Tags signiert. Vor einem Konsolenupdate die Signatur mit dem Prüfer der installierten Version bestätigen: `/opt/timereal-node/bin/node /opt/timereal-betrieb-current/verwaltung/tag-pruefen.mjs vX.Y.Z`. Das Update über **Verwaltung → Updates** prüft die Signatur selbst.
 
 Der Prüfmodus kontrolliert den Ausgangsstand. Das Update baut ein getrenntes Release und erstellt vor einer Datenbankänderung eine geprüfte Sicherung. Schlägt der neue Anwendungsstart fehl, versucht der Updater den vorherigen Anwendungsstand wieder zu starten. Eine alte Datenbanksicherung wird dabei nicht automatisch zurückgespielt.
 
-[Release und Änderungsnotizen](https://github.com/larsborgwardt/timereal/releases/latest) · [Updatevertrag und Wiederherstellung](https://github.com/larsborgwardt/timereal/blob/v0.9.5/betrieb/README.md)
+[Release und Änderungsnotizen](https://github.com/larsborgwardt/timereal/releases/latest) · [Updatevertrag und Wiederherstellung](https://github.com/larsborgwardt/timereal/blob/v0.9.6/betrieb/README.md)
 
 ## Eigene Domain
 
@@ -109,7 +111,7 @@ Der vorgeschaltete Proxy leitet auf **`https://CONTAINER_IP:443`** weiter und ü
 
 Nach dem Speichern ist Timereal **zusätzlich** über die Domain erreichbar; die Anmeldung über die Container-IP im lokalen Netz bleibt möglich. Ab **0.9.5** gibt es keine Frist und keine automatische Rücknahme mehr (bis 0.9.4: drei Minuten). Nicht eingerichtete Hostnamen beantwortet Timereal mit dem Fehler 421 statt mit einer leeren Seite; HTTP/3 wird nicht angekündigt. Unterstützt wird die vom Installer erzeugte interne HTTPS-Vorlage mit IPv4-Adresse; eigene Caddy-Konfigurationen werden nicht überschrieben. Nach dem Update von 0.9.4 oder älter die Domain einmal erneut speichern, damit die neue HTTPS-Vorlage aktiv wird. Am vorgeschalteten Proxy keinen Zwischenspeicher für Seitenbestandteile einschalten (Nginx Proxy Manager: „Cache Assets“ aus). Prüfe die öffentliche Domain auch von außerhalb deines lokalen Netzes.
 
-[Reverse Proxy, Konsolenweg und direkter HTTPS-Betrieb](https://github.com/larsborgwardt/timereal/blob/v0.9.5/betrieb/README.md)
+[Reverse Proxy, Konsolenweg und direkter HTTPS-Betrieb](https://github.com/larsborgwardt/timereal/blob/v0.9.6/betrieb/README.md)
 
 ## Einen Arbeitstag ausprobieren
 
@@ -131,24 +133,24 @@ Unter **Nachweise** Zeitraum und Suche wählen, **Übernahme** oder **Historie**
 
 ## Dokumentation
 
-Die folgenden Links zeigen den Stand des Releases **0.9.5**:
+Die folgenden Links zeigen den Stand des Releases **0.9.6**:
 
 | Thema | Einstieg |
 |---|---|
-| Installation, HTTPS, SMTP, Sicherung und Updates | [Betriebsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.9.5/betrieb/README.md) |
-| Versionen und Änderungen | [Changelog](https://github.com/larsborgwardt/timereal/blob/v0.9.5/CHANGELOG.md) |
-| Architektur und Kundenwechsel | [Architektur](https://github.com/larsborgwardt/timereal/blob/v0.9.5/ARCHITEKTUR.md) |
-| Datenbank | [Datenmodell](https://github.com/larsborgwardt/timereal/blob/v0.9.5/DATENMODELL.md) |
-| Audit-Ereignisse und Export | [Audit-Vertrag](https://github.com/larsborgwardt/timereal/blob/v0.9.5/AUDIT.md) |
-| Browsererweiterung | [Chrome/Edge einrichten](https://github.com/larsborgwardt/timereal/blob/v0.9.5/erweiterung/README.md) |
-| Betrieb mit mehreren Nutzern | [Kapazitätsplanung](https://github.com/larsborgwardt/timereal/blob/v0.9.5/KAPAZITAET.md) |
+| Installation, HTTPS, SMTP, Sicherung und Updates | [Betriebsanleitung](https://github.com/larsborgwardt/timereal/blob/v0.9.6/betrieb/README.md) |
+| Versionen und Änderungen | [Changelog](https://github.com/larsborgwardt/timereal/blob/v0.9.6/CHANGELOG.md) |
+| Architektur und Kundenwechsel | [Architektur](https://github.com/larsborgwardt/timereal/blob/v0.9.6/ARCHITEKTUR.md) |
+| Datenbank | [Datenmodell](https://github.com/larsborgwardt/timereal/blob/v0.9.6/DATENMODELL.md) |
+| Audit-Ereignisse und Export | [Audit-Vertrag](https://github.com/larsborgwardt/timereal/blob/v0.9.6/AUDIT.md) |
+| Browsererweiterung | [Chrome/Edge einrichten](https://github.com/larsborgwardt/timereal/blob/v0.9.6/erweiterung/README.md) |
+| Betrieb mit mehreren Nutzern | [Kapazitätsplanung](https://github.com/larsborgwardt/timereal/blob/v0.9.6/KAPAZITAET.md) |
 
 ## Entwicklung und Mitmachen
 
 Für einen reproduzierbaren Einstieg das Release auschecken; laufende Änderungen sind in den [Pull Requests](https://github.com/larsborgwardt/timereal/pulls) sichtbar. Benötigt werden **Node.js 24** und **Docker** für die isolierte PostgreSQL-Testinstanz.
 
 ```bash
-git clone --branch v0.9.5 https://github.com/larsborgwardt/timereal.git
+git clone --branch v0.9.6 https://github.com/larsborgwardt/timereal.git
 cd timereal
 npm ci
 npm run build
