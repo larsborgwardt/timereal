@@ -30,6 +30,7 @@ import {
 } from "./korrektur.js";
 import { historie, bestaetigen } from "./nachweise.js";
 import { nachweisExportRouten } from "./nachweis-export.js";
+import { anmeldeDrossel, type AnmeldeGrenzen } from "./anmeldedrossel.js";
 
 const zielSchema = objekt(
   {
@@ -62,6 +63,7 @@ export function createApp(
     updateCheck?: (force?: boolean) => Promise<UpdateStatus>;
     betriebSocket?: string;
     mfaKey?: Buffer;
+    anmeldeGrenzen?: Partial<AnmeldeGrenzen>;
   },
 ) {
   const app = Fastify({
@@ -71,7 +73,7 @@ export function createApp(
       hop === 0 && ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(address),
     ajv: { customOptions: { coerceTypes: false, removeAdditional: false } },
   });
-  const loginversuche = new Map<string, { ab: number; n: number }>();
+  const drossel = anmeldeDrossel(options.anmeldeGrenzen);
   const cookie = (value: string, ttl: number) =>
     "timereal=" +
     value +
@@ -237,18 +239,11 @@ export function createApp(
     async (req, reply) => {
       if (req.headers.authorization)
         throw new Fehler(403, "Webanmeldung erforderlich.");
-      const now = Date.now();
-      for (const [k, v] of loginversuche)
-        if (v.ab <= now) loginversuche.delete(k);
-      const key = req.ip + "|" + req.body.login.toLowerCase();
-      const versuch = loginversuche.get(key) ?? { ab: now + 600000, n: 0 };
-      if (versuch.n >= 12 || loginversuche.size >= 2048)
+      if (!drossel.versuch(req.ip, req.body.login))
         throw new Fehler(
           429,
           "Zu viele Versuche. Bitte später erneut versuchen.",
         );
-      versuch.n++;
-      loginversuche.set(key, versuch);
       const {
         rows: [konto],
       } = await pool.query("select * from login_suchen($1)", [req.body.login]);
@@ -275,7 +270,7 @@ export function createApp(
           throw new Fehler(401, "Anmeldung fehlgeschlagen.");
         return issueSession(db, konto.id, "web", konto.hash);
       });
-      loginversuche.delete(key);
+      drossel.erfolg(req.ip, req.body.login);
       if (token === null)
         return reply
           .header("Set-Cookie", mfaCookie(challenge, options.secure))

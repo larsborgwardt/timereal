@@ -1,5 +1,9 @@
 # Änderungen
 
+## Unveröffentlicht
+
+- Anmeldung: Viele Fehlversuche eines Absenders sperren nicht mehr die Anmeldung aller. Das Kontingent gilt je Absender; ein voller Zählerspeicher verdrängt den ältesten Eintrag, statt jede weitere Anmeldung abzuweisen.
+
 ## 0.9.4 — 20. November 2026
 
 - Gitleaks prüft die Git-Historie auf eingecheckte Zugangsdaten. Der automatische Lastprofil-Job entfällt; Lastmessungen bleiben manuell möglich.
