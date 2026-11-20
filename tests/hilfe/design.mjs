@@ -19,13 +19,27 @@ export async function pruefeAnsicht(
           (document.documentElement.style.fontSize = `${16 * scale}px`),
         scale,
       );
+      // Material animiert Beschriftungen beim Öffnen und Umbrechen; gemessen
+      // und aufgenommen wird der Endzustand, nicht ein Zwischenbild.
+      await page.evaluate(() =>
+        Promise.all(
+          document
+            .getAnimations()
+            .filter((a) =>
+              Number.isFinite(a.effect?.getComputedTiming().endTime),
+            )
+            .map((a) => a.finished.catch(() => {})),
+        ),
+      );
       const result = await page.evaluate(() => {
         const root = document.querySelector("dialog[open]") ?? document;
         const shown = (el) =>
           el.getClientRects().length &&
           getComputedStyle(el).visibility !== "hidden";
         const controls = [
-          ...root.querySelectorAll("button,input,select,textarea,a[href]"),
+          ...root.querySelectorAll(
+            "button,md-filled-button,md-outlined-button,md-text-button,input,select,textarea,md-outlined-text-field,md-outlined-select,a[href]",
+          ),
         ].filter(shown);
         const label = (el) =>
           el.id ||
@@ -70,16 +84,23 @@ export async function pruefeAnsicht(
         const fieldsWithoutLabel = controls
           .filter(
             (el) =>
-              el.matches("input,select,textarea") &&
-              !el.labels?.length &&
-              !el.getAttribute("aria-label") &&
-              !el.getAttribute("aria-labelledby"),
+              (el.matches("input,select,textarea") &&
+                !el.labels?.length &&
+                !el.getAttribute("aria-label") &&
+                !el.getAttribute("aria-labelledby")) ||
+              // Material-Felder tragen ihre Beschriftung als label-Eigenschaft.
+              (el.matches("md-outlined-text-field,md-outlined-select") &&
+                !el.label?.trim() &&
+                !el.getAttribute("aria-label")),
           )
           .map(label);
         // Aktionsbuttons brauchen neben ihrer Trefferfläche auch freien Abstand.
         // Navigationsregister können bewusst unmittelbar aneinander anschließen.
         const actions = controls.filter(
-          (el) => el.matches("button") && !el.closest("nav,.register"),
+          (el) =>
+            el.matches(
+              "button,md-filled-button,md-outlined-button,md-text-button",
+            ) && !el.closest("nav,.register"),
         );
         const crowdedActions = [];
         for (let i = 0; i < actions.length; i++) {

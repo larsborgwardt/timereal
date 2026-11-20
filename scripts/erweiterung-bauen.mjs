@@ -43,7 +43,13 @@ if (target === "edge-store") {
 }
 await rm(ziel, { recursive: true, force: true });
 await mkdir(ziel, { recursive: true });
-await cp(resolve(root, "web"), ziel, { recursive: true });
+// web/material/ enthält nur die Quellen des Material-Bündels; die Erweiterung
+// lädt wie die Web-App das erzeugte web/material.js.
+const buendelQuellen = resolve(root, "web/material");
+await cp(resolve(root, "web"), ziel, {
+  recursive: true,
+  filter: (quelle) => quelle !== buendelQuellen,
+});
 await cp(resolve(root, "erweiterung"), ziel, { recursive: true });
 await writeFile(
   resolve(ziel, "manifest.json"),

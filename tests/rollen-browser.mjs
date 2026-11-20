@@ -5,6 +5,7 @@ import { randomBytes } from "node:crypto";
 import { createApp } from "../dist/app.js";
 import { passwordHash } from "../dist/session.js";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
+import { waehle, wertVon } from "./hilfe/material.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
 });
@@ -54,15 +55,25 @@ try {
     .waitFor();
   const row = page.locator("#kontoliste article").filter({ hasText: berater });
   const own = page.locator("#kontoliste article").filter({ hasText: admin });
-  assert.equal(await own.locator("button,select").count(), 0);
-  await row.getByLabel("Rolle").selectOption("betrieb");
+  assert.equal(
+    await own
+      .locator(
+        "button,select,md-filled-button,md-outlined-button,md-text-button",
+      )
+      .count(),
+    0,
+  );
+  await waehle(row.getByRole("combobox", { name: "Rolle" }), "betrieb");
   // Reguläre Hintergrundaktualisierung darf den Entwurf nicht überschreiben.
   const nextRefresh = page.waitForResponse(
     (r) => r.url().endsWith("/verwaltung/konten"),
     { timeout: 15000 },
   );
   await nextRefresh;
-  assert.equal(await row.getByLabel("Rolle").inputValue(), "betrieb");
+  assert.equal(
+    await wertVon(row.getByRole("combobox", { name: "Rolle" })),
+    "betrieb",
+  );
   assert.deepEqual(await pruefeAnsicht(page, "rollen-entwurf"), []);
   await row
     .getByRole("button", { name: "Rolle speichern", exact: true })
@@ -77,11 +88,21 @@ try {
   await page.getByRole("button", { name: "Heute", exact: true }).click();
   await page.getByRole("button", { name: "Verwaltung", exact: true }).click();
   await row.getByText("Berater · Aktiv", { exact: true }).waitFor();
-  assert.equal(await row.getByLabel("Rolle").inputValue(), "berater");
+  assert.equal(
+    await wertVon(row.getByRole("combobox", { name: "Rolle" })),
+    "berater",
+  );
   // Rollenauswahl per Tastatur, Speichern und anschließende Anmeldung als Betrieb.
-  await row.getByLabel("Rolle").focus();
+  // Material-Auswahl: Enter öffnet, Tippen springt zur Option, Enter wählt.
+  const rolle = row.getByRole("combobox", { name: "Rolle" });
+  await rolle.focus();
+  await page.keyboard.press("Enter");
   await page.keyboard.press("b");
-  await row.getByLabel("Rolle").selectOption("betrieb");
+  await page.keyboard.press("Enter");
+  await page
+    .locator('md-select-option[value="betrieb"]:visible')
+    .waitFor({ state: "hidden" });
+  assert.equal(await wertVon(rolle), "betrieb");
   await row
     .getByRole("button", { name: "Rolle speichern", exact: true })
     .click();

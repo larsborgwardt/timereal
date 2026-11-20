@@ -6,6 +6,7 @@ import pg from "pg";
 import { createApp } from "../dist/app.js";
 import { passwordHash } from "../dist/session.js";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
+import { waehle } from "./hilfe/material.mjs";
 const db = new pg.Client({ connectionString: process.env.TEST_DATABASE_URL });
 await db.connect();
 const suffix = randomBytes(6).toString("hex"),
@@ -43,7 +44,7 @@ try {
   await page.getByRole("heading", { name: "Heute", exact: true }).waitFor();
   await page.getByRole("button", { name: "Verwaltung", exact: true }).click();
   const row = page.locator("#kontoliste article").filter({ hasText: ziel });
-  await row.getByLabel("Rolle").selectOption("betrieb");
+  await waehle(row.getByRole("combobox", { name: "Rolle" }), "betrieb");
   await row
     .getByRole("button", { name: "Rolle speichern", exact: true })
     .click();

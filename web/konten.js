@@ -33,13 +33,13 @@ export function kontenOberflaeche({
     action +
     "</div></article>";
   const knopf = (text, action, id) =>
-    '<button type="button" class="sek" data-konto="' +
+    '<md-outlined-button type="button" data-konto="' +
     action +
     '" data-id="' +
     esc(id) +
     '">' +
     text +
-    "</button>";
+    "</md-outlined-button>";
   function aktualisieren(neu) {
     if (profil?.id !== neu.id) rollenentwuerfe.clear();
     profil = neu;
@@ -60,9 +60,10 @@ export function kontenOberflaeche({
       $("#mailhinweis").textContent = mail.konfiguriert
         ? "Einladungen werden per E-Mail versendet."
         : "Mailversand noch nicht eingerichtet. Unter Verwaltung → Mailversand einrichten.";
-      $("#einladen button").disabled = !mail.konfiguriert;
+      $("#einladen md-filled-button").disabled = !mail.konfiguriert;
       // Die fachliche Sperre darf am Ende einer Bedienaktion nicht aufgehoben werden.
-      if (!mail.konfiguriert) delete $("#einladen button").dataset.wartet;
+      if (!mail.konfiguriert)
+        delete $("#einladen md-filled-button").dataset.wartet;
       $("#kontoliste").innerHTML = konten
         .map((k) => {
           const eigenes = String(k.id) === String(profil.id);
@@ -78,7 +79,7 @@ export function kontenOberflaeche({
             "</span></div>" +
             (eigenes
               ? ""
-              : '<label>Rolle<select id="rolle-' +
+              : '<md-outlined-select label="Rolle" id="rolle-' +
                 esc(k.id) +
                 '" data-rolle="' +
                 esc(k.id) +
@@ -86,23 +87,23 @@ export function kontenOberflaeche({
                 Object.entries(rollen)
                   .map(
                     ([id, name]) =>
-                      '<option value="' +
+                      '<md-select-option value="' +
                       id +
                       '"' +
                       (id === value ? " selected" : "") +
-                      ">" +
+                      '><div slot="headline">' +
                       name +
-                      "</option>",
+                      "</div></md-select-option>",
                   )
                   .join("") +
-                "</select></label>") +
+                "</md-outlined-select>") +
             "</div>" +
             (eigenes
               ? ""
               : '<div class="aktionen">' +
-                '<button type="button" data-konto="rolle" data-id="' +
+                '<md-filled-button type="button" data-konto="rolle" data-id="' +
                 esc(k.id) +
-                '">Rolle speichern</button>' +
+                '">Rolle speichern</md-filled-button>' +
                 knopf(
                   k.aktiv ? "Sperren" : "Entsperren",
                   k.aktiv ? "sperren" : "entsperren",

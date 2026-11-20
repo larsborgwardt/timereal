@@ -6,6 +6,7 @@ import { mkdir } from "node:fs/promises";
 import { createApp } from "../dist/app.js";
 import { passwordHash } from "../dist/session.js";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
+import { waehle, wertVon } from "./hilfe/material.mjs";
 const owner = new pg.Client({
   connectionString: process.env.TEST_DATABASE_URL,
 });
@@ -67,8 +68,8 @@ sunday.setUTCDate(sunday.getUTCDate() + 6);
 const history = async () => {
   await btn("Nachweise").click();
   const f = page.locator("#filter");
-  await f.locator("[name=von]").fill(day);
-  await f.locator("[name=bis]").fill(day);
+  await f.locator("input[name=von]").fill(day);
+  await f.locator("input[name=bis]").fill(day);
   await f.getByRole("button").click();
   await btn("Historie").click();
 };
@@ -91,9 +92,9 @@ try {
   await page.reload();
   await btn("Zeit nachtragen").first().click();
   const dlg = page.locator("#zeitfenster");
-  await dlg.locator("[name=beginn]").fill(day + "T09:00");
-  await dlg.locator("[name=ende]").fill(day + "T10:00");
-  await dlg.locator("[name=auswahl]").selectOption("ziel:" + a.id);
+  await dlg.locator("input[name=beginn]").fill(day + "T09:00");
+  await dlg.locator("input[name=ende]").fill(day + "T10:00");
+  await waehle(dlg.locator("md-outlined-select[name=auswahl]"), "ziel:" + a.id);
   await dlg.getByLabel("Leistungstext").fill("Customizing geprüft");
   await dlg.getByRole("button", { name: "Übernehmen", exact: true }).click();
   await dlg.waitFor({ state: "hidden" });
@@ -104,9 +105,9 @@ try {
     .click();
   await first.getByText("Übertragen", { exact: true }).waitFor();
   await first.getByRole("button", { name: "Unterbrechung einfügen" }).click();
-  await dlg.locator("[name=beginn]").fill(day + "T09:20");
-  await dlg.locator("[name=ende]").fill(day + "T09:32");
-  await dlg.locator("[name=auswahl]").selectOption("ziel:" + b.id);
+  await dlg.locator("input[name=beginn]").fill(day + "T09:20");
+  await dlg.locator("input[name=ende]").fill(day + "T09:32");
+  await waehle(dlg.locator("md-outlined-select[name=auswahl]"), "ziel:" + b.id);
   await dlg.getByLabel("Leistungstext").fill("Telefonische Abstimmung");
   assert.deepEqual(
     await dlg.locator("#zeitvorschau .ziel span:last-child").allTextContents(),
@@ -137,7 +138,7 @@ try {
   await compare.getByRole("button", { name: "Schließen" }).click();
   await first.getByRole("button", { name: "Korrigieren", exact: true }).click();
   assert.deepEqual(await pruefeAnsicht(page, "korrektur"), []);
-  await dlg.locator("[name=ende]").fill(day + "T09:22");
+  await dlg.locator("input[name=ende]").fill(day + "T09:22");
   await dlg.getByRole("button", { name: "Übernehmen", exact: true }).click();
   await dlg.waitFor({ state: "hidden" });
   assert.deepEqual(
@@ -175,8 +176,11 @@ try {
   assert.deepEqual(await pruefeAnsicht(page, "woche-gefuellt"), []);
   await btn("Einstellungen").click();
   const settings = page.locator("#grundeinstellungen");
-  await settings.locator("[name=nachkommastellen]").selectOption("3");
-  await settings.locator("[name=pruefminuten]").fill("360");
+  await waehle(
+    settings.locator("md-outlined-select[name=nachkommastellen]"),
+    "3",
+  );
+  await settings.locator("input[name=pruefminuten]").fill("360");
   await settings.getByRole("button").click();
   assert.equal((await api("/profil")).nachkommastellen, 3);
   await btn("Heute").click();
@@ -215,8 +219,8 @@ try {
   await btn("Stoppen").click();
   // Filter dürfen weder heutige Zeiten verbergen noch nach Abmelden sensible Einträge zurücklassen.
   await history();
-  await page.locator("#filter [name=suche]").fill("kein-treffer");
-  await page.locator("#filter button").click();
+  await page.locator("#filter input[name=suche]").fill("kein-treffer");
+  await page.locator("#filter md-filled-button").click();
   await btn("Heute").click();
   await page.waitForFunction(() => !document.querySelector("#sofort").disabled);
   if (!(await page.locator("#tageseintraege article").count()))
@@ -226,14 +230,16 @@ try {
   await shot("heute-mobil");
   // In der doppelten Herbststunde muss ein neuer Zeitpunkt bewusst ausgewählt werden.
   await btn("Zeit nachtragen").first().click();
-  await dlg.locator("[name=beginn]").fill("2026-10-25T02:15");
-  if ((await dlg.locator("[name=beginnOffset]").inputValue()) !== "")
+  await dlg.locator("input[name=beginn]").fill("2026-10-25T02:15");
+  if (
+    (await wertVon(dlg.locator("md-outlined-select[name=beginnOffset]"))) !== ""
+  )
     befunde.push("Doppelte Stunde ohne bewusste Auswahl");
-  await dlg
-    .locator("[name=beginnOffset]")
-    .selectOption({ label: "2. Vorkommen · 02:15 GMT+1" });
+  await waehle(dlg.locator("md-outlined-select[name=beginnOffset]"), {
+    label: "2. Vorkommen · 02:15 GMT+1",
+  });
   assert.match(
-    await dlg.locator("[name=beginnOffset]").inputValue(),
+    await wertVon(dlg.locator("md-outlined-select[name=beginnOffset]")),
     /01:15:00/,
   );
   await dlg.getByRole("button", { name: "Abbrechen" }).click();

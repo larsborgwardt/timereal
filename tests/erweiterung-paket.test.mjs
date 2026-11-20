@@ -77,11 +77,18 @@ test("Edge-Upload-ZIP entfernt Entwicklungsfelder und enthält das Manifest dire
       "app.js",
       "transport.js",
       "app.css",
+      "material.js",
     ])
       assert.ok(files.includes(path), path + " fehlt im Upload-Paket");
     assert.equal(
       files.some((f) => /(^|\/)(\.env|node_modules|dist|\.git)(\/|$)/.test(f)),
       false,
+    );
+    // Die Quellen des Material-Bündels gehören nicht ins Paket; es lädt nur
+    // das erzeugte material.js.
+    assert.deepEqual(
+      files.filter((f) => f.startsWith("material/")),
+      [],
     );
     const hash = createHash("sha256")
       .update(await readFile(zip))

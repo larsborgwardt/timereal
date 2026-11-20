@@ -20,6 +20,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Material-Bündel entspricht den Quellen
+        run: node scripts/oberflaeche-buendeln.mjs --check
       - name: Formatierung des Programmcodes prüfen
         run: npx prettier --check src web betrieb tests scripts erweiterung .github
       - name: Bekannte Schwachstellen in Abhängigkeiten prüfen

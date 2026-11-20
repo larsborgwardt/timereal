@@ -1,4 +1,31 @@
 :root {
+  /* Material-3-Farbschema aus dem Timereal-Grün (Entwurf 19, D-RELEASE-017). */
+  --md-sys-color-primary: #006a60;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #9ef2e4;
+  --md-sys-color-on-primary-container: #00201c;
+  --md-sys-color-secondary: #4a635f;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #cce8e2;
+  --md-sys-color-on-secondary-container: #05201c;
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-surface: #f4fbf8;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #eef5f2;
+  --md-sys-color-surface-container: #e9efec;
+  --md-sys-color-surface-container-high: #e3eae7;
+  --md-sys-color-surface-container-highest: #dde4e1;
+  --md-sys-color-on-surface: #161d1c;
+  --md-sys-color-on-surface-variant: #3f4947;
+  --md-sys-color-outline: #6f7976;
+  --md-sys-color-outline-variant: #bec9c5;
+  --md-ref-typeface-brand: Inter, system-ui, sans-serif;
+  --md-ref-typeface-plain: Inter, system-ui, sans-serif;
+  /* Trefferfläche wie bisher mindestens 44 Pixel. */
+  --md-filled-button-container-height: 44px;
+  --md-outlined-button-container-height: 44px;
+  --md-text-button-container-height: 44px;
   font-family: Inter, system-ui, sans-serif;
   color: #102542;
   background: #f8fafb;
@@ -107,7 +134,7 @@ dialog {
 .logkarte .filter {
   gap: 16px;
 }
-.logkarte .filter label:first-child {
+.logkarte .filter > :first-child {
   flex: 1.5;
 }
 .logaktionen {
@@ -201,14 +228,15 @@ dialog {
   .logkarte {
     padding: 16px;
   }
-  .logkarte .filter label {
+  .logkarte .filter :is(label, md-outlined-text-field, md-outlined-select) {
     flex: 1 1 100%;
     min-width: 0;
   }
   .logaktionen {
     gap: 12px;
   }
-  .logaktionen button {
+  .logaktionen
+    :is(button, md-filled-button, md-outlined-button, md-text-button) {
     flex: 1 1 100%;
   }
   .konsole {
@@ -263,6 +291,7 @@ dialog {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 16px;
+  align-items: start;
 }
 .mailseite {
   display: grid;
@@ -346,6 +375,18 @@ label {
   font-weight: 600;
   margin: 12px 0;
 }
+/* Material-Felder tragen ihre Beschriftung selbst und stehen wie bisher die
+   beschrifteten Felder untereinander in voller Breite. */
+md-outlined-text-field,
+md-outlined-select {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  margin: 12px 0;
+}
+input[type="checkbox"] {
+  accent-color: var(--md-sys-color-primary);
+}
 .check input {
   width: auto;
   min-height: auto;
@@ -366,9 +407,20 @@ label {
   min-width: 0;
   max-width: 100%;
 }
-button {
+button,
+md-filled-button,
+md-outlined-button,
+md-text-button {
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+/* Material setzt text-wrap: nowrap; lange Beschriftungen müssen bei schmalen
+   Ansichten und vergrößerter Schrift umbrechen statt überzulaufen. */
+md-filled-button,
+md-outlined-button,
+md-text-button {
+  text-wrap: wrap;
+  text-overflow: clip;
 }
 .suche {
   font-size: 0.9rem;
@@ -402,7 +454,7 @@ small,
   align-items: end;
   flex-wrap: wrap;
 }
-.filter label {
+.filter :is(label, md-outlined-text-field, md-outlined-select) {
   flex: 1;
   min-width: 145px;
   margin: 0;
@@ -518,13 +570,13 @@ dialog .aktionen {
   .karte {
     padding: 16px;
   }
-  .ziel button {
+  .ziel :is(button, md-filled-button, md-outlined-button, md-text-button) {
     margin-left: 0;
   }
   .zeile {
     gap: 8px;
   }
-  .filter label {
+  .filter :is(label, md-outlined-text-field, md-outlined-select) {
     min-width: 110px;
   }
   .text {
@@ -712,7 +764,7 @@ h2:focus-visible {
   gap: 24px;
   align-items: start;
 }
-.konto label {
+.konto :is(label, md-outlined-text-field, md-outlined-select) {
   width: 200px;
   max-width: 100%;
 }
@@ -767,7 +819,8 @@ h2:focus-visible {
   color: #4b6475;
 }
 @media (max-width: 760px) {
-  .exportaktionen button {
+  .exportaktionen
+    :is(button, md-filled-button, md-outlined-button, md-text-button) {
     width: 100%;
   }
 }

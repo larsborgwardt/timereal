@@ -11,27 +11,27 @@ export function kontoSicherheit({ $, request, aktualisieren, istErweiterung }) {
       <p>Dein Konto verlangt bei einer neuen Anmeldung zusätzlich einen Authenticator- oder Wiederherstellungscode.</p>
       <h3>Wiederherstellungscodes</h3><p id="mfa-anzahl"></p>
       <p>Neue Codes ersetzen deine bisherigen Codes. Du kannst sie anschließend einmal herunterladen oder kopieren.</p>
-      <div class="aktionen"><button id="mfa-neue-codes">Neue Codes erstellen</button><button class="sek" id="mfa-ausschalten">Zwei-Faktor-Anmeldung ausschalten</button><button class="sek" data-mfa-zurueck>Zurück zum Konto</button></div>
+      <div class="aktionen"><md-filled-button id="mfa-neue-codes">Neue Codes erstellen</md-filled-button><md-outlined-button id="mfa-ausschalten">Zwei-Faktor-Anmeldung ausschalten</md-outlined-button><md-outlined-button data-mfa-zurueck>Zurück zum Konto</md-outlined-button></div>
     </section>
     <form class="karte" id="mfa-passwort-form" hidden>
       <h2 id="mfa-passwort-titel">Passwort bestätigen</h2><p id="mfa-passwort-hilfe">Bestätige dein Passwort, um die Einrichtung zu beginnen.</p>
-      <label>Aktuelles Passwort<input id="mfa-passwort" type="password" required maxlength="512" autocomplete="current-password"></label>
-      <div id="mfa-zweiter-nachweis" hidden><label>Bestätigen mit<select id="mfa-art"><option value="totp">Authenticator</option><option value="recovery">Wiederherstellungscode</option></select></label>
-      <label><span id="mfa-bestaetigung-label">Sechsstelliger Code</span><input id="mfa-bestaetigung" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"></label></div>
-      <div class="aktionen"><button id="mfa-passwort-weiter">Weiter</button><button type="button" class="sek" data-mfa-zurueck>Abbrechen</button></div>
+      <md-outlined-text-field label="Aktuelles Passwort" id="mfa-passwort" type="password" required maxlength="512" autocomplete="current-password"></md-outlined-text-field>
+      <div id="mfa-zweiter-nachweis" hidden><md-outlined-select label="Bestätigen mit" id="mfa-art"><md-select-option value="totp"><div slot="headline">Authenticator</div></md-select-option><md-select-option value="recovery"><div slot="headline">Wiederherstellungscode</div></md-select-option></md-outlined-select>
+      <md-outlined-text-field label="Sechsstelliger Code" id="mfa-bestaetigung" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"></md-outlined-text-field></div>
+      <div class="aktionen"><md-filled-button id="mfa-passwort-weiter">Weiter</md-filled-button><md-outlined-button type="button" data-mfa-zurueck>Abbrechen</md-outlined-button></div>
     </form>
     <form class="karte" id="mfa-einrichten" hidden>
       <h2>Authenticator verbinden</h2><p>Scanne den QR-Code mit deiner Authenticator-App. Auf demselben Gerät kannst du stattdessen den Einrichtungsschlüssel kopieren.</p>
       <img id="mfa-qr" width="256" height="256" alt="Persönlicher QR-Code für deine Authenticator-App">
-      <button type="button" class="sek" id="mfa-schluessel-kopieren">Einrichtungsschlüssel kopieren</button>
-      <label>Sechsstelliger Code<input id="mfa-code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"></label>
+      <md-outlined-button type="button" id="mfa-schluessel-kopieren">Einrichtungsschlüssel kopieren</md-outlined-button>
+      <md-outlined-text-field label="Sechsstelliger Code" id="mfa-code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"></md-outlined-text-field>
       <p class="neben">Gib den aktuellen Code aus deiner Authenticator-App ein.</p>
-      <div class="aktionen"><button>Code prüfen und aktivieren</button><button type="button" class="sek" id="mfa-abbrechen">Abbrechen</button></div>
+      <div class="aktionen"><md-filled-button>Code prüfen und aktivieren</md-filled-button><md-outlined-button type="button" id="mfa-abbrechen">Abbrechen</md-outlined-button></div>
     </form>
     <section class="karte" id="mfa-codes" hidden>
       <h2>Wiederherstellungscodes sichern</h2><p>Bewahre diese Codes außerhalb von Timereal sicher auf. Jeder Code kann einmal verwendet werden. Diese Ansicht wird nur einmal angezeigt.</p>
-      <p class="erfolg">Zwei-Faktor-Anmeldung ist eingeschaltet</p><pre id="mfa-code-liste"></pre><div class="aktionen"><button class="sek" id="mfa-codes-download">Codes herunterladen</button><button class="sek" id="mfa-codes-kopieren">Codes kopieren</button></div>
-      <label class="mfa-gesichert"><input id="mfa-gesichert" type="checkbox"> Ich habe die Codes sicher aufbewahrt.</label><button id="mfa-fertig" disabled>Fertig</button>
+      <p class="erfolg">Zwei-Faktor-Anmeldung ist eingeschaltet</p><pre id="mfa-code-liste"></pre><div class="aktionen"><md-outlined-button id="mfa-codes-download">Codes herunterladen</md-outlined-button><md-outlined-button id="mfa-codes-kopieren">Codes kopieren</md-outlined-button></div>
+      <label class="mfa-gesichert"><input id="mfa-gesichert" type="checkbox"> Ich habe die Codes sicher aufbewahrt.</label><md-filled-button id="mfa-fertig" disabled>Fertig</md-filled-button>
       <p class="neben">Andere Sitzungen wurden abgemeldet. Verbinde deine Browsererweiterung anschließend neu.</p>
     </section><p id="mfa-hinweis" role="status"></p>`;
   function zeige(id) {
@@ -69,7 +69,11 @@ export function kontoSicherheit({ $, request, aktualisieren, istErweiterung }) {
     if (busy) return;
     busy = true;
     $("#mfa-fehler").hidden = true;
-    const buttons = [...document.querySelectorAll("button:enabled")];
+    const buttons = [
+      ...document.querySelectorAll(
+        "button, md-filled-button, md-outlined-button, md-text-button",
+      ),
+    ].filter((b) => !b.disabled);
     buttons.forEach((b) => (b.disabled = true));
     try {
       await fn();
@@ -145,7 +149,7 @@ export function kontoSicherheit({ $, request, aktualisieren, istErweiterung }) {
     input.inputMode = recovery ? "text" : "numeric";
     input.maxLength = recovery ? 39 : 6;
     input.pattern = recovery ? "[A-Fa-f0-9-]{32,39}" : "[0-9]{6}";
-    $("#mfa-bestaetigung-label").textContent = recovery
+    $("#mfa-bestaetigung").label = recovery
       ? "Wiederherstellungscode"
       : "Sechsstelliger Code";
   };

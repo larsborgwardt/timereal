@@ -56,7 +56,7 @@ try {
     .waitFor();
   await neu(laptop, "Kunde A", "4711", "Speichern und starten");
   await laptop.getByRole("button", { name: "Leistungstext" }).click();
-  await laptop.locator("#notiz").fill("Konfiguration geprüft");
+  await laptop.locator("#notiz textarea").fill("Konfiguration geprüft");
   await laptop.getByRole("button", { name: "Speichern", exact: true }).click();
   await laptop.getByRole("dialog").waitFor({ state: "hidden" });
   const handy = await anmelden(390, 844);

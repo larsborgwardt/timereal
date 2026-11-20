@@ -147,9 +147,9 @@ try {
     () => button("Bearbeiten").click(),
     "zielpflegefenster",
   );
-  await page.locator("#suche").fill("nicht vorhanden");
+  await page.locator("#suche input").fill("nicht vorhanden");
   await audit("ziele-suche-leer");
-  await page.locator("#suche").fill("");
+  await page.locator("#suche input").fill("");
   await navigate("Woche");
   check(
     await page.evaluate(
@@ -260,18 +260,19 @@ try {
     (await api("/profil")).name === emailEntwurf,
     "Profilentwurf wird wirklich gespeichert",
   );
+  // Material-Schaltflächen fokussieren ihre innere Schaltfläche im Shadow DOM;
+  // document.activeElement zeigt nach außen nur das Hostelement.
+  const fokussiert = (el) => {
+    let aktiv = document.activeElement;
+    while (aktiv?.shadowRoot?.activeElement)
+      aktiv = aktiv.shadowRoot.activeElement;
+    return el === aktiv;
+  };
   await navigate("Heute");
   const pause = button("Pausieren");
-  for (
-    let n = 0;
-    n < 8 && !(await pause.evaluate((el) => el === document.activeElement));
-    n++
-  )
+  for (let n = 0; n < 8 && !(await pause.evaluate(fokussiert)); n++)
     await page.keyboard.press("Tab");
-  assert.ok(
-    await pause.evaluate((el) => el === document.activeElement),
-    "Pausieren per Tab erreicht",
-  );
+  assert.ok(await pause.evaluate(fokussiert), "Pausieren per Tab erreicht");
   const refreshedHistory = page.waitForResponse((r) =>
     r.url().includes("/api/v1/historie?"),
   );
@@ -284,11 +285,16 @@ try {
       ),
   );
   check(
-    await pause.evaluate((el) => el === document.activeElement),
+    await pause.evaluate(fokussiert),
     "Timeraktualisierung erhält den Tastaturfokus",
   );
   check(
-    await pause.evaluate((el) => getComputedStyle(el).outlineStyle !== "none"),
+    // Material zeigt den Tastaturfokus mit seinem Fokusring statt einer Umrandung.
+    await pause.evaluate(
+      (el) =>
+        getComputedStyle(el).outlineStyle !== "none" ||
+        el.getRootNode().querySelector("md-focus-ring")?.visible === true,
+    ),
     "Tastaturfokus bleibt sichtbar",
   );
   await page.context().setOffline(true);

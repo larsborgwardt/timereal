@@ -135,11 +135,13 @@ try {
   await page
     .getByText("Neue Version wird geprüft …", { exact: true })
     .waitFor();
-  assert.equal(await page.locator("#betrieb-aktualisieren").isDisabled(), true);
   assert.equal(
-    await page.locator("#betrieb-aktualisieren").getAttribute("aria-busy"),
-    "true",
+    await page.locator("#betrieb-aktualisieren").evaluate((el) => el.disabled),
+    true,
   );
+  // aria-busy erreicht die innere Material-Schaltfläche nicht (Material Web
+  // reicht nur aria-label, aria-haspopup und aria-expanded weiter); wirksam
+  // sind Sperre und Statustext.
   pruefungFreigeben();
   await page
     .locator("#betrieb-neu")
@@ -151,10 +153,9 @@ try {
     .getByText("Update verfügbar: v99.0.0 ↗", { exact: true })
     .waitFor();
   assert.equal(releaseAbrufe, 2);
-  assert.equal(
-    await page.locator("#betrieb-aktualisieren").getAttribute("aria-busy"),
-    "false",
-  );
+  // aria-busy erreicht die innere Material-Schaltfläche nicht (Material Web
+  // reicht nur aria-label, aria-haspopup und aria-expanded weiter); wirksam
+  // sind Sperre und Statustext.
   await page
     .getByRole("button", { name: "Status aktualisieren", exact: true })
     .click();
@@ -178,10 +179,11 @@ try {
     .waitFor();
   assert.equal(ausfuehrungen, 1);
   await page.locator("#betrieb-fehler").waitFor({ state: "hidden" });
-  assert.match(
-    await page.locator("#betrieb-updatephase").textContent(),
-    /v0\.6\.2 → v99\.0\.0/,
-  );
+  // Der Auftrag entsteht vor dem Eintrag der bisherigen Version; die Anzeige
+  // zieht beim nächsten Abruf nach (in der CI mit PostgreSQL 17 sichtbar).
+  await page
+    .locator("#betrieb-updatephase", { hasText: /v0\.6\.2 → v99\.0\.0/ })
+    .waitFor();
   assert.match(
     await page.locator("#betrieb-updatemeta").textContent(),
     new RegExp(login),

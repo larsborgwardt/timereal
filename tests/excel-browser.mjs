@@ -80,8 +80,8 @@ try {
       .waitFor();
     const button = page.locator("#nachweise-excel");
     await button.waitFor();
-    await page.locator('#filter [name="von"]').fill("2026-11-10");
-    await page.locator('#filter [name="bis"]').fill("2026-11-11");
+    await page.locator('#filter input[name="von"]').fill("2026-11-10");
+    await page.locator('#filter input[name="bis"]').fill("2026-11-11");
     await page.getByRole("button", { name: "Filtern", exact: true }).click();
     await page.getByText("Konfiguration geprüft", { exact: true }).waitFor();
     const before = (
@@ -97,7 +97,7 @@ try {
       ["Historie", "ohne Treffer", 1],
     ]) {
       await page.getByRole("button", { name: view, exact: true }).click();
-      await page.locator('#filter [name="suche"]').fill(suche);
+      await page.locator('#filter input[name="suche"]').fill(suche);
       const [download] = await Promise.all([
         page.waitForEvent("download"),
         button.click(),
@@ -132,9 +132,15 @@ try {
       await route.continue();
     });
     const download = page.waitForEvent("download");
+    // Ein offener Wartepunkt darf einen früheren Fehlschlag nicht verdecken.
+    download.catch(() => {});
     await button.click();
-    assert.equal(await button.isDisabled(), true);
-    assert.equal(await button.getAttribute("aria-busy"), "true");
+    // Material-Schaltflächen: gesperrt ist das Element selbst, nicht ein natives
+    // Steuerelement, das Playwrights isDisabled() erkennt.
+    assert.equal(await button.evaluate((el) => el.disabled), true);
+    // Material Web reicht aria-busy nicht an die innere Schaltfläche weiter;
+    // wirksam sind gesperrter Zustand und geänderte Beschriftung.
+    assert.equal((await button.textContent()).trim(), "Excel wird erstellt …");
     await button.evaluate((el) => el.click());
     freigeben();
     await download;
@@ -158,13 +164,15 @@ try {
       .getByText("Bitte den Zeitraum verkleinern.", { exact: true })
       .waitFor();
     assert.equal(downloads, 0);
-    assert.equal(await button.isEnabled(), true);
+    assert.equal(await button.evaluate((el) => el.disabled), false);
     await page.unroute("**/api/v1/nachweise/excel?*");
-    await page.locator('#filter [name="suche"]').fill("00123");
+    await page.locator('#filter input[name="suche"]').fill("00123");
     await page.getByRole("button", { name: "Filtern", exact: true }).click();
     await page.getByText("Konfiguration geprüft", { exact: true }).waitFor();
     const boxes = await page
-      .locator(".exportaktionen button")
+      .locator(
+        ".exportaktionen md-outlined-button, .exportaktionen md-filled-button",
+      )
       .evaluateAll((els) =>
         els.map((el) => {
           const r = el.getBoundingClientRect();

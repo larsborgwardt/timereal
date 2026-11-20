@@ -23,6 +23,7 @@
       href="/icons/timereal-180.png?v=1"
     />
     <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/material.js"></script>
     <script type="module" src="/app.js"></script>
     <script type="module" src="/version.js"></script>
   </head>
@@ -39,7 +40,7 @@
             Verwaltung
           </button>
         </nav>
-        <button id="logout" class="text" hidden>Abmelden</button>
+        <md-text-button id="logout" hidden>Abmelden</md-text-button>
       </div>
     </header>
     <main>
@@ -58,55 +59,60 @@
           Eine Antwort fehlt. Lade den aktuellen Stand und bestätige danach
           deinen Wechsel.
         </p>
-        <button id="verbindung-laden">Aktuellen Stand laden</button>
+        <md-filled-button id="verbindung-laden"
+          >Aktuellen Stand laden</md-filled-button
+        >
       </section>
       <section id="login" hidden>
         <h1>Anmelden</h1>
         <form id="anmelden" class="karte login">
-          <label
-            >Anmeldename<input
-              name="login"
-              required
-              autocomplete="username" /></label
-          ><label
-            >Passwort<input
-              type="password"
-              name="passwort"
-              required
-              autocomplete="current-password" /></label
-          ><button>Anmelden</button>
+          <md-outlined-text-field
+            label="Anmeldename"
+            name="login"
+            required
+            autocomplete="username"
+          ></md-outlined-text-field
+          ><md-outlined-text-field
+            label="Passwort"
+            type="password"
+            name="passwort"
+            required
+            autocomplete="current-password"
+          ></md-outlined-text-field
+          ><md-filled-button>Anmelden</md-filled-button>
         </form>
-        <button id="vergessen" class="text">Passwort vergessen?</button>
+        <md-text-button id="vergessen">Passwort vergessen?</md-text-button>
         <div id="faktor-anmeldung"></div>
       </section>
       <section id="heute" hidden>
         <div class="zeile">
           <h1>Heute</h1>
           <div class="aktionen">
-            <button id="sofort">Sofort starten</button
-            ><button id="intern" class="sek">Interne Zeit</button>
+            <md-filled-button id="sofort">Sofort starten</md-filled-button
+            ><md-outlined-button id="intern">Interne Zeit</md-outlined-button>
           </div>
         </div>
         <section class="karte" id="timer" aria-label="Timer"></section>
         <section class="karte">
           <div class="zeile">
             <h2>Buchungsziel wählen</h2>
-            <button id="neu">+ Neues Buchungsziel</button>
+            <md-filled-button id="neu">+ Neues Buchungsziel</md-filled-button>
           </div>
-          <label class="suche"
-            >Suchen<input
-              id="suche"
-              type="search"
-              placeholder="Kunde, Ticket oder Termin"
-          /></label>
+          <md-outlined-text-field
+            label="Suchen"
+            id="suche"
+            type="search"
+            placeholder="Kunde, Ticket oder Termin"
+            class="suche"
+          ></md-outlined-text-field>
           <div id="ziele"></div>
         </section>
         <section class="karte">
           <div class="zeile">
             <h2>Tagesverlauf</h2>
-            <button type="button" data-arbeit="nachtrag">
+            <md-filled-button type="button" data-arbeit="nachtrag">
               Zeit nachtragen
-            </button>
+            </md-filled-button>
           </div>
           <div id="tageseintraege"></div>
         </section>
@@ -119,9 +125,12 @@
         </p>
         <div class="karte">
           <div class="zeile">
-            <button id="woche-vorher" class="sek">← Vorherige Woche</button
+            <md-outlined-button id="woche-vorher"
+              >← Vorherige Woche</md-outlined-button
             ><strong id="wochentitel"></strong
-            ><button id="woche-nachher" class="sek">Nächste Woche →</button>
+            ><md-outlined-button id="woche-nachher"
+              >Nächste Woche →</md-outlined-button
+            >
           </div>
           <div class="kennzahlen">
             <div><span>Erfasst</span><strong id="wochensumme"></strong></div>
@@ -142,35 +151,51 @@
               <tbody id="wochenzeilen"></tbody>
             </table>
           </div>
-          <button id="wochennacharbeit">Offene Nacharbeiten</button>
+          <md-filled-button id="wochennacharbeit"
+            >Offene Nacharbeiten</md-filled-button
+          >
         </div>
       </section>
       <section id="nachweise" hidden>
         <h1>Stundennachweise</h1>
         <div class="register">
-          <button id="liste">Übernahme</button
-          ><button id="historie">Historie</button>
+          <md-filled-button id="liste">Übernahme</md-filled-button
+          ><md-filled-button id="historie">Historie</md-filled-button>
         </div>
         <form id="filter" class="karte filter">
-          <label>Von<input type="date" name="von" required /></label
-          ><label>Bis<input type="date" name="bis" required /></label
-          ><label
-            >Kunde oder Buchungsziel<input name="suche" type="search" /></label
-          ><button>Filtern</button>
+          <md-outlined-text-field
+            label="Von"
+            type="date"
+            name="von"
+            required
+          ></md-outlined-text-field
+          ><md-outlined-text-field
+            label="Bis"
+            type="date"
+            name="bis"
+            required
+          ></md-outlined-text-field
+          ><md-outlined-text-field
+            label="Kunde oder Buchungsziel"
+            name="suche"
+            type="search"
+          ></md-outlined-text-field
+          ><md-filled-button>Filtern</md-filled-button>
         </form>
         <div class="aktionen exportaktionen">
-          <button type="button" class="sek" id="filter-reset">
+          <md-outlined-button type="button" id="filter-reset">
             Filter zurücksetzen
-          </button>
-          <button type="button" data-arbeit="nachtrag">Zeit nachtragen</button>
-          <button
+          </md-outlined-button>
+          <md-filled-button type="button" data-arbeit="nachtrag"
+            >Zeit nachtragen</md-filled-button
+          >
+          <md-outlined-button
             type="button"
-            class="sek"
             id="nachweise-excel"
             aria-describedby="exporthilfe"
           >
             Als Excel exportieren
-          </button>
+          </md-outlined-button>
         </div>
         <p id="exporthilfe" class="exporthilfe">
           Exportiert die aktuelle Ansicht mit den gewählten Filtern. Der
@@ -226,14 +251,14 @@
             </aside>
           </div>
           <form id="einladen" class="karte filter">
-            <label
-              >E-Mail-Adresse<input
-                name="email"
-                type="email"
-                required
-                maxlength="250"
-            /></label>
-            <button>Berater einladen</button>
+            <md-outlined-text-field
+              label="E-Mail-Adresse"
+              name="email"
+              type="email"
+              required
+              maxlength="250"
+            ></md-outlined-text-field>
+            <md-filled-button>Berater einladen</md-filled-button>
             <p id="mailhinweis"></p>
           </form>
           <section class="karte">
@@ -254,83 +279,77 @@
             <form id="mail-einstellungen" autocomplete="off">
               <h3>Verbindung</h3>
               <div class="mailzeile">
-                <label
-                  >SMTP-Server<input
-                    name="host"
-                    type="text"
-                    required
-                    maxlength="253"
-                    spellcheck="false"
-                    placeholder="smtp.example.org"
-                /></label>
-                <label
-                  >Port<input
-                    name="port"
-                    type="number"
-                    required
-                    min="1"
-                    max="65535"
-                    inputmode="numeric"
-                /></label>
-              </div>
-              <label
-                >Verschlüsselung<select
-                  name="verschluesselung"
-                  aria-describedby="mail-tlshilfe"
-                >
-                  <option value="starttls">STARTTLS</option>
-                  <option value="tls">Direktes TLS</option>
-                </select></label
-              >
-              <p id="mail-tlshilfe" class="hinweis">
-                Üblicherweise STARTTLS mit Port 587 oder direktes TLS mit Port
-                465. Verwende die Angaben deines Mailanbieters.
-              </p>
-              <label
-                >Absenderadresse<input
-                  name="from"
-                  type="email"
-                  required
-                  maxlength="254"
-                  placeholder="timereal@example.org"
-              /></label>
-              <h3>Anmeldung am Mailserver</h3>
-              <label
-                >Benutzername<input
-                  name="user"
+                <md-outlined-text-field
+                  label="SMTP-Server"
+                  name="host"
                   type="text"
-                  maxlength="254"
-                  spellcheck="false"
-                  aria-describedby="mail-userhilfe"
-              /></label>
-              <p id="mail-userhilfe" class="hinweis">
-                Bei einem Mailserver ohne Anmeldung bleibt dieses Feld leer.
-              </p>
-              <label
-                >SMTP-Passwort<input
-                  name="password"
-                  type="password"
-                  maxlength="512"
-                  autocomplete="new-password"
-                  aria-describedby="mail-passworthilfe"
-              /></label>
-              <p id="mail-passworthilfe" class="hinweis">
-                Das gespeicherte Passwort wird nicht angezeigt.
-              </p>
-              <h3>Änderung bestätigen</h3>
-              <label
-                >Dein Timereal-Passwort<input
-                  name="passwort"
-                  type="password"
                   required
-                  maxlength="512"
-                  autocomplete="current-password"
-              /></label>
+                  maxlength="253"
+                  spellcheck="false"
+                  placeholder="smtp.example.org"
+                ></md-outlined-text-field>
+                <md-outlined-text-field
+                  label="Port"
+                  name="port"
+                  type="number"
+                  required
+                  min="1"
+                  max="65535"
+                  inputmode="numeric"
+                ></md-outlined-text-field>
+              </div>
+              <md-outlined-select
+                label="Verschlüsselung"
+                name="verschluesselung"
+                supporting-text="Üblicherweise STARTTLS mit Port 587 oder direktes TLS mit Port 465. Verwende die Angaben deines Mailanbieters."
+                ><md-select-option value="starttls"
+                  ><div slot="headline">STARTTLS</div></md-select-option
+                >
+                <md-select-option value="tls"
+                  ><div slot="headline">Direktes TLS</div></md-select-option
+                ></md-outlined-select
+              >
+              <md-outlined-text-field
+                label="Absenderadresse"
+                name="from"
+                type="email"
+                required
+                maxlength="254"
+                placeholder="timereal@example.org"
+              ></md-outlined-text-field>
+              <h3>Anmeldung am Mailserver</h3>
+              <md-outlined-text-field
+                label="Benutzername"
+                name="user"
+                type="text"
+                maxlength="254"
+                spellcheck="false"
+                supporting-text="Bei einem Mailserver ohne Anmeldung bleibt dieses Feld leer."
+              ></md-outlined-text-field>
+              <md-outlined-text-field
+                label="SMTP-Passwort"
+                name="password"
+                type="password"
+                maxlength="512"
+                autocomplete="new-password"
+                supporting-text="Das gespeicherte Passwort wird nicht angezeigt."
+              ></md-outlined-text-field>
+              <h3>Änderung bestätigen</h3>
+              <md-outlined-text-field
+                label="Dein Timereal-Passwort"
+                name="passwort"
+                type="password"
+                required
+                maxlength="512"
+                autocomplete="current-password"
+              ></md-outlined-text-field>
               <div class="aktionen">
-                <button id="mail-speichern">Prüfen und speichern</button>
-                <button type="button" id="mail-verwerfen" class="sek">
+                <md-filled-button id="mail-speichern"
+                  >Prüfen und speichern</md-filled-button
+                >
+                <md-outlined-button type="button" id="mail-verwerfen">
                   Änderungen verwerfen
-                </button>
+                </md-outlined-button>
               </div>
               <p class="hinweis">
                 Die Verbindung wird vor dem Speichern geprüft. Bei einem Fehler
@@ -348,17 +367,17 @@
                 ankommt.
               </p>
               <form id="mail-testmail">
-                <label
-                  >Empfängeradresse<input
-                    name="email"
-                    type="email"
-                    required
-                    maxlength="254"
-                    placeholder="dein.name@example.org"
-                /></label>
-                <button id="mail-senden" class="sek" disabled>
+                <md-outlined-text-field
+                  label="Empfängeradresse"
+                  name="email"
+                  type="email"
+                  required
+                  maxlength="254"
+                  placeholder="dein.name@example.org"
+                ></md-outlined-text-field>
+                <md-outlined-button id="mail-senden" disabled>
                   Testmail senden
-                </button>
+                </md-outlined-button>
               </form>
               <p id="mail-testhinweis" class="hinweis">
                 Richte zuerst den Mailversand ein.
@@ -391,12 +410,23 @@
             Sicherheits- und Verwaltungsereignisse der vergangenen 180 Tage.
           </p>
           <form id="audit-filter" class="filter">
-            <label>Von<input name="von" type="date" /></label>
-            <label>Bis<input name="bis" type="date" /></label>
-            <label
-              >Suchbegriff<input name="suche" type="search" maxlength="200"
-            /></label>
-            <button id="audit-filtern">Filtern</button>
+            <md-outlined-text-field
+              label="Von"
+              name="von"
+              type="date"
+            ></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Bis"
+              name="bis"
+              type="date"
+            ></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Suchbegriff"
+              name="suche"
+              type="search"
+              maxlength="200"
+            ></md-outlined-text-field>
+            <md-filled-button id="audit-filtern">Filtern</md-filled-button>
           </form>
           <p id="audit-status" role="status"></p>
           <p id="audit-fehler" role="alert" hidden></p>
@@ -407,15 +437,15 @@
           ></ul>
           <p id="audit-leer" hidden>Keine Ereignisse für diese Filter.</p>
           <div class="aktionen">
-            <button type="button" id="audit-laden" class="sek">
+            <md-outlined-button type="button" id="audit-laden">
               Aktualisieren
-            </button>
-            <button type="button" id="audit-download" class="sek" disabled>
+            </md-outlined-button>
+            <md-outlined-button type="button" id="audit-download" disabled>
               Auswahl herunterladen
-            </button>
-            <button type="button" id="audit-mehr" class="sek" disabled>
+            </md-outlined-button>
+            <md-outlined-button type="button" id="audit-mehr" disabled>
               Weitere laden
-            </button>
+            </md-outlined-button>
           </div>
           <p class="hinweis">
             Download als JSON, bis zu 5.000 Ereignisse. Der Zeitraum bezieht
@@ -437,34 +467,56 @@
             <p id="konsole-status" role="status">Noch nicht geladen</p>
           </div>
           <form id="konsole-filter" class="filter">
-            <label
-              >Quelle<select name="quelle">
-                <option value="all">Alle Timereal-Dienste</option>
-                <option value="anwendung">Anwendung</option>
-                <option value="betrieb">Betriebsdienst</option>
-                <option value="https">HTTPS</option>
-              </select></label
+            <md-outlined-select label="Quelle" name="quelle"
+              ><md-select-option value="all"
+                ><div slot="headline">
+                  Alle Timereal-Dienste
+                </div></md-select-option
+              >
+              <md-select-option value="anwendung"
+                ><div slot="headline">Anwendung</div></md-select-option
+              >
+              <md-select-option value="betrieb"
+                ><div slot="headline">Betriebsdienst</div></md-select-option
+              >
+              <md-select-option value="https"
+                ><div slot="headline">HTTPS</div></md-select-option
+              ></md-outlined-select
             >
-            <label
-              >Level<select name="level">
-                <option value="all">all</option>
-                <option value="info">info</option>
-                <option value="warn">warn</option>
-                <option value="error">error</option>
-                <option value="debug">debug</option>
-                <option value="success">success</option>
-                <option value="fatal">fatal</option>
-                <option value="complete">complete</option>
-              </select></label
+            <md-outlined-select label="Level" name="level"
+              ><md-select-option value="all"
+                ><div slot="headline">all</div></md-select-option
+              >
+              <md-select-option value="info"
+                ><div slot="headline">info</div></md-select-option
+              >
+              <md-select-option value="warn"
+                ><div slot="headline">warn</div></md-select-option
+              >
+              <md-select-option value="error"
+                ><div slot="headline">error</div></md-select-option
+              >
+              <md-select-option value="debug"
+                ><div slot="headline">debug</div></md-select-option
+              >
+              <md-select-option value="success"
+                ><div slot="headline">success</div></md-select-option
+              >
+              <md-select-option value="fatal"
+                ><div slot="headline">fatal</div></md-select-option
+              >
+              <md-select-option value="complete"
+                ><div slot="headline">complete</div></md-select-option
+              ></md-outlined-select
             >
-            <label
-              >Freitextsuche<input
-                name="suche"
-                type="search"
-                maxlength="200"
-                placeholder="Logs durchsuchen …"
-            /></label>
-            <button>Filtern</button>
+            <md-outlined-text-field
+              label="Freitextsuche"
+              name="suche"
+              type="search"
+              maxlength="200"
+              placeholder="Logs durchsuchen …"
+            ></md-outlined-text-field>
+            <md-filled-button>Filtern</md-filled-button>
           </form>
           <div class="aktionen logaktionen">
             <label class="logschalter"
@@ -477,12 +529,12 @@
                 checked
               />Automatisch scrollen</label
             >
-            <button type="button" class="sek" id="konsole-laden">
+            <md-outlined-button type="button" id="konsole-laden">
               Aktualisieren
-            </button>
-            <button type="button" class="sek" id="konsole-download" disabled>
+            </md-outlined-button>
+            <md-outlined-button type="button" id="konsole-download" disabled>
               Herunterladen
-            </button>
+            </md-outlined-button>
           </div>
           <p id="konsole-fehler" role="alert" hidden></p>
           <div
@@ -507,9 +559,9 @@
         <div id="betrieb-bereich" hidden>
           <p id="betrieb-status" role="status" aria-live="polite"></p>
           <p id="betrieb-fehler" role="alert" hidden></p>
-          <button type="button" class="sek" id="betrieb-aktualisieren">
+          <md-outlined-button type="button" id="betrieb-aktualisieren">
             Status aktualisieren
-          </button>
+          </md-outlined-button>
           <div
             id="betrieb-updates"
             data-betrieb-panel
@@ -537,9 +589,13 @@
                 >Änderungsnotizen ansehen ↗</a
               >
               <div class="aktionen">
-                <button type="button" id="betrieb-vorbereiten" disabled>
+                <md-filled-button
+                  type="button"
+                  id="betrieb-vorbereiten"
+                  disabled
+                >
                   Update starten
-                </button>
+                </md-filled-button>
               </div>
               <section
                 id="betrieb-updateauftrag"
@@ -565,7 +621,9 @@
                     angehalten. Laufende Timer bleiben zeitlich erhalten.
                   </p>
 
-                  <button>Vorbereitetes Update installieren</button>
+                  <md-filled-button
+                    >Vorbereitetes Update installieren</md-filled-button
+                  >
                 </form>
                 <p>
                   Du kannst diesen Tab schließen. Der Auftrag läuft auf dem
@@ -602,27 +660,23 @@
             <section class="karte">
               <h2>Öffentliche Domain einrichten</h2>
               <form id="betrieb-domainpruefen">
-                <label
-                  >Öffentliche Domain<input
-                    name="domain"
-                    type="text"
-                    inputmode="url"
-                    spellcheck="false"
-                    autocomplete="off"
-                    required
-                    maxlength="253"
-                    aria-describedby="betrieb-domainhilfe"
-                /></label>
-                <p id="betrieb-domainhilfe">
-                  Ohne https://, Port oder Pfad. Du kannst eine eigene Domain
-                  verwenden.
-                </p>
+                <md-outlined-text-field
+                  label="Öffentliche Domain"
+                  name="domain"
+                  type="text"
+                  inputmode="url"
+                  spellcheck="false"
+                  autocomplete="off"
+                  required
+                  maxlength="253"
+                  supporting-text="Ohne https://, Port oder Pfad. Du kannst eine eigene Domain verwenden."
+                ></md-outlined-text-field>
                 <p>
                   DNS, öffentliches Zertifikat und Weiterleitung richtest du am
                   Reverse Proxy ein. Timereal übernimmt hier die passende App-
                   und Serverkonfiguration.
                 </p>
-                <button>Domain speichern</button>
+                <md-filled-button>Domain speichern</md-filled-button>
               </form>
               <section
                 id="betrieb-domainauftrag"
@@ -640,7 +694,7 @@
                     im lokalen Netz bleibt möglich.
                   </p>
 
-                  <button>Domain übernehmen</button>
+                  <md-filled-button>Domain übernehmen</md-filled-button>
                 </form>
                 <div id="betrieb-bestaetigung" hidden>
                   <p id="betrieb-frist"></p>
@@ -651,9 +705,9 @@
                     >Neue Adresse öffnen und anmelden ↗</a
                   >
                   <div class="aktionen">
-                    <button type="button" class="sek" id="betrieb-zurueck">
+                    <md-outlined-button type="button" id="betrieb-zurueck">
                       Änderung zurücknehmen
-                    </button>
+                    </md-outlined-button>
                   </div>
                 </div>
               </section>
@@ -678,32 +732,32 @@
           <form class="karte" id="profilform">
             <h2>Profil</h2>
             <p>So erscheint dein Name in Timereal.</p>
-            <label
-              >Anzeigename<input
-                name="name"
-                maxlength="120"
-                autocomplete="name"
-            /></label>
-            <label
-              >E-Mail-Adresse<input
-                name="email"
-                type="email"
-                maxlength="250"
-                autocomplete="email"
-            /></label>
+            <md-outlined-text-field
+              label="Anzeigename"
+              name="name"
+              maxlength="120"
+              autocomplete="name"
+            ></md-outlined-text-field>
+            <md-outlined-text-field
+              label="E-Mail-Adresse"
+              name="email"
+              type="email"
+              maxlength="250"
+              autocomplete="email"
+            ></md-outlined-text-field>
             <p class="neben">
               Für eine neue E-Mail-Adresse erhältst du einen Bestätigungslink.
             </p>
             <p id="profil-ausstehend" class="neben" hidden></p>
-            <button>Profil speichern</button>
+            <md-filled-button>Profil speichern</md-filled-button>
           </form>
           <div>
             <section class="karte">
               <h2>Passwort</h2>
               <p>Ändere dein Passwort für die Anmeldung.</p>
-              <button class="sek" type="button" id="passwort-oeffnen">
+              <md-outlined-button type="button" id="passwort-oeffnen">
                 Passwort ändern
-              </button>
+              </md-outlined-button>
             </section>
             <section class="karte" id="mfa-karte">
               <h2>Zwei-Faktor-Anmeldung</h2>
@@ -713,62 +767,70 @@
                 Der Betreiber muss den Zwei-Faktor-Schlüssel im Dienst
                 einrichten.
               </p>
-              <button type="button" id="mfa-start">Einrichten</button>
+              <md-filled-button type="button" id="mfa-start"
+                >Einrichten</md-filled-button
+              >
             </section>
             <section class="karte">
               <h2>Angemeldete Geräte</h2>
               <p>Browser und Erweiterungen haben eigene Sitzungen.</p>
-              <button class="sek" type="button" id="sitzungen-oeffnen">
+              <md-outlined-button type="button" id="sitzungen-oeffnen">
                 Sitzungen verwalten
-              </button>
+              </md-outlined-button>
             </section>
           </div>
         </div>
         <form id="grundeinstellungen" class="karte">
           <h2>Zeiterfassung</h2>
-          <label
-            >Nachkommastellen<select name="nachkommastellen">
-              <option value="2">2 Nachkommastellen</option>
-              <option value="3">3 Nachkommastellen</option>
-            </select></label
+          <md-outlined-select label="Nachkommastellen" name="nachkommastellen"
+            ><md-select-option value="2"
+              ><div slot="headline">2 Nachkommastellen</div></md-select-option
+            >
+            <md-select-option value="3"
+              ><div slot="headline">3 Nachkommastellen</div></md-select-option
+            ></md-outlined-select
           >
           <p>
             Die erfassten Minuten bleiben unverändert. Eine andere Ausgabe kann
             bereits übertragene Nachweise zur erneuten Prüfung markieren.
           </p>
-          <label
-            >Lange Buchungen ab (Minuten)<input
-              name="pruefminuten"
-              type="number"
-              min="1"
-              max="1440"
-              step="1"
-              required /></label
-          ><button>Einstellungen speichern</button>
+          <md-outlined-text-field
+            label="Lange Buchungen ab (Minuten)"
+            name="pruefminuten"
+            type="number"
+            min="1"
+            max="1440"
+            step="1"
+            required
+          ></md-outlined-text-field
+          ><md-filled-button>Einstellungen speichern</md-filled-button>
         </form>
         <section id="mfa-bereich" class="mfa-bereich" hidden></section>
         <dialog id="passwortfenster" aria-labelledby="passworttitel">
           <form class="karte" id="passwortform">
             <h2 id="passworttitel">Passwort ändern</h2>
-            <label
-              >Bisheriges Passwort<input
-                type="password"
-                name="alt"
-                required
-                autocomplete="current-password"
-                maxlength="512" /></label
-            ><label
-              >Neues Passwort · mindestens 12 Zeichen<input
-                type="password"
-                name="neu"
-                required
-                minlength="12"
-                maxlength="512"
-                autocomplete="new-password"
-            /></label>
+            <md-outlined-text-field
+              label="Bisheriges Passwort"
+              type="password"
+              name="alt"
+              required
+              autocomplete="current-password"
+              maxlength="512"
+            ></md-outlined-text-field
+            ><md-outlined-text-field
+              label="Neues Passwort · mindestens 12 Zeichen"
+              type="password"
+              name="neu"
+              required
+              minlength="12"
+              maxlength="512"
+              autocomplete="new-password"
+            ></md-outlined-text-field>
             <div class="aktionen">
-              <button>Passwort ändern und abmelden</button
-              ><button type="button" class="sek" data-close>Abbrechen</button>
+              <md-filled-button>Passwort ändern und abmelden</md-filled-button
+              ><md-outlined-button type="button" data-close
+                >Abbrechen</md-outlined-button
+              >
             </div>
           </form>
         </dialog>
@@ -777,7 +839,9 @@
           <p>Du kannst Browser und Erweiterung einzeln abmelden.</p>
           <div id="sitzungsliste"></div>
           <div class="aktionen">
-            <button class="sek" type="button" data-close>Schließen</button>
+            <md-outlined-button type="button" data-close
+              >Schließen</md-outlined-button
+            >
           </div>
         </dialog>
         <p id="versionsnummer" class="neben"></p>
@@ -787,106 +851,140 @@
       <h2 id="emailtitel">Neue E-Mail-Adresse</h2>
       <p>Übernimm die bestätigte Adresse für dein angemeldetes Konto.</p>
       <div class="aktionen">
-        <button id="email-bestaetigen">E-Mail-Adresse bestätigen</button
-        ><button type="button" class="sek" data-close>Abbrechen</button>
+        <md-filled-button id="email-bestaetigen"
+          >E-Mail-Adresse bestätigen</md-filled-button
+        ><md-outlined-button type="button" data-close
+          >Abbrechen</md-outlined-button
+        >
       </div>
     </dialog>
     <dialog id="zielfenster" aria-labelledby="zieltitel">
       <form id="zielform">
         <h2 id="zieltitel">Neues Buchungsziel</h2>
-        <label
-          >Kunde<input
-            name="kunde"
-            list="kunden"
-            maxlength="150"
-            required /><datalist id="kunden"></datalist></label
-        ><label
-          >Art<select name="art">
-            <option>Ticket</option>
-            <option>Termin</option>
-            <option>Projekt</option>
-          </select></label
-        ><label
-          >Bezeichnung<input
-            name="bezeichnung"
-            required
-            maxlength="240" /></label
-        ><label>Projekt (optional)<select name="projektId"></select></label
+        <md-outlined-text-field
+          label="Kunde"
+          name="kunde"
+          list="kunden"
+          maxlength="150"
+          required
+          data-vorschlaege="kunden"
+        ></md-outlined-text-field
+        ><datalist id="kunden"></datalist
+        ><md-outlined-select label="Art" name="art"
+          ><md-select-option value="Ticket"
+            ><div slot="headline">Ticket</div></md-select-option
+          >
+          <md-select-option value="Termin"
+            ><div slot="headline">Termin</div></md-select-option
+          >
+          <md-select-option value="Projekt"
+            ><div slot="headline">Projekt</div></md-select-option
+          ></md-outlined-select
+        ><md-outlined-text-field
+          label="Bezeichnung"
+          name="bezeichnung"
+          required
+          maxlength="240"
+        ></md-outlined-text-field
+        ><md-outlined-select
+          label="Projekt (optional)"
+          name="projektId"
+        ></md-outlined-select
         ><label class="check"
           ><input name="abrechenbar" type="checkbox" checked />
           Abrechenbar</label
         >
         <div class="aktionen">
-          <button id="zielspeichern">Speichern und starten</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button id="zielspeichern"
+            >Speichern und starten</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
     <dialog id="notizfenster" aria-labelledby="notiztitel">
       <form id="notizform">
         <h2 id="notiztitel">Leistungstext</h2>
-        <label id="notizbez" for="notiz">Tätigkeit</label
-        ><textarea id="notiz" rows="5" maxlength="4000"></textarea>
+        <md-outlined-text-field
+          id="notiz"
+          type="textarea"
+          label="Tätigkeit"
+          rows="5"
+          maxlength="4000"
+        ></md-outlined-text-field>
         <div class="aktionen">
-          <button>Speichern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Speichern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
     <dialog id="resetfenster" aria-labelledby="resettitel">
       <form id="resetform">
         <h2 id="resettitel">Passwort vergessen?</h2>
-        <label
-          >E-Mail-Adresse<input
-            type="email"
-            name="email"
-            required
-            maxlength="250"
-            autocomplete="email"
-        /></label>
+        <md-outlined-text-field
+          label="E-Mail-Adresse"
+          type="email"
+          name="email"
+          required
+          maxlength="250"
+          autocomplete="email"
+        ></md-outlined-text-field>
         <div class="aktionen">
-          <button>Rücksetzlink anfordern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Rücksetzlink anfordern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
     <dialog id="linkfenster" aria-labelledby="linktitel">
       <form id="linkform">
         <h2 id="linktitel">Passwort festlegen</h2>
-        <label
-          >Passwort · mindestens 12 Zeichen<input
-            type="password"
-            name="passwort"
-            required
-            minlength="12"
-            maxlength="512"
-            autocomplete="new-password" /></label
-        ><label
-          >Passwort wiederholen<input
-            type="password"
-            name="wiederholung"
-            required
-            minlength="12"
-            maxlength="512"
-            autocomplete="new-password"
-        /></label>
+        <md-outlined-text-field
+          label="Passwort · mindestens 12 Zeichen"
+          type="password"
+          name="passwort"
+          required
+          minlength="12"
+          maxlength="512"
+          autocomplete="new-password"
+        ></md-outlined-text-field
+        ><md-outlined-text-field
+          label="Passwort wiederholen"
+          type="password"
+          name="wiederholung"
+          required
+          minlength="12"
+          maxlength="512"
+          autocomplete="new-password"
+        ></md-outlined-text-field>
         <div class="aktionen">
-          <button>Passwort speichern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Passwort speichern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
     <dialog id="sofortfenster" aria-labelledby="soforttitel">
       <form id="sofortform">
         <h2 id="soforttitel">Sofort starten</h2>
-        <label>Kunde (optional)<select name="kundeId"></select></label>
+        <md-outlined-select
+          label="Kunde (optional)"
+          name="kundeId"
+        ></md-outlined-select>
         <p>
           Ticket oder Termin ordnest du später zu. Ein laufender Abschnitt wird
           beim Start beendet.
         </p>
         <div class="aktionen">
-          <button>Timer starten</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Timer starten</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -899,32 +997,53 @@
         </p>
         <p>Uhrzeiten in Europe/Berlin.</p>
         <div class="zeitfelder">
-          <label
-            >Von<input type="datetime-local" name="beginn" required /></label
-          ><label
-            >Bis<input type="datetime-local" name="ende" required
-          /></label>
+          <md-outlined-text-field
+            label="Von"
+            type="datetime-local"
+            name="beginn"
+            required
+          ></md-outlined-text-field
+          ><md-outlined-text-field
+            label="Bis"
+            type="datetime-local"
+            name="ende"
+            required
+          ></md-outlined-text-field>
         </div>
-        <label hidden
-          >Beginn bei Zeitumstellung<select name="beginnOffset"></select></label
-        ><label hidden
-          >Ende bei Zeitumstellung<select name="endeOffset"></select
-        ></label>
-        <label>Tätigkeit<select name="auswahl"></select></label
-        ><label>Kunde (optional)<select name="kundeId"></select></label
-        ><label
-          >Leistungstext<textarea
-            name="leistungstext"
-            maxlength="4000"
-            rows="3"
-          ></textarea></label
+        <md-outlined-select
+          label="Beginn bei Zeitumstellung"
+          name="beginnOffset"
+          hidden
+        ></md-outlined-select
+        ><md-outlined-select
+          label="Ende bei Zeitumstellung"
+          name="endeOffset"
+          hidden
+        ></md-outlined-select>
+        <md-outlined-select
+          label="Tätigkeit"
+          name="auswahl"
+        ></md-outlined-select
+        ><md-outlined-select
+          label="Kunde (optional)"
+          name="kundeId"
+        ></md-outlined-select
+        ><md-outlined-text-field
+          label="Leistungstext"
+          type="textarea"
+          name="leistungstext"
+          maxlength="4000"
+          rows="3"
+        ></md-outlined-text-field
         ><label class="check"
           ><input name="abrechenbar" type="checkbox" /> Abrechenbar</label
         >
         <div id="zeitvorschau"></div>
         <div class="aktionen">
-          <button>Übernehmen</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Übernehmen</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -932,30 +1051,43 @@
       <h2 id="vergleichtitel">Buchung vergleichen</h2>
       <div id="vergleichinhalt"></div>
       <div class="aktionen">
-        <button type="button" class="sek" data-close>Schließen</button>
+        <md-outlined-button type="button" data-close
+          >Schließen</md-outlined-button
+        >
       </div>
     </dialog>
     <dialog id="zielpflegefenster" aria-labelledby="zielpflegetitel">
       <form id="zielpflegeform">
         <h2 id="zielpflegetitel">Buchungsziel bearbeiten</h2>
-        <label>Kundenname<input name="kunde" maxlength="150" required /></label>
+        <md-outlined-text-field
+          label="Kundenname"
+          name="kunde"
+          maxlength="150"
+          required
+        ></md-outlined-text-field>
         <p>
           Ein geänderter Kundenname gilt für seine Buchungsziele und Nachweise.
           Der zuletzt übertragene Stand bleibt erhalten.
         </p>
-        <label
-          >Bezeichnung<input
-            name="bezeichnung"
-            required
-            maxlength="240" /></label
-        ><label>Projekt (optional)<select name="projektId"></select></label
+        <md-outlined-text-field
+          label="Bezeichnung"
+          name="bezeichnung"
+          required
+          maxlength="240"
+        ></md-outlined-text-field
+        ><md-outlined-select
+          label="Projekt (optional)"
+          name="projektId"
+        ></md-outlined-select
         ><label class="check"
           ><input type="checkbox" name="abrechenbar" /> Abrechenbar bei neuen
           Abschnitten</label
         >
         <div class="aktionen">
-          <button>Änderungen speichern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Änderungen speichern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>

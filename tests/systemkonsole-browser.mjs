@@ -10,6 +10,7 @@ import { passwordHash } from "../dist/session.js";
 import { dienstStarten } from "../betrieb/verwaltung/dienst.mjs";
 import { journalLeser } from "../betrieb/verwaltung/journal.mjs";
 import { pruefeAnsicht } from "./hilfe/design.mjs";
+import { waehle } from "./hilfe/material.mjs";
 
 // Echte App, Datenbank und Unix-Socket. Journal-JSON als Testdouble für die
 // Browser-Zustandsfälle; echtes journald wird in systemkonsole-native.mjs geprüft.
@@ -177,8 +178,8 @@ try {
     "Manuelle Leseposition bleibt erhalten",
   );
   assert.deepEqual(await pruefeAnsicht(page, "systemkonsole"), []);
-  await panel.getByLabel(/^Quelle/).selectOption("https");
-  await panel.getByLabel(/^Level/).selectOption("warn");
+  await waehle(panel.getByRole("combobox", { name: /^Quelle/ }), "https");
+  await waehle(panel.getByRole("combobox", { name: /^Level/ }), "warn");
   await panel.getByLabel("Freitextsuche").fill("WARNUNG");
   await panel.getByRole("button", { name: "Filtern", exact: true }).click();
   await page.waitForFunction(

@@ -183,6 +183,7 @@ export function createApp(
   mfaRouten(app, pool, privat, options, cookie);
   for (const [url, file, mime] of [
     ["/", "index.html", "text/html"],
+    ["/material.js", "material.js", "text/javascript"],
     ["/app.js", "app.js", "text/javascript"],
     ["/version.js", "version.js", "text/javascript"],
     ["/konten.js", "konten.js", "text/javascript"],

@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.10.0 — 20. November 2026
+
+- **Material 3 mit Material Web, erster Teil** (Entwurf 19): Farbschema und Typografie nach Material 3 auf Basis des bisherigen Timereal-Grüns, Schaltflächen sowie Eingabefelder und Auswahllisten mit schwebender Beschriftung. Hilfetexte stehen direkt unter dem jeweiligen Feld. Navigation, Register, Karten, Listen, Dialoge und die Seiten der Erweiterung folgen in einem späteren Release.
+- Material Web 2.5.0 und Lit 3.3.3 sind gebündelt im Repository enthalten (`web/material.js`); die CI prüft, dass das Bündel genau aus den Quellen entsteht. Die Inhaltsrichtlinie bleibt unverändert, es werden keine externen Schriften oder Skripte geladen.
+- Bedienung wie bisher: Enter sendet Formulare ab, Auswahllisten wählen ohne Vorgabe die erste Option, die Kundenvorschläge beim Buchungsziel bleiben erhalten, Eingaben bleiben auf ihre Höchstlänge begrenzt.
+- Bekannte Einschränkung von Material Web: Die Schaltflächen reichen „wird geladen“ (aria-busy) und verknüpfte Hilfetexte (aria-describedby) nicht an Screenreader weiter; sichtbar bleiben Sperre, Beschriftung und Statusmeldungen.
+- API 1 und Datenbankschema 10 bleiben erhalten. Zuerst den Server aktualisieren; die Erweiterung ändert sich nur in der Versionsnummer. [Prüfbelege](nachweise/0.10.0.md).
+
 ## 0.9.7 — 20. November 2026
 
 - **Verwaltung → Mailversand** (Entwurf 15): Administratoren richten SMTP-Server, Port, Verschlüsselung, Absender und Anmeldung direkt in der App ein. Die Verbindung wird vor dem Speichern geprüft; bei einem Fehler bleiben die bisherigen Einstellungen erhalten. Bestätigung mit dem eigenen Timereal-Passwort; das gespeicherte SMTP-Passwort wird nie angezeigt. Testmail an eine beliebige Adresse. Änderungen gelten ohne Neustart.

@@ -62,8 +62,14 @@ function fokusMerken() {
       ziel = bereich.querySelector("h1, h2");
       if (ziel) ziel.tabIndex = -1;
     }
-    if (ziel?.getClientRects().length && !ziel.disabled)
-      ziel.focus({ preventScroll: true });
+    if (!ziel?.getClientRects().length || ziel.disabled) return;
+    // Material-Schaltflächen zeichnen ihre innere Schaltfläche asynchron;
+    // erst danach kann der Fokus sie erreichen.
+    if (ziel.updateComplete)
+      void ziel.updateComplete.then(() => {
+        if (ziel.isConnected) ziel.focus({ preventScroll: true });
+      });
+    else ziel.focus({ preventScroll: true });
   };
 }
 function seitenFokus() {
@@ -177,16 +183,22 @@ function panels() {
     else b.removeAttribute("aria-current");
   });
 }
+// Hauptaktionen gefüllt, Nebenaktionen umrandet (Material 3, Entwurf 19).
+// Native Schaltflächen (Navigation, Register) und Material-Schaltflächen.
+const SCHALTFLAECHEN =
+  "button, md-filled-button, md-outlined-button, md-text-button";
 function btn(label, action, klasse = "sek") {
-  return (
-    '<button type="button" class="' +
-    klasse +
-    '" data-action="' +
-    esc(action) +
-    '">' +
-    esc(label) +
-    "</button>"
-  );
+  return klasse === "sek"
+    ? '<md-outlined-button type="button" data-action="' +
+        esc(action) +
+        '">' +
+        esc(label) +
+        "</md-outlined-button>"
+    : '<md-filled-button type="button" data-action="' +
+        esc(action) +
+        '">' +
+        esc(label) +
+        "</md-filled-button>";
 }
 function zielname(id, art) {
   const z = ziele.find((x) => x.id === id);
@@ -240,7 +252,7 @@ function dauer() {
     String(min % 60).padStart(2, "0");
 }
 function arbeitButton(text, aktion, id) {
-  return `<button type="button" class="sek" data-arbeit="${aktion}" data-id="${esc(id)}">${text}</button>`;
+  return `<md-outlined-button type="button" data-arbeit="${aktion}" data-id="${esc(id)}">${text}</md-outlined-button>`;
 }
 function zeigeZiele() {
   const suche = $("#suche").value.trim().toLocaleLowerCase("de");
@@ -454,7 +466,8 @@ async function bediene(fn, { navigation = false } = {}) {
   // Schnelle Seitenwechsel bleiben ruhig; längere Abrufe erhalten Feedback.
   const hinweisTimer = navigation ? setTimeout(hinweis, 300) : null;
   if (!navigation) hinweis();
-  document.querySelectorAll("button:enabled").forEach((b) => {
+  document.querySelectorAll(SCHALTFLAECHEN).forEach((b) => {
+    if (b.disabled) return;
     b.disabled = true;
     b.dataset.wartet = "";
   });
@@ -528,7 +541,7 @@ async function aktion(s) {
     });
 }
 document.addEventListener("click", (ev) => {
-  const b = ev.target.closest("button");
+  const b = ev.target.closest(SCHALTFLAECHEN);
   if (!b) return;
   if (b.hasAttribute("data-close")) b.closest("dialog").close();
   if (b.dataset.page)
@@ -543,16 +556,16 @@ document.addEventListener("click", (ev) => {
 function projekte() {
   const f = $("#zielform").elements;
   f.projektId.innerHTML =
-    '<option value="">Ohne Projekt</option>' +
+    '<md-select-option value=""><div slot="headline">Ohne Projekt</div></md-select-option>' +
     ziele
       .filter((z) => z.art === "Projekt" && z.kunde === f.kunde.value)
       .map(
         (z) =>
-          '<option value="' +
+          '<md-select-option value="' +
           esc(z.id) +
-          '">' +
+          '"><div slot="headline">' +
           esc(z.bezeichnung) +
-          "</option>",
+          "</div></md-select-option>",
       )
       .join("");
   f.projektId.disabled = f.art.value === "Projekt";
@@ -758,13 +771,12 @@ if (transport.istErweiterung) {
     document.querySelector(`[data-betrieb="${bereich}"]`).hidden = true;
   $("#anmelden").hidden = true;
   $("#vergessen").hidden = true;
-  const verbinden = document.createElement("button");
+  const verbinden = document.createElement("md-filled-button");
   verbinden.textContent = "Erweiterung verbinden";
   verbinden.onclick = () => chrome.runtime.openOptionsPage();
   $("#login").append(verbinden);
-  const oeffnen = document.createElement("button");
+  const oeffnen = document.createElement("md-outlined-button");
   oeffnen.id = "ganze-app";
-  oeffnen.className = "sek";
   oeffnen.textContent = "Ganze App öffnen";
   oeffnen.onclick = () =>
     chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
