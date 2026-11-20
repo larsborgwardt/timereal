@@ -12,6 +12,8 @@ mirror="timereal-releasemirror-$$"
 cleanup(){ local code=$?; trap - EXIT; docker rm -f "$guest" "$mirror" >/dev/null 2>&1 || true; printf 'Prüfbelege: %s\n' "$out"; exit "$code"; }
 trap cleanup EXIT
 mkdir "$out/kandidat" "$out/mirror"
+# Eigener Prüfschlüssel: Kandidaten ab 0.9.0 vertrauen nur diesem Schlüssel.
+ssh-keygen -q -t ed25519 -N "" -C timereal-pruefung -f "$out/signatur"
 git ls-files -z --cached --others --exclude-standard | tar --null -T - -cf "$out/kandidat.tar"
 git archive v0.8.2 | tar -x -C "$out/kandidat"
 git -C "$out/kandidat" init -q
@@ -28,7 +30,12 @@ const p=path.join(dir,'tests/version.test.mjs');fs.writeFileSync(p,fs.readFileSy
 JS
   git -C "$out/kandidat" add .
   git -C "$out/kandidat" -c user.name=Timereal-Pruefung -c user.email=probe@example.org commit -qm "Privater Prüfkandidat $1"
-  git -C "$out/kandidat" tag "v$1"
+  if [[ ${2:-} == unsigniert ]]; then
+    git -C "$out/kandidat" tag "v$1"
+  else
+    git -C "$out/kandidat" -c user.name=Timereal-Pruefung -c user.email=probe@example.org \
+      -c gpg.format=ssh -c user.signingkey="$out/signatur" tag -s -m "Prüfrelease v$1" "v$1"
+  fi
 }
 version 0.8.2
 docker run -d --name "$guest" --privileged --cgroupns=private --tmpfs /run --tmpfs /run/lock --tmpfs /tmp "$base" /sbin/init >/dev/null
@@ -44,6 +51,9 @@ echo 'Domainwechsel, neue Anmeldung und Bestätigung sowie Rückbau nach drei Mi
 fi
 git -C "$out/kandidat" rm -qrf .
 tar -xf "$out/kandidat.tar" -C "$out/kandidat"
+printf 'timereal-release namespaces="git" %s\n' "$(cat "$out/signatur.pub")" > "$out/kandidat/betrieb/release-signierer"
+# Läuft beim Bau jedes Kandidaten mit: unter root schlägt der Bau fehl.
+printf '\ntest("Prüfkandidat wird nicht als root gebaut", () => {\n  if (process.getuid() === 0) throw new Error("Bau läuft als root");\n});\n' >> "$out/kandidat/tests/version.test.mjs"
 version 0.9.0
 # Ein baubarer, aber beim Start fehlerhafter Folgekandidat prüft den Rückbau.
 printf '\nthrow new Error("Absichtlicher Startfehler im isolierten Prüfkandidaten");\n' >> "$out/kandidat/src/server.ts"
@@ -58,6 +68,8 @@ JS
 version 0.9.2
 tar -xOf "$out/kandidat.tar" betrieb/verwaltung-einrichten.sh > "$out/kandidat/betrieb/verwaltung-einrichten.sh"
 version 0.9.3
+# Ein stabiles Release ohne Signatur darf nicht installiert werden.
+version 0.9.4 unsigniert
 git clone -q --bare "$out/kandidat" "$out/mirror/timereal.git"
 git -C "$out/mirror/timereal.git" update-server-info
 openssl req -x509 -newkey rsa:2048 -nodes -days 1 -keyout "$out/mirror/key.pem" -out "$out/mirror/cert.pem" -subj '/CN=Timereal-Pruefung' -addext 'subjectAltName=DNS:github.com,DNS:api.github.com' >"$out/tls.log" 2>&1
@@ -68,7 +80,7 @@ https.createServer({key:fs.readFileSync('/mirror/key.pem'),cert:fs.readFileSync(
  const url=new URL(req.url,'https://github.com');
  if(url.pathname.startsWith('/repos/larsborgwardt/timereal/releases/')){
   const tag=url.pathname.endsWith('/latest')?'v0.9.0':url.pathname.split('/').pop();
-  if(!['v0.9.0','v0.9.1','v0.9.2','v0.9.3'].includes(tag)){res.writeHead(404);res.end();return;}
+  if(!['v0.9.0','v0.9.1','v0.9.2','v0.9.3','v0.9.4'].includes(tag)){res.writeHead(404);res.end();return;}
   res.setHeader('content-type','application/json');res.end(JSON.stringify({tag_name:tag,draft:false,prerelease:false,html_url:`https://github.com/larsborgwardt/timereal/releases/tag/${tag}`}));return;
  }
  const prefix='/larsborgwardt/timereal.git/';
@@ -121,6 +133,8 @@ for _ in {1..30}; do
 done
 [[ $current == /opt/timereal-betrieb/0.9.2-* ]] || { echo 'FEHLER: Anwendung meldet Erfolg, der abgebrochene Betriebsdienstwechsel wurde aber nicht nachgeholt.' >&2; exit 1; }
 echo 'SIGKILL während des Dienstwechsels: Anwendung und eigener Betriebsdienst wiederhergestellt.'
+docker exec "$guest" runuser -u postgres -- env TIMEREAL_WEGWERFTEST=1 TIMEREAL_TEST_EINKLICK=1 TIMEREAL_TEST_TAG=v0.9.4 TIMEREAL_TEST_ERGEBNIS=fehlgeschlagen TIMEREAL_TEST_VERSION=0.9.2 TIMEREAL_TEST_MELDUNG='nicht signiert' /opt/timereal-node/bin/node /opt/timereal-current/tests/betrieb-native-update.mjs >"$out/unsigniert.log" 2>&1
+echo 'Unsigniertes Release v0.9.4 abgewiesen; installierte Version 0.9.2 unverändert.'
 docker exec "$guest" env TIMEREAL_WEGWERFTEST=1 TIMEREAL_LOG_ABSCHLUSS=1 /opt/timereal-node/bin/node /opt/timereal-current/tests/systemkonsole-native.mjs >"$out/systemkonsole.log" 2>&1
 echo 'Systemkonsole mit echtem journald, Dienstquellen und realen Updateabschlüssen bestanden.'
 docker exec "$guest" bash -c 'for _ in {1..30}; do if curl --fail --silent --max-time 3 --unix-socket /run/timereal-betrieb/dienst.sock -H "Content-Type: application/json" -d "{\"aktion\":\"status\"}" http://localhost/; then exit 0; fi; sleep 1; done; exit 1' >"$out/status.json"

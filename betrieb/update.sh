@@ -43,6 +43,25 @@ schritt() {
   phase=$2; printf '\n[%s/6] %s\n' "$1" "$phase"
   case "$1" in 1) ereignis pruefung;; 2) ereignis vorbereitung;; 3) ereignis sicherung;; 4) ereignis migration;; 5) ereignis neustart;; 6) ereignis erfolgreich;; esac
 }
+# Bau und Tests des neuen Stands laufen nicht als root, sondern unter einem
+# eigenen Dienstkonto ohne Datenbankzugang. Danach gehört der Stand wieder root;
+# übrig gebliebene Prozesse des Kontos werden beendet.
+ohne_root() {
+  local dir=$1 befehl=$2 heim code=0
+  getent passwd timereal_build >/dev/null ||
+    useradd --system --user-group --no-create-home --shell /usr/sbin/nologin timereal_build
+  heim=$(mktemp -d /var/tmp/timereal-build.XXXXXXXX)
+  chown timereal_build:timereal_build "$heim"
+  chown -R timereal_build:timereal_build "$dir"
+  # Ereigniskanal (3) und Betriebssperre (9) bleiben dem Bau verschlossen.
+  runuser -u timereal_build -- env -i HOME="$heim" PATH=/opt/timereal-node/bin:/usr/bin:/bin \
+    npm_config_cache="$heim/npm" bash -c 'cd -- "$1" && eval "$2"' bauen "$dir" "$befehl" 3>&- 9>&- || code=$?
+  pkill -KILL -u timereal_build 2>/dev/null || true
+  chown -R root:root "$dir"
+  find "$heim" -mindepth 1 -delete
+  rmdir "$heim"
+  return "$code"
+}
 zugang_anzeigen() {
   local url
   # dienst.conf ist eine systemd-Umgebungsdatei, kein auszuführendes Shellskript.
@@ -174,7 +193,7 @@ if [[ $prepared == true || ( $prepare == true && -e $ready ) ]]; then
     echo 'Der vorbereitete Anwendungsstand fehlt oder passt nicht zum Auftrag.' >&2; exit 1;
   }
   if [[ $prepare == true ]]; then
-    (cd "$ready" && "$node" --test tests/version.test.mjs tests/update.test.mjs)
+    ohne_root "$ready" 'node --test tests/version.test.mjs tests/update.test.mjs'
     echo "Bereits vorbereiteten Stand erneut geprüft: $tag ($sha). Die bisherige Anwendung läuft weiter."
     ereignis bereit
     exit 0
@@ -188,7 +207,7 @@ else
   chmod 755 "$stage"
   schritt 2 'Neue Anwendung bauen und prüfen (bisherige Anwendung läuft weiter)'
   git -C "$repo" archive "$sha" | tar -x -C "$stage"
-  (cd "$stage" && npm ci --ignore-scripts --no-audit --no-fund && npm run build && node --test tests/version.test.mjs tests/update.test.mjs)
+  ohne_root "$stage" 'npm ci --ignore-scripts --no-audit --no-fund && npm run build && node --test tests/version.test.mjs tests/update.test.mjs'
   printf '%s\n' "$sha" > "$stage/.timereal-commit"
 fi
 if [[ $prepare == true ]]; then

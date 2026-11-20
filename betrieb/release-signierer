@@ -1,0 +1,3 @@
+# Öffentlicher Schlüssel, mit dem Timereal-Release-Tags ab 0.9.6 signiert sind.
+# Format: OpenSSH allowed_signers. Prüfen: git -c gpg.ssh.allowedSignersFile=betrieb/release-signierer verify-tag vX.Y.Z
+timereal-release namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKzHJ+2Ke8tGQLomHuscvjpciliJPBmmvO9DEUHp66fC timereal-release
