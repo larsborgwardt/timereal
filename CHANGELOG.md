@@ -2,6 +2,7 @@
 
 ## Unveröffentlicht
 
+- Passwörter: Neue und geänderte Passwörter werden mit Argon2id (m=19 MiB, t=2, p=1) gespeichert, der Erstwahl des OWASP Password Storage Cheat Sheet; bisher scrypt mit p=1 unterhalb der OWASP-Empfehlung. Der Hash trägt seine Parameter. Bestehende Passwörter bleiben gültig und werden beim nächsten Passwortwechsel umgestellt. Eine Anmeldung kostet etwa so viel Rechenzeit wie bisher. Benötigt Node.js ab 24.7; Installationen verwenden 24.22.3.
 - Passwort zurücksetzen: Die Anfrage wird beantwortet, bevor die Mail versendet wird. Bisher wartete nur die Anfrage für ein vorhandenes Konto auf den Mailserver; die Antwortzeit verriet so, ob ein Konto existiert.
 
 ## 0.9.5 — 20. November 2026

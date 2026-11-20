@@ -29,7 +29,7 @@ flowchart LR
 | Stelle | Aufgabe |
 |---|---|
 | Oberfläche | Zeigt den vom Server gelesenen Zustand. Die laufende Anzeige berechnet sie aus der Startzeit. Datenbankkennung des Benutzers und Wechselzeit sind keine Eingaben des Clients. |
-| Zugang | Das Passwort wird mit Salt und scrypt geprüft. Der Browser erhält ein zufälliges Sitzungstoken als HttpOnly-, Secure- und SameSite-Cookie. PostgreSQL speichert seinen SHA-256-Abdruck, Clientart, Ablauf und Widerruf. Änderungen über Cookie verlangen die konfigurierte HTTPS-Herkunft. |
+| Zugang | Das Passwort wird mit Salt geprüft. Ab 0.9.6 erhalten neue und geänderte Passwörter Argon2id mit m=19 MiB, t=2, p=1 (OWASP Password Storage Cheat Sheet) im PHC-Format; ältere scrypt-Hashes (N=2^14, r=8, p=1) bleiben bis zum nächsten Passwortwechsel gültig. Der Browser erhält ein zufälliges Sitzungstoken als HttpOnly-, Secure- und SameSite-Cookie. PostgreSQL speichert seinen SHA-256-Abdruck, Clientart, Ablauf und Widerruf. Änderungen über Cookie verlangen die konfigurierte HTTPS-Herkunft. |
 | Servertransaktion | Prüft und sperrt das Konto und die Sitzung. Sie bindet die Konto-ID nur für diese Transaktion. Fehler rollen die Änderung zurück, bevor die Verbindung in den Pool zurückkehrt. |
 | Fachmodule | Kundenanlage und Projektzuordnung liegen bei den Buchungszielen. Der Timer setzt Zeitgrenzen. Die Tageskorrektur bearbeitet bestehende Abschnitte. Die Nachweise berechnen den Übertragungsstand aus denselben Daten. |
 | PostgreSQL | Die Dienstrolle besitzt keine Tabellen und hat keine RLS-Ausnahme. Eigentümerbezogene Fremdschlüssel, Zeilenrichtlinien und ein Ausschluss über Zeitintervalle sichern die Schreib- und Lesewege. Migration und Kontoverwaltung erfolgen mit eigener Berechtigung. |
