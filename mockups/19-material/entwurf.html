@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Timereal – Entwurf 19 Material 3</title>
+    <link rel="stylesheet" href="entwurf.css" />
+    <script type="module" src="entwurf.js"></script>
+  </head>
+  <body>
+    <header data-ansicht="heute updates" class="kopf">
+      <span class="marke md-typescale-title-large">Timereal</span>
+      <md-tabs class="hauptnavigation" aria-label="Bereiche">
+        <md-primary-tab data-auswahl="heute">Heute</md-primary-tab>
+        <md-primary-tab>Woche</md-primary-tab>
+        <md-primary-tab>Nachweise</md-primary-tab>
+        <md-primary-tab>Einstellungen</md-primary-tab>
+        <md-primary-tab data-auswahl="updates">Verwaltung</md-primary-tab>
+      </md-tabs>
+      <md-text-button class="abmelden">Abmelden</md-text-button>
+    </header>
+
+    <main data-ansicht="anmeldung" class="anmeldung">
+      <md-outlined-card class="karte login">
+        <span class="marke md-typescale-headline-small">Timereal</span>
+        <h1 class="md-typescale-headline-large">Anmelden</h1>
+        <p class="md-typescale-body-large neben">Mit deinem Anmeldenamen oder deiner E-Mail-Adresse.</p>
+        <md-outlined-text-field label="Anmeldename oder E-Mail" value="lars"></md-outlined-text-field>
+        <md-outlined-text-field label="Passwort" type="password" value="geheimespasswort"></md-outlined-text-field>
+        <div class="aktionen">
+          <md-filled-button>Anmelden</md-filled-button>
+          <md-text-button>Passwort vergessen?</md-text-button>
+        </div>
+      </md-outlined-card>
+    </main>
+
+    <main data-ansicht="heute">
+      <div class="titelzeile">
+        <h1 class="md-typescale-display-small">Heute</h1>
+        <div class="aktionen">
+          <md-filled-button>Sofort starten</md-filled-button>
+          <md-outlined-button>Interne Zeit</md-outlined-button>
+        </div>
+      </div>
+      <md-outlined-card class="karte timer">
+        <p class="md-typescale-label-large status">Läuft</p>
+        <h2 class="md-typescale-title-large">Beratungsgesellschaft Nord · Ticket Systemkonfiguration</h2>
+        <p class="md-typescale-body-medium neben">Läuft seit 12:44</p>
+        <p class="md-typescale-display-medium timerzeit">01:27</p>
+        <div class="aktionen">
+          <md-filled-button>Pausieren</md-filled-button>
+          <md-outlined-button>Stoppen</md-outlined-button>
+          <md-text-button>Leistungstext</md-text-button>
+        </div>
+      </md-outlined-card>
+      <md-outlined-card class="karte">
+        <div class="titelzeile">
+          <h2 class="md-typescale-title-large">Buchungsziel wählen</h2>
+          <md-filled-button>Neues Buchungsziel</md-filled-button>
+        </div>
+        <md-outlined-text-field label="Suchen" placeholder="Kunde, Ticket oder Termin"></md-outlined-text-field>
+        <md-list>
+          <md-list-item>
+            <div slot="headline">Beratungsgesellschaft Nord</div>
+            <div slot="supporting-text">Ticket · Systemkonfiguration</div>
+            <span slot="end" class="md-typescale-label-large status">Läuft</span>
+          </md-list-item>
+          <md-divider></md-divider>
+          <md-list-item>
+            <div slot="headline">Stadtwerke Süd</div>
+            <div slot="supporting-text">Projekt · Netzumstellung 2027</div>
+            <md-outlined-button slot="end">Hierhin wechseln</md-outlined-button>
+          </md-list-item>
+          <md-divider></md-divider>
+          <md-list-item>
+            <div slot="headline">Praxis am Markt</div>
+            <div slot="supporting-text">Termin · Schulung Abrechnung</div>
+            <md-outlined-button slot="end">Hierhin wechseln</md-outlined-button>
+          </md-list-item>
+        </md-list>
+      </md-outlined-card>
+      <md-outlined-card class="karte">
+        <div class="titelzeile">
+          <h2 class="md-typescale-title-large">Tagesverlauf · 20.11.2026</h2>
+          <md-outlined-button>Zeit nachtragen</md-outlined-button>
+        </div>
+        <md-list>
+          <md-list-item>
+            <div slot="headline">Interne Zeit</div>
+            <div slot="supporting-text">08:30–09:15 · 45 min · 0,75 h · Nicht abrechenbar</div>
+            <md-text-button slot="end">Korrigieren</md-text-button>
+          </md-list-item>
+          <md-divider></md-divider>
+          <md-list-item>
+            <div slot="headline">Stadtwerke Süd · Netzumstellung 2027</div>
+            <div slot="supporting-text">09:15–11:00 · 105 min · 1,75 h</div>
+            <md-text-button slot="end">Korrigieren</md-text-button>
+          </md-list-item>
+        </md-list>
+      </md-outlined-card>
+    </main>
+
+    <main data-ansicht="updates">
+      <h1 class="md-typescale-display-small">Verwaltung</h1>
+      <md-tabs class="register" aria-label="Verwaltungsbereiche">
+        <md-secondary-tab>Konten</md-secondary-tab>
+        <md-secondary-tab active>Updates</md-secondary-tab>
+        <md-secondary-tab>Domainzugriff</md-secondary-tab>
+        <md-secondary-tab>Systemlogs</md-secondary-tab>
+        <md-secondary-tab>Audit-Protokoll</md-secondary-tab>
+      </md-tabs>
+      <div class="raster">
+        <md-outlined-card class="karte">
+          <h2 class="md-typescale-title-large">Update wird installiert</h2>
+          <p class="md-typescale-body-medium">v0.9.6 → v0.9.7 · Datensicherung wird erstellt · Schritt 3 von 6</p>
+          <md-linear-progress id="fortschritt" aria-label="Updatefortschritt"></md-linear-progress>
+          <p class="md-typescale-body-medium neben">Angemeldete Nutzer werden kurz getrennt. Laufende Timer behalten ihre Zeiten.</p>
+          <md-assist-chip label="Signatur des Releases geprüft"></md-assist-chip>
+        </md-outlined-card>
+        <md-outlined-card class="karte">
+          <h2 class="md-typescale-title-large">Installierte Version</h2>
+          <dl>
+            <dt class="md-typescale-label-large">Version</dt><dd class="md-typescale-body-large">v0.9.6</dd>
+            <dt class="md-typescale-label-large">Neueste Veröffentlichung</dt><dd class="md-typescale-body-large">v0.9.7</dd>
+          </dl>
+          <md-outlined-button>Status aktualisieren</md-outlined-button>
+        </md-outlined-card>
+      </div>
+    </main>
+    <footer data-ansicht="heute updates" class="md-typescale-body-small">
+      <span>Timereal <strong>v0.9.6</strong></span><span>GitHub</span>
+    </footer>
+  </body>
+</html>
