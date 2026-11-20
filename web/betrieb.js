@@ -1,5 +1,6 @@
 import { systemkonsole } from "./systemkonsole.js";
 import { auditOberflaeche } from "./audit.js";
+import { mailOberflaeche } from "./mailversand.js";
 import { updateFortschritt } from "./betrieb-fortschritt.js";
 const prefix = "/verwaltung/betrieb";
 const laufend = new Set([
@@ -54,6 +55,11 @@ export function betriebsOberflaeche({
     request,
     sichtbar: () => bereich === "logs" && !$("#verwaltung").hidden,
   });
+  const mail = mailOberflaeche({
+    $,
+    request,
+    sichtbar: () => bereich === "mail" && !$("#verwaltung").hidden,
+  });
   const audit = auditOberflaeche({
     $,
     request,
@@ -80,9 +86,13 @@ export function betriebsOberflaeche({
   const job = (typ) => stand?.auftraege.find((j) => j.typ === typ);
   function anzeigen() {
     $("#betrieb-berater").hidden = bereich !== "berater";
-    $("#betrieb-bereich").hidden = ["berater", "logs", "audit"].includes(
-      bereich,
-    );
+    $("#betrieb-bereich").hidden = [
+      "berater",
+      "mail",
+      "logs",
+      "audit",
+    ].includes(bereich);
+    $("#betrieb-mail").hidden = bereich !== "mail";
     $("#betrieb-logs").hidden = bereich !== "logs";
     $("#betrieb-audit").hidden = bereich !== "audit";
     for (const name of ["updates", "domain"])
@@ -222,6 +232,7 @@ export function betriebsOberflaeche({
   async function laden() {
     if (bereich === "audit") return audit.laden();
     if (bereich === "logs") return konsole.liveLaden();
+    if (bereich === "mail") return mail.laden();
     if (bereich === "berater" || $("#verwaltung").hidden || laedt || prueft)
       return;
     const vorher = generation;
@@ -356,6 +367,7 @@ export function betriebsOberflaeche({
       bereich = b.dataset.betrieb;
       anzeigen();
       if (bereich === "logs") void konsole.laden();
+      else if (bereich === "mail") void mail.laden();
       else void laden();
     }),
   );
@@ -381,7 +393,7 @@ export function betriebsOberflaeche({
   $("#betrieb-zurueck").onclick = () =>
     void senden(`/domain/${job("domain").id}/zuruecknehmen`);
   setInterval(() => {
-    if (bereich === "audit") return;
+    if (bereich === "audit" || bereich === "mail") return;
     if (bereich === "logs") return konsole.liveLaden();
     if (!$("#verwaltung").hidden && bereich !== "berater") {
       anzeigen();
@@ -405,7 +417,8 @@ export function betriebsOberflaeche({
       }
       document.querySelector('[data-betrieb="berater"]').hidden = !profil.admin;
       document.querySelector('[data-betrieb="audit"]').hidden = !profil.admin;
-      if (!profil.admin && ["berater", "audit"].includes(bereich))
+      document.querySelector('[data-betrieb="mail"]').hidden = !profil.admin;
+      if (!profil.admin && ["berater", "mail", "audit"].includes(bereich))
         bereich = "updates";
       anzeigen();
     },
@@ -416,6 +429,7 @@ export function betriebsOberflaeche({
     zuruecksetzen() {
       konsole.zuruecksetzen();
       audit.zuruecksetzen();
+      mail.zuruecksetzen();
       generation++;
       prueft = false;
       startPruefung = false;

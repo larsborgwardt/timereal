@@ -55,6 +55,10 @@ Technische Grundlagen: [journalctl, Matching und JSON-Ausgabe](https://www.freed
 
 Der erste Umfang unterstützt den vorhandenen Timereal-LXC mit externem HTTPS-Proxy und lokaler IPv4-Adresse auf Port 443. Abweichende eigene Caddy-Konfigurationen werden als nicht unterstützt angezeigt. Ein neuer öffentlicher Direktbetrieb ohne vorgeschalteten Proxy bleibt über das bestehende HTTPS-Einrichtungsskript möglich und wird nicht still in einen anderen Betriebsmodus umgeschaltet.
 
+### Mailversand ab 0.9.7
+
+Entwurf 15 (D-RELEASE-009). **Verwaltung → Mailversand** ist nur für Administratoren sichtbar; Betrieb, Berater und Erweiterungssitzungen erhalten 403. Speichern verlangt das eigene Timereal-Passwort (begrenzt wie eine Anmeldung, zwölf Fehlversuche je zehn Minuten). Die Anwendung reicht die Eingaben über den Unix-Socket an den Betriebsdienst; er prüft die SMTP-Verbindung, schreibt `/etc/timereal/mail.json` atomar (root, Gruppe `timereal_app`, Modus 640) und lehnt einen veralteten Stand mit 409 ab. Das SMTP-Passwort wird nie zurückgegeben. Die Anwendung liest die Datei bei jedem Versand neu. `GET/PUT /api/v1/verwaltung/mail/einstellungen`, `POST /api/v1/verwaltung/mail/test`.
+
 ## Architektur und Vertrauensgrenzen
 
 ```mermaid

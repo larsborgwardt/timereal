@@ -96,7 +96,7 @@ try {
   );
   assert.equal(dienst.buch.lesen(auftrag.id).zustand, "erfolgreich");
   assert.equal(
-    await page.locator('#verwaltung input[type="password"]').count(),
+    await page.locator('#betrieb-bereich input[type="password"]').count(),
     0,
   );
   console.log(

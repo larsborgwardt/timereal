@@ -98,7 +98,9 @@ Bei „manuelle Wiederherstellung erforderlich“ keine neue Aktion starten. Akt
 
 Das erste bei der Installation angelegte Konto ist Administrator. Nach dem Update erscheinen **Verwaltung** und **Einstellungen**. In der Verwaltung kannst du andere Berater per E-Mail einladen, offene Einladungen erneut senden oder widerrufen und Beraterkonten sperren. Eine Sperre beendet einen laufenden Timer als prüfpflichtigen Abschnitt und widerruft die Sitzungen. Ab 0.8.1 stehen Berater, Betrieb und Administrator zur Auswahl. Das eigene und das letzte aktive Administratorkonto bleiben geschützt; andere Administratorkonten können gesperrt werden. Ein Rollenwechsel widerruft Sitzungen, lässt den Timer aber weiterlaufen; die vorhandene Konten-CLI bleibt für die Wiederherstellung im Container verfügbar.
 
-Richte zuerst SMTP in der Root-Konsole ein:
+Ab 0.9.7 richtest du den Mailversand unter **Verwaltung → Mailversand** ein (nur Administratoren): SMTP-Server, Port, Verschlüsselung, Absender und optional die Anmeldung am Mailserver. Die Änderung bestätigst du mit deinem Timereal-Passwort. Der Betriebsdienst prüft die Verbindung vor dem Speichern; bei einem Fehler bleiben die bisherigen Einstellungen erhalten. Das gespeicherte SMTP-Passwort wird nicht angezeigt; ein leeres Feld behält es, solange Server, Port, Verschlüsselung und Benutzername gleich bleiben. Gespeicherte Änderungen gelten sofort ohne Neustart. Danach prüft **Testmail senden** die Zustellung.
+
+Alternativ und für ältere Versionen in der Root-Konsole:
 
 ```bash
 bash /opt/timereal-current/betrieb/mail-einrichten.sh

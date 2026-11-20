@@ -11,7 +11,7 @@ import {
   wort,
   type Privat,
 } from "./http.js";
-import { maildienst, type MailConfig } from "./mail.js";
+import { maildienst, type MailQuelle } from "./mail.js";
 import {
   profil,
   profilMail,
@@ -20,14 +20,20 @@ import {
   resetAnfordern,
   passwortAendern,
 } from "./konten.js";
-import { digest } from "./session.js";
+import { digest, verify } from "./session.js";
+import { betriebsAufruf } from "./betrieb.js";
+import { anmeldeDrossel } from "./anmeldedrossel.js";
 
 export function kontenRouten(
   app: FastifyInstance,
   pool: Pool,
   privat: Privat,
-  options: { origin?: string; smtp?: MailConfig },
+  options: { origin?: string; smtp?: MailQuelle; betriebSocket?: string },
 ) {
+  const betriebSocket =
+    options.betriebSocket ?? "/run/timereal-betrieb/dienst.sock";
+  // Bestätigung mit dem eigenen Passwort: begrenzt wie eine Anmeldung.
+  const bestaetigungen = anmeldeDrossel();
   const mail = maildienst(options.smtp),
     versuche = new Map<string, { n: number; bis: number }>();
   function limit(req: FastifyRequest, ziel: string) {
@@ -137,6 +143,95 @@ export function kontenRouten(
       await db.query("select admin_pruefen()");
       return { konfiguriert: mail.konfiguriert };
     }),
+  );
+  // Mailversand: nur Administratoren in einer Websitzung. Der Betriebsdienst
+  // prüft die Verbindung und schreibt die Datei; das SMTP-Passwort verlässt
+  // ihn nie.
+  const mailAdmin = (req: FastifyRequest) =>
+    verwaltung(req, async (db) => {
+      await db.query("select admin_pruefen()");
+      return (await db.query("select aktuelles_konto()::text as id")).rows[0]
+        .id as string;
+    });
+  app.get("/api/v1/verwaltung/mail/einstellungen", async (req) => {
+    await mailAdmin(req);
+    return betriebsAufruf(betriebSocket, { aktion: "mail-lesen" });
+  });
+  const kurz = (max: number) => ({ type: "string", maxLength: max });
+  app.put<{
+    Body: {
+      host: string;
+      port: number;
+      secure: boolean;
+      from: string;
+      user?: string;
+      password?: string;
+      version: string;
+      passwort: string;
+    };
+  }>(
+    "/api/v1/verwaltung/mail/einstellungen",
+    {
+      schema: {
+        body: objekt(
+          {
+            host: { type: "string", minLength: 1, maxLength: 253 },
+            port: { type: "integer", minimum: 1, maximum: 65535 },
+            secure: { type: "boolean" },
+            from: { type: "string", minLength: 3, maxLength: 254 },
+            user: kurz(254),
+            password: kurz(512),
+            version: { type: "string", minLength: 1, maxLength: 150 },
+            passwort: wort(512),
+          },
+          ["host", "port", "secure", "from", "version", "passwort"],
+        ),
+      },
+    },
+    async (req) => {
+      const { passwort, ...daten } = req.body;
+      await verwaltung(req, async (db) => {
+        await db.query("select admin_pruefen()");
+        const {
+          rows: [k],
+        } = await db.query(
+          "select aktuelles_konto()::text as id, eigenes_passwort() as hash",
+        );
+        if (!bestaetigungen.versuch(req.ip, "mail:" + k.id))
+          throw new Fehler(
+            429,
+            "Zu viele Versuche. Bitte später erneut versuchen.",
+          );
+        if (!(await verify(passwort, k.hash)))
+          throw new Fehler(403, "Das Timereal-Passwort stimmt nicht.");
+        bestaetigungen.erfolg(req.ip, "mail:" + k.id);
+      });
+      return betriebsAufruf(betriebSocket, {
+        aktion: "mail-speichern",
+        daten: { user: "", password: "", ...daten },
+      });
+    },
+  );
+  app.post<{ Body: { email: string; version: string } }>(
+    "/api/v1/verwaltung/mail/test",
+    {
+      schema: {
+        body: objekt(
+          {
+            email,
+            version: { type: "string", minLength: 1, maxLength: 150 },
+          },
+          ["email", "version"],
+        ),
+      },
+    },
+    async (req) => {
+      await mailAdmin(req);
+      return betriebsAufruf(betriebSocket, {
+        aktion: "mail-test",
+        daten: { email: req.body.email, version: req.body.version },
+      });
+    },
   );
   app.patch<{ Params: { id: string }; Body: { aktiv: boolean } }>(
     "/api/v1/verwaltung/konten/:id",

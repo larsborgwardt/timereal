@@ -201,6 +201,15 @@ export async function dienstStarten(options) {
           const auftrag = annahmen.then(() => annehmen(data.anfrage));
           annahmen = auftrag.catch(() => {});
           antwort = await auftrag;
+        } else if (
+          ["mail-lesen", "mail-speichern", "mail-test"].includes(data?.aktion)
+        ) {
+          if (!options.mail)
+            throw new Betriebsfehler(
+              "ZUSTAND",
+              "Mailversand benötigt einen aktuellen Betriebsdienst.",
+            );
+          antwort = await options.mail(data);
         } else
           throw new Betriebsfehler("EINGABE", "Unbekannter Betriebsauftrag.");
         res.end(JSON.stringify(antwort));

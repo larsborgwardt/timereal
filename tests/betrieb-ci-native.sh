@@ -55,6 +55,11 @@ fi
 exec 4>&-
 grep -q 'ist installiert. HTTPS wurde im Container erfolgreich geprüft.' "$out/installation.log"
 echo 'Frische Installation mit HTTPS, PostgreSQL und Betriebsdienst bestanden.'
+# Der Betriebsdienst lädt die Mailverwaltung mit dem Mailmodul der installierten Anwendung.
+docker exec "$guest" curl --fail --silent --max-time 5 --unix-socket /run/timereal-betrieb/dienst.sock \
+  -H 'Content-Type: application/json' -d '{"aktion":"mail-lesen"}' http://localhost/ >"$out/mail-lesen.json"
+grep -q '"konfiguriert":false' "$out/mail-lesen.json"
+echo 'Mailverwaltung im Betriebsdienst erreichbar (noch nicht eingerichtet).'
 docker exec "$guest" bash /opt/timereal/tests/betrieb-proxy.sh /opt/timereal/betrieb/proxy-einrichten.sh >"$out/proxy.log" 2>&1 || {
   tail -40 "$out/proxy.log" >&2
   exit 1

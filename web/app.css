@@ -259,8 +259,39 @@ dialog {
   padding: 12px 16px;
   background: #fff1ef;
 }
+.mailzeile {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 16px;
+}
+.mailseite {
+  display: grid;
+  gap: 20px;
+}
+.mailzustand {
+  border-left: 3px solid #9a6a10;
+  padding: 12px 16px;
+  background: #fff6dc;
+  color: #6b4a00;
+}
+.mailzustand.ok {
+  border-left-color: #08796f;
+  background: #e3f4f0;
+  color: #04574f;
+}
+#mail-fehler,
+#mail-testfehler {
+  border-left: 3px solid #b23b31;
+  padding: 12px 16px;
+  background: #fff1ef;
+}
 @media (max-width: 760px) {
   .betrieb-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .mailzeile {
     grid-template-columns: minmax(0, 1fr);
   }
 }
