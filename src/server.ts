@@ -15,9 +15,10 @@ const app = createApp(datenbankPool(), {
     version: release.version,
     enabled: updateCheckingEnabled(process.env.TIMEREAL_UPDATE_CHECK),
   }),
-  smtp: smtpKonfiguration(
-    process.env.TIMEREAL_SMTP_FILE || "/etc/timereal/mail.json",
-  ),
+  smtp: () =>
+    smtpKonfiguration(
+      process.env.TIMEREAL_SMTP_FILE || "/etc/timereal/mail.json",
+    ),
 });
 for (const signal of ["SIGINT", "SIGTERM"])
   process.once(signal, () => void app.close());

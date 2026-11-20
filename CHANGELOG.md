@@ -1,5 +1,11 @@
 # Änderungen
 
+## 0.9.7 — 20. November 2026
+
+- **Verwaltung → Mailversand** (Entwurf 15): Administratoren richten SMTP-Server, Port, Verschlüsselung, Absender und Anmeldung direkt in der App ein. Die Verbindung wird vor dem Speichern geprüft; bei einem Fehler bleiben die bisherigen Einstellungen erhalten. Bestätigung mit dem eigenen Timereal-Passwort; das gespeicherte SMTP-Passwort wird nie angezeigt. Testmail an eine beliebige Adresse. Änderungen gelten ohne Neustart.
+- Der Konsolenweg `betrieb/mail-einrichten.sh` bleibt verfügbar.
+- API 1 und Datenbankschema 10 bleiben erhalten. Zuerst den Server aktualisieren; die Erweiterung ändert sich nur in der Versionsnummer. [Prüfbelege](nachweise/0.9.7.md).
+
 ## 0.9.6 — 20. November 2026
 
 - Updates: Release-Tags sind ab 0.9.6 mit einem SSH-Schlüssel signiert (`betrieb/release-signierer`). Der Betriebsdienst einer installierten 0.9.6 installiert nur Tags, die mit dem Schlüssel der bereits installierten Version signiert sind; die Prüfung greift deshalb ab dem Update nach 0.9.6. Bau und Tests eines neuen Stands laufen nicht mehr als root, sondern unter `timereal_build`. Für den Konsolenweg prüft `tag-pruefen.mjs` die Signatur. Auf GitHub schützt eine Regel Release-Tags vor Verschieben und Löschen.

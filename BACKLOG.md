@@ -28,9 +28,9 @@ Das getrennte Edge-Upload-Paket enthält kein `key`. Die von Lars gelieferte Mic
 
 Entwurf 16 ist von Lars freigegeben und eingebunden: Web-Favicon, Erweiterungssymbol und separates Store-Logo. [Prüfbelege](nachweise/0.9.2.md). Store-Einreichung und Installation erfolgen durch Lars; eine Microsoft-Zertifizierung ist damit nicht belegt.
 
-## Mailversand im Adminbereich
+## Mailversand im Adminbereich in 0.9.7
 
-Von Lars beauftragt; Bildentwurf 15 freigegeben. SMTP ist bis Release 0.9.2 bisher nur über `betrieb/mail-einrichten.sh` einrichtbar, obwohl die Web-App bereits Einladungen und E-Mail-Bestätigung verwendet. **Verwaltung → Mailversand** mit sicherer Passwortspeicherung, Prüfen vor Übernahme und Testmail ist in Arbeit und noch nicht ausgeliefert.
+Entwurf 15 (D-RELEASE-009) ist umgesetzt: **Verwaltung → Mailversand** mit Prüfung vor dem Speichern, Passwortbestätigung und Testmail. Die Arbeit begann in einer Codex-Sitzung und wurde auf Lars’ Entscheid D-RELEASE-017 von Claude fertiggestellt. [Prüfbelege](nachweise/0.9.7.md).
 
 ## Umfang von 0.7.0
 

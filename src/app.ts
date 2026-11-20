@@ -10,7 +10,7 @@ import { auditRouten } from "./audit.js";
 import { mfaRouten, mfaCookie } from "./mfa.js";
 import { randomBytes } from "node:crypto";
 import { profil } from "./konten.js";
-import type { MailConfig } from "./mail.js";
+import type { MailQuelle } from "./mail.js";
 import { id, version, wort, tag, objekt } from "./http.js";
 import Fastify, { type FastifyRequest } from "fastify";
 import type { Pool, PoolClient } from "pg";
@@ -60,7 +60,7 @@ export function createApp(
   options: {
     secure: boolean;
     origin?: string;
-    smtp?: MailConfig;
+    smtp?: MailQuelle;
     updateCheck?: (force?: boolean) => Promise<UpdateStatus>;
     betriebSocket?: string;
     mfaKey?: Buffer;
@@ -192,6 +192,7 @@ export function createApp(
     ["/betrieb-fortschritt.js", "betrieb-fortschritt.js", "text/javascript"],
     ["/systemkonsole.js", "systemkonsole.js", "text/javascript"],
     ["/audit.js", "audit.js", "text/javascript"],
+    ["/mailversand.js", "mailversand.js", "text/javascript"],
     ["/zeit.js", "zeit.js", "text/javascript"],
     ["/arbeitsablauf.js", "arbeitsablauf.js", "text/javascript"],
     ["/nachweis-export.js", "nachweis-export.js", "text/javascript"],

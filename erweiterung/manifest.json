@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Timereal",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Persönliche Zeiterfassung direkt in der Browserleiste.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5yGplnG5KGG9sfxLn0rZKWFmiPPeBoy91mH0xSsAPaiav0LEnYHcnuzBQ6ycUtZO9BdXlhIbSkbOXZgNT4tA15TSozQRqPJPEBs9YRO22qypUWw+v4sVif9jMwbYdONm3tEdms9zc+qTJGb3H2uy8xMPu816Na3GWTXzilLweHq/CegsTkOYVyCbpTrwUUaA1GChSAHhbsxdYDdj+cdxLb/J1ljDVXW/49RuXZrvPeL6H9m9+KuEv0J2Iroltkh7tql233ja5cbIc6Hz3zj5QTFAgL8ukESO7AW3TEvG/t004l/fw0LyU4VGHcr9Qhw4c2DfsdxD9ZLgbRN9GyumvwIDAQAB",
   "permissions": ["storage", "identity"],

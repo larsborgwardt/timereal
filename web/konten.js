@@ -59,7 +59,7 @@ export function kontenOberflaeche({
       namen = new Map(konten.map((k) => [String(k.id), k.login]));
       $("#mailhinweis").textContent = mail.konfiguriert
         ? "Einladungen werden per E-Mail versendet."
-        : "Mailversand noch nicht eingerichtet. Im Container die Mailkonfiguration hinterlegen.";
+        : "Mailversand noch nicht eingerichtet. Unter Verwaltung → Mailversand einrichten.";
       $("#einladen button").disabled = !mail.konfiguriert;
       // Die fachliche Sperre darf am Ende einer Bedienaktion nicht aufgehoben werden.
       if (!mail.konfiguriert) delete $("#einladen button").dataset.wartet;

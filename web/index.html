@@ -185,6 +185,7 @@
           <button type="button" data-betrieb="berater" aria-current="page">
             Konten
           </button>
+          <button type="button" data-betrieb="mail">Mailversand</button>
           <button type="button" data-betrieb="updates">Updates</button>
           <button type="button" data-betrieb="domain">Domainzugriff</button>
           <button type="button" data-betrieb="logs">Systemlogs</button>
@@ -239,6 +240,144 @@
             <h2>Einladungen</h2>
             <div id="einladungsliste"></div>
           </section>
+        </div>
+        <div id="betrieb-mail" data-betrieb-panel class="betrieb-grid" hidden>
+          <section class="karte" aria-labelledby="mail-titel">
+            <h2 id="mail-titel">Mailversand</h2>
+            <p>
+              Für Einladungen, Passwortlinks und die Bestätigung neuer
+              E-Mail-Adressen.
+            </p>
+            <p id="mail-zustand" class="mailzustand" role="status">
+              Noch nicht eingerichtet
+            </p>
+            <form id="mail-einstellungen" autocomplete="off">
+              <h3>Verbindung</h3>
+              <div class="mailzeile">
+                <label
+                  >SMTP-Server<input
+                    name="host"
+                    type="text"
+                    required
+                    maxlength="253"
+                    spellcheck="false"
+                    placeholder="smtp.example.org"
+                /></label>
+                <label
+                  >Port<input
+                    name="port"
+                    type="number"
+                    required
+                    min="1"
+                    max="65535"
+                    inputmode="numeric"
+                /></label>
+              </div>
+              <label
+                >Verschlüsselung<select
+                  name="verschluesselung"
+                  aria-describedby="mail-tlshilfe"
+                >
+                  <option value="starttls">STARTTLS</option>
+                  <option value="tls">Direktes TLS</option>
+                </select></label
+              >
+              <p id="mail-tlshilfe" class="hinweis">
+                Üblicherweise STARTTLS mit Port 587 oder direktes TLS mit Port
+                465. Verwende die Angaben deines Mailanbieters.
+              </p>
+              <label
+                >Absenderadresse<input
+                  name="from"
+                  type="email"
+                  required
+                  maxlength="254"
+                  placeholder="timereal@example.org"
+              /></label>
+              <h3>Anmeldung am Mailserver</h3>
+              <label
+                >Benutzername<input
+                  name="user"
+                  type="text"
+                  maxlength="254"
+                  spellcheck="false"
+                  aria-describedby="mail-userhilfe"
+              /></label>
+              <p id="mail-userhilfe" class="hinweis">
+                Bei einem Mailserver ohne Anmeldung bleibt dieses Feld leer.
+              </p>
+              <label
+                >SMTP-Passwort<input
+                  name="password"
+                  type="password"
+                  maxlength="512"
+                  autocomplete="new-password"
+                  aria-describedby="mail-passworthilfe"
+              /></label>
+              <p id="mail-passworthilfe" class="hinweis">
+                Das gespeicherte Passwort wird nicht angezeigt.
+              </p>
+              <h3>Änderung bestätigen</h3>
+              <label
+                >Dein Timereal-Passwort<input
+                  name="passwort"
+                  type="password"
+                  required
+                  maxlength="512"
+                  autocomplete="current-password"
+              /></label>
+              <div class="aktionen">
+                <button id="mail-speichern">Prüfen und speichern</button>
+                <button type="button" id="mail-verwerfen" class="sek">
+                  Änderungen verwerfen
+                </button>
+              </div>
+              <p class="hinweis">
+                Die Verbindung wird vor dem Speichern geprüft. Bei einem Fehler
+                bleiben die bisherigen Einstellungen erhalten.
+              </p>
+            </form>
+            <p id="mail-fehler" role="alert" hidden></p>
+            <p id="mail-ergebnis" role="status" hidden></p>
+          </section>
+          <div class="mailseite">
+            <section class="karte" aria-labelledby="mail-testtitel">
+              <h2 id="mail-testtitel">Testmail</h2>
+              <p>
+                Prüfe nach dem Speichern, ob eine Nachricht in deinem Postfach
+                ankommt.
+              </p>
+              <form id="mail-testmail">
+                <label
+                  >Empfängeradresse<input
+                    name="email"
+                    type="email"
+                    required
+                    maxlength="254"
+                    placeholder="dein.name@example.org"
+                /></label>
+                <button id="mail-senden" class="sek" disabled>
+                  Testmail senden
+                </button>
+              </form>
+              <p id="mail-testhinweis" class="hinweis">
+                Richte zuerst den Mailversand ein.
+              </p>
+              <p id="mail-testfehler" role="alert" hidden></p>
+              <p id="mail-testergebnis" role="status" hidden></p>
+            </section>
+            <section class="karte" aria-labelledby="mail-geltungtitel">
+              <h2 id="mail-geltungtitel">Gilt für diese Installation</h2>
+              <p>
+                Administratoren verwalten den Mailversand gemeinsam. Persönliche
+                Kunden und Zeiten bleiben getrennt.
+              </p>
+              <p>
+                Gespeicherte Änderungen gelten sofort. Die App muss dafür nicht
+                neu gestartet werden.
+              </p>
+            </section>
+          </div>
         </div>
         <section
           id="betrieb-audit"

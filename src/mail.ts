@@ -8,7 +8,29 @@ export interface MailConfig {
   user?: string;
   password?: string;
 }
-export function maildienst(config?: MailConfig) {
+export type MailQuelle = MailConfig | (() => MailConfig | undefined);
+export function maildienst(quelle?: MailQuelle): {
+  readonly konfiguriert: boolean;
+  pruefen(): Promise<void>;
+  senden(
+    email: string,
+    typ: "einladung" | "reset" | "email" | "test",
+    url: string,
+  ): Promise<void>;
+} {
+  if (typeof quelle === "function")
+    return {
+      get konfiguriert() {
+        return maildienst(quelle()).konfiguriert;
+      },
+      async pruefen() {
+        await maildienst(quelle()).pruefen();
+      },
+      async senden(email, typ, url) {
+        await maildienst(quelle()).senden(email, typ, url);
+      },
+    };
+  const config = quelle;
   if (
     config &&
     (!config.host ||
@@ -34,6 +56,9 @@ export function maildienst(config?: MailConfig) {
       connectionTimeout: 10000,
       greetingTimeout: 10000,
       socketTimeout: 15000,
+      dnsTimeout: 10000,
+      disableFileAccess: true,
+      disableUrlAccess: true,
     });
   return {
     konfiguriert: !!transport,
@@ -43,7 +68,7 @@ export function maildienst(config?: MailConfig) {
     },
     async senden(
       email: string,
-      typ: "einladung" | "reset" | "email",
+      typ: "einladung" | "reset" | "email" | "test",
       url: string,
     ) {
       if (!transport || !config)
@@ -53,17 +78,21 @@ export function maildienst(config?: MailConfig) {
           from: config.from,
           to: email,
           subject:
-            typ === "einladung"
-              ? "Deine Einladung zu Timereal"
-              : typ === "email"
-                ? "Timereal: E-Mail-Adresse bestätigen"
-                : "Timereal: Passwort zurücksetzen",
+            typ === "test"
+              ? "Timereal: Testmail"
+              : typ === "einladung"
+                ? "Deine Einladung zu Timereal"
+                : typ === "email"
+                  ? "Timereal: E-Mail-Adresse bestätigen"
+                  : "Timereal: Passwort zurücksetzen",
           text:
-            (typ === "einladung"
-              ? "Du wurdest zu Timereal eingeladen. Lege dein eigenes Passwort fest. Der Link gilt 48 Stunden."
-              : typ === "email"
-                ? "Bestätige deine neue E-Mail-Adresse in deinem angemeldeten Timereal-Konto. Der Link gilt 30 Minuten."
-                : "Setze dein Timereal-Passwort zurück. Der Link gilt 30 Minuten.") +
+            (typ === "test"
+              ? "Dies ist eine Testmail deiner Timereal-Installation."
+              : typ === "einladung"
+                ? "Du wurdest zu Timereal eingeladen. Lege dein eigenes Passwort fest. Der Link gilt 48 Stunden."
+                : typ === "email"
+                  ? "Bestätige deine neue E-Mail-Adresse in deinem angemeldeten Timereal-Konto. Der Link gilt 30 Minuten."
+                  : "Setze dein Timereal-Passwort zurück. Der Link gilt 30 Minuten.") +
             "\n\n" +
             url +
             "\n\nWenn du diese Nachricht nicht erwartet hast, kannst du sie ignorieren.",
