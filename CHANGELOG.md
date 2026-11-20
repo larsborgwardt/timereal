@@ -1,10 +1,12 @@
 # Änderungen
 
-## Unveröffentlicht
+## 0.9.5 — 20. November 2026
 
 - Domainzugriff: Die Domain kommt zur Container-IP hinzu, statt sie zu ersetzen. Die Anmeldung über die lokale Adresse bleibt möglich; Bestätigungsfrist und automatische Rücknahme nach drei Minuten entfallen.
 - Nicht eingerichtete Hostnamen erhalten den Fehler 421 mit `Cache-Control: no-store` statt einer leeren Erfolgsantwort. HTTP/3 wird nicht mehr angekündigt.
 - Betriebsdienst, `proxy-einrichten.sh` und `install.sh` verwenden dieselbe HTTPS-Vorlage. Die Vorlage bis 0.9.4 wird weiter erkannt; nach dem Update die Domain einmal erneut speichern.
+- Anmeldung: Viele Fehlversuche eines Absenders sperren nicht mehr die Anmeldung aller. Das Kontingent gilt je Absender; ein voller Zählerspeicher verdrängt den ältesten Eintrag, statt jede weitere Anmeldung abzuweisen.
+- API 1 und Datenbankschema 10 bleiben erhalten. Zuerst den Server aktualisieren; die Erweiterung ändert sich nur in der Versionsnummer. [Prüfbelege](nachweise/0.9.5.md).
 
 ## 0.9.4 — 20. November 2026
 

@@ -69,10 +69,16 @@ async function setup(options) {
   const url = new URL(process.env.TEST_DATABASE_URL);
   url.username = "timereal_app";
   url.password = "nur-fuer-diese-wegwerfdatenbank";
-  const pool = new pg.Pool({ connectionString: url.href, max: 1, ...options });
+  const { anmeldeGrenzen, ...poolOptions } = options ?? {};
+  const pool = new pg.Pool({
+    connectionString: url.href,
+    max: 1,
+    ...poolOptions,
+  });
   const app = createApp(pool, {
     secure: true,
     origin: "https://timereal.test",
+    anmeldeGrenzen,
   });
   const request = () =>
     app.inject({
@@ -92,6 +98,31 @@ async function setup(options) {
     },
   };
 }
+test("Das Anmeldekontingent eines Absenders sperrt weder andere Absender noch deren Konten", async () => {
+  const x = await setup({ anmeldeGrenzen: { jeAbsender: 5 } });
+  const versuch = (remoteAddress, login) =>
+    x.app.inject({
+      method: "POST",
+      url: "/api/v1/anmeldung",
+      remoteAddress,
+      headers: { origin: "https://timereal.test" },
+      payload: { login, passwort: "FalschesTestpasswort" },
+    });
+  try {
+    for (let i = 0; i < 5; i++)
+      assert.equal(
+        (await versuch("198.51.100.7", "flut-" + i)).statusCode,
+        401,
+      );
+    assert.equal((await versuch("198.51.100.7", "flut-neu")).statusCode, 429);
+    assert.equal(
+      (await versuch("203.0.113.9", "anderes-konto")).statusCode,
+      401,
+    );
+  } finally {
+    await x.close();
+  }
+});
 test("Eine Kontosperre wartet begrenzt; danach bleibt der Pool benutzbar", async () => {
   const x = await setup({
     options: "-c lock_timeout=80ms -c statement_timeout=500ms",
