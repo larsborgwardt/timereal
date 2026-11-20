@@ -185,9 +185,13 @@ test("Audit: Rollen, echte Ereignisse, Geheimnisgrenze, Zeitraum und Export", as
   )[1];
   const neu = randomBytes(20).toString("hex");
   await ok(q(sitzung, "POST", "/passwort/aendern", { alt: passwort, neu }));
+  // Der Versand läuft nach der Antwort; jeweils auf die neue Nachricht warten.
+  let gesendet = mail.nachrichten.length;
   await ok(q("", "POST", "/passwort/anfordern", { email }), 202);
+  await mail.warten(++gesendet);
   const alterReset = token();
   await ok(q("", "POST", "/passwort/anfordern", { email }), 202);
+  await mail.warten(++gesendet);
   const resetcode = token();
   await ok(
     q("", "POST", "/passwort/zuruecksetzen", { token: resetcode, passwort }),

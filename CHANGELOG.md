@@ -1,5 +1,9 @@
 # Änderungen
 
+## Unveröffentlicht
+
+- Passwort zurücksetzen: Die Anfrage wird beantwortet, bevor die Mail versendet wird. Bisher wartete nur die Anfrage für ein vorhandenes Konto auf den Mailserver; die Antwortzeit verriet so, ob ein Konto existiert.
+
 ## 0.9.5 — 20. November 2026
 
 - Domainzugriff: Die Domain kommt zur Container-IP hinzu, statt sie zu ersetzen. Die Anmeldung über die lokale Adresse bleibt möglich; Bestätigungsfrist und automatische Rücknahme nach drei Minuten entfallen.
