@@ -12,8 +12,10 @@ import ts from "typescript";
 // Alles andere ist ein Befund, auch wenn es heute harmlos wäre.
 
 const quellen = [
+  // web/material.js ist das erzeugte Bündel von Material Web und Lit; seine
+  // Herkunft prüft scripts/oberflaeche-buendeln.mjs --check.
   ...readdirSync("web")
-    .filter((d) => d.endsWith(".js"))
+    .filter((d) => d.endsWith(".js") && d !== "material.js")
     .map((d) => "web/" + d),
   ...readdirSync("erweiterung")
     .filter((d) => d.endsWith(".js"))
