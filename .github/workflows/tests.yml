@@ -8,6 +8,22 @@ on:
 permissions:
   contents: read
 jobs:
+  format-und-abhaengigkeiten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Formatierung des Programmcodes prüfen
+        run: npx prettier --check src web betrieb tests scripts erweiterung .github
+      - name: Bekannte Schwachstellen in Abhängigkeiten prüfen
+        run: npm audit --audit-level=moderate
   gitleaks:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -51,7 +67,7 @@ jobs:
         run: npm test
         env:
           POSTGRES_IMAGE: postgres:${{ matrix.postgres }}-alpine
-          BROWSER_TEST: '1'
+          BROWSER_TEST: "1"
           SCREENSHOT_DIR: screenshots
       - name: Betriebsskripte prüfen
         run: |
