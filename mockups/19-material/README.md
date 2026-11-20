@@ -1,6 +1,6 @@
 # Entwurf 19 — Material 3 mit Material Web
 
-Auftrag von Lars am 20. November 2026: Material Web (github.com/material-components/material-web) auf die Oberfläche anwenden, nachdem die Audit-Befunde erledigt sind. **Noch nicht freigegeben.**
+Auftrag von Lars am 20. November 2026: Material Web (github.com/material-components/material-web) auf die Oberfläche anwenden, nachdem die Audit-Befunde erledigt sind. **Freigegeben am 20. November 2026 (D-RELEASE-017):** Material Web, Inhaltsrichtlinie unverändert, Auslieferung als 0.10.0.
 
 Die Bilder entstehen aus `entwurf.html` mit echten Komponenten von `@material/web` 2.5.0, gebündelt mit esbuild und ausgeliefert unter Timereals Inhaltsrichtlinie. Farbschema: Material 3, abgeleitet vom bisherigen Timereal-Grün. Schrift: die bisherige (Inter bzw. Systemschrift), nicht Roboto.
 
