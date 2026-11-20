@@ -40,6 +40,27 @@ jobs:
           tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
       - name: Gegenprobe und Git-Historie auf Geheimnisse prüfen
         run: GITLEAKS_BIN="$RUNNER_TEMP/gitleaks" bash tests/gitleaks.sh
+  nativ:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+      - name: Frische Installation, Proxy- und Domainprobe im Debian-13/systemd-Container
+        run: bash tests/betrieb-ci-native.sh
+        env:
+          TIMEREAL_BELEGE: ${{ runner.temp }}/nativ
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: failure()
+        with:
+          name: nativ-belege
+          path: |
+            ${{ runner.temp }}/nativ/*.log
+          retention-days: 7
   pruefung:
     runs-on: ubuntu-latest
     strategy:
@@ -71,7 +92,7 @@ jobs:
           SCREENSHOT_DIR: screenshots
       - name: Betriebsskripte prüfen
         run: |
-          for script in betrieb/*.sh tests/betrieb-ausgabe*.sh tests/betrieb-proxy.sh; do
+          for script in betrieb/*.sh tests/betrieb-ausgabe*.sh tests/betrieb-proxy.sh tests/betrieb-ci-native.sh tests/betrieb-native-release.sh; do
             bash -n "$script" || exit
           done
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
