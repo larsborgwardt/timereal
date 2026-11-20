@@ -51,12 +51,13 @@ const dienst = await dienstStarten({
         phase: "erfolgreich",
       });
     }
+    // Wie der echte Betriebsdienst: Die Übernahme endet ohne Frist.
     if (aktion === "domain-speichern")
       await buch.fortschreiben(j.id, {
-        zustand: "bestaetigung_ausstehend",
-        phase: "bestaetigung_ausstehend",
-        frist: Date.now() + 180000,
+        zustand: "erfolgreich",
+        phase: "erfolgreich",
         vorherigeOrigin: "https://192.0.2.42",
+        meldung: "Die Anmeldung über https://192.0.2.42 bleibt möglich.",
       });
   },
   wiederherstellen: async () => {
@@ -241,8 +242,22 @@ try {
     .getByRole("button", { name: "Domain speichern", exact: true })
     .click();
   await page
-    .getByRole("heading", { name: "Neue Adresse wird geprüft", exact: true })
+    .getByRole("heading", { name: "Domain eingerichtet", exact: true })
     .waitFor();
+  assert.equal(
+    await page.locator("#betrieb-domainmeldung").textContent(),
+    "Die Anmeldung über https://192.0.2.42 bleibt möglich.",
+  );
+  assert.equal(
+    await page.locator("#betrieb-domainphase").textContent(),
+    "https://zeit.beispiel.de · Einrichtung abgeschlossen",
+  );
+  // Weder Frist noch Rücknahme: Der Block des früheren Bestätigungsfensters bleibt verborgen.
+  assert.equal(await page.locator("#betrieb-bestaetigung").isHidden(), true);
+  assert.match(
+    await page.locator("#betrieb-domainhinweis").textContent(),
+    /zusätzlich über die Domain erreichbar.*bisherige Adresse.*bleibt möglich/,
+  );
   assert.deepEqual(await pruefeAnsicht(page, "betrieb-domain-zugriff"), []);
   const bilder = process.env.SCREENSHOT_DIR ?? "/tmp/timereal-betrieb-bilder";
   await mkdir(bilder, { recursive: true });

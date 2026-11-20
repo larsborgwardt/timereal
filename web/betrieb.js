@@ -145,7 +145,7 @@ export function betriebsOberflaeche({
     text(
       "domainhinweis",
       stand?.hinweis ??
-        "Öffne die neue Adresse. Dein angemeldeter Zugriff wird automatisch erkannt. Ohne erfolgreichen Zugriff kehrt Timereal zum bisherigen Zugang zurück.",
+        "Nach dem Speichern ist Timereal zusätzlich über die Domain erreichbar. Die Anmeldung über die bisherige Adresse im lokalen Netz bleibt möglich.",
     );
     $("#betrieb-domainpruefen button").disabled =
       beschaeftigt || !stand?.domainUnterstuetzt || aktiv;
@@ -169,7 +169,9 @@ export function betriebsOberflaeche({
           " · " +
           (typ === "update" && j.phase === "pruefung"
             ? "Release wird geprüft"
-            : (titel[j.phase] ?? "Verarbeitung läuft")),
+            : typ === "domain" && j.phase === "erfolgreich"
+              ? "Einrichtung abgeschlossen"
+              : (titel[j.phase] ?? "Verarbeitung läuft")),
       );
       text(typ + "meldung", j.meldung);
       text(

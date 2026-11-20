@@ -34,6 +34,9 @@ done
 node=/opt/timereal-node/bin/node
 ca=/var/lib/timereal-https/caddy/pki/authorities/local/root.crt
 [[ -x $node && -f $ca ]] || { echo 'Timereal-Laufzeit oder interne Test-CA fehlt.' >&2; exit 1; }
+# Dieselbe Vorlage wie im Betriebsdienst und in install.sh.
+vorlage=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/verwaltung/caddy-vorlage.mjs
+[[ -f $vorlage ]] || { echo 'Caddy-Vorlage fehlt neben diesem Skript.' >&2; exit 1; }
 if [[ ${TIMEREAL_BETRIEB_LOCK:-} == 1 ]]; then
   [[ $(readlink /proc/$$/fd/9) == /run/lock/timereal-install.lock ]] || { echo 'Gemeinsame Betriebssperre fehlt.' >&2; exit 1; }
 else
@@ -46,27 +49,18 @@ cp -p /etc/timereal/{Caddyfile,dienst.conf} "$work/"
 cp -p "$work/Caddyfile" "$work/Caddyfile.vorher"
 cp -p "$work/dienst.conf" "$work/dienst.conf.vorher"
 echo '[1/4] Bestehende Konfiguration und gewünschten Host prüfen'
-"$node" --input-type=commonjs - "$work" "$domain" "$adresse" <<'JS'
-const fs = require('node:fs');
-const [dir, domain, ip] = process.argv.slice(2);
+"$node" --input-type=module - "$work" "$domain" "$adresse" "$vorlage" <<'JS'
+import fs from 'node:fs';
+import { pathToFileURL } from 'node:url';
+const [dir, domain, ip, modul] = process.argv.slice(2);
+const { caddyVorlage, caddyVorlagenstand } = await import(pathToFileURL(modul).href);
 const old = fs.readFileSync(`${dir}/Caddyfile`, 'utf8');
 const env = fs.readFileSync(`${dir}/dienst.conf`, 'utf8');
-const compact = text => text.replace(/\s+/g, '');
-const template = host => `{
-  admin off
-  auto_https disable_redirects
-  default_sni ${ip}
-  skip_install_trust
-}
-https://${ip}${host ? `, https://${host}` : ''} {
-  tls internal
-  reverse_proxy 127.0.0.1:3040
-}
-`;
-// Absichtliche Erlaubnisliste der Installer-Vorlage, kein allgemeiner Caddyfile-Parser.
+// Absichtliche Erlaubnisliste der Timereal-Vorlagen (aktuell und bis 0.9.4),
+// kein allgemeiner Caddyfile-Parser.
 const hosts = [...old.matchAll(/https:\/\/([a-zA-Z0-9.-]+)/g)].map(m => m[1]);
 const prior = hosts.length === 2 && hosts[0] === ip ? hosts[1] : '';
-if (compact(old) !== compact(template(prior))) {
+if (!caddyVorlagenstand(old, ip, prior)) {
   console.error('Caddy-Konfiguration weicht von der Timereal-Standardinstallation ab. Keine Änderung.');
   process.exit(1);
 }
@@ -76,7 +70,7 @@ if (origins.length !== 1 || ![`PUBLIC_ORIGIN=https://${ip}`, `PUBLIC_ORIGIN=http
   process.exit(1);
 }
 fs.writeFileSync(`${dir}/alter-host`, origins[0].slice('PUBLIC_ORIGIN=https://'.length));
-fs.writeFileSync(`${dir}/Caddyfile`, template(domain));
+fs.writeFileSync(`${dir}/Caddyfile`, caddyVorlage(ip, domain));
 fs.writeFileSync(`${dir}/dienst.conf`, env.replace(/^PUBLIC_ORIGIN=.*$/m, `PUBLIC_ORIGIN=https://${domain}`));
 JS
 old_host=$(cat "$work/alter-host")
@@ -141,7 +135,7 @@ cp -p "$work/dienst.conf" /etc/timereal/dienst.conf.proxy-next
 mv /etc/timereal/Caddyfile.proxy-next /etc/timereal/Caddyfile
 mv /etc/timereal/dienst.conf.proxy-next /etc/timereal/dienst.conf
 dienste_neu_starten
-echo '[4/4] HTTPS mit öffentlichem Hostnamen und lokalem IP-Zugang prüfen'
+echo '[4/4] HTTPS mit öffentlichem Hostnamen, lokalem IP-Zugang und Fehlerantwort für fremde Hostnamen prüfen'
 ok=false
 for _ in {1..20}; do
   if health "$domain" >/dev/null 2>&1 && health "$adresse" >/dev/null 2>&1; then ok=true; break; fi
@@ -151,8 +145,12 @@ done
 curl --noproxy '*' -fsS --max-time 5 --cacert "$ca" --resolve "$adresse:443:127.0.0.1" \
   -H "Host: $domain" "https://$adresse/" >"$work/startseite.html"
 grep -qi '<html' "$work/startseite.html"
+# Ein nicht eingerichteter Hostname muss einen Fehler erhalten, keine leere Erfolgsantwort.
+fremd=$(curl --noproxy '*' -sS --max-time 5 --cacert "$ca" --resolve "$adresse:443:127.0.0.1" \
+  -H 'Host: nicht-eingerichtet.invalid' -o /dev/null -w '%{http_code}' "https://$adresse/")
+[[ $fremd == 421 ]]
 trap - ERR INT TERM
 echo "Proxy-Patch erfolgreich. Browser-Adresse: https://$domain:443"
 echo "Sicherung: $backup"
-echo 'Ab jetzt über die öffentliche Domain anmelden; die lokale IP bleibt für HTTPS-Diagnosen erreichbar.'
+echo 'Timereal ist jetzt zusätzlich über die öffentliche Domain erreichbar; die Anmeldung über die lokale IP bleibt möglich.'
 echo 'Die Prüfung erfolgte im Container. Externen Nginx-Zugang anschließend im Browser prüfen.'

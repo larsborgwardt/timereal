@@ -21,7 +21,8 @@ cleanup() {
   rm -rf "$work"
 }
 trap cleanup EXIT
-ip=$(sed -n 's/^PUBLIC_ORIGIN=https:\/\///p' "$work/dienst.conf")
+ip=$(sed -n 's/^[[:space:]]*default_sni[[:space:]]\{1,\}//p' "$work/Caddyfile")
+[[ $ip =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]
 ca=/var/lib/timereal-https/caddy/pki/authorities/local/root.crt
 domain=erste.proxyprobe.test
 systemctl start postgresql timereal timereal-https
@@ -35,9 +36,10 @@ for _ in {1..20}; do
   if curl -fsS --cacert "$ca" --resolve "$ip:443:127.0.0.1" "https://$ip/health" >/dev/null 2>&1; then break; fi
   sleep 1
 done
-curl -fsS --cacert "$ca" --resolve "$ip:443:127.0.0.1" -H "Host: $domain" "https://$ip/" >"$work/vorher.html"
-test ! -s "$work/vorher.html"
-printf 'Rotfall am HTTPS-Dienst: öffentlicher Host liefert leeren Inhalt.\n'
+vorher=$(curl -sS --cacert "$ca" --resolve "$ip:443:127.0.0.1" -H "Host: $domain" -o "$work/vorher.html" -w '%{http_code}' "https://$ip/")
+# Bestand bis 0.9.4: 200 ohne Inhalt. Aktuelle Vorlage: 421 mit Hinweis. Nie eine Seite.
+if [[ $vorher == 200 ]]; then test ! -s "$work/vorher.html"; else [[ $vorher == 421 ]]; fi
+printf 'Ausgangslage: nicht eingerichteter Host erhält keine Seite (HTTP %s).\n' "$vorher"
 pid=$(systemctl show timereal.service --property=MainPID --value)
 bash "$script" --check "$domain" "$ip"
 cmp "$work/Caddyfile" /etc/timereal/Caddyfile
@@ -46,6 +48,15 @@ cmp "$work/dienst.conf" /etc/timereal/dienst.conf
 bash "$script" "$domain" "$ip"
 curl -fsS --cacert "$ca" --resolve "$ip:443:127.0.0.1" -H "Host: $domain" "https://$ip/" >"$work/nachher.html"
 grep -q '<html' "$work/nachher.html"
+# Fremde Hostnamen erhalten einen nicht speicherbaren Fehler statt einer leeren Erfolgsantwort.
+curl -sS --cacert "$ca" --resolve "$ip:443:127.0.0.1" -H 'Host: fremd.proxyprobe.test' -D "$work/fremd.kopf" -o "$work/fremd.txt" "https://$ip/app.js"
+grep -Eqi '^HTTP/[0-9.]+ 421' "$work/fremd.kopf"
+grep -qi '^cache-control: no-store' "$work/fremd.kopf"
+test -s "$work/fremd.txt"
+# HTTP/3 wird nicht angekündigt: hinter einem fremden Proxy wäre es nicht erreichbar.
+curl -sS --cacert "$ca" --resolve "$ip:443:127.0.0.1" -D "$work/eigen.kopf" -o /dev/null "https://$ip/health"
+grep -Eqi '^HTTP/[0-9.]+ 200' "$work/eigen.kopf"
+if grep -qi '^alt-svc:' "$work/eigen.kopf" "$work/fremd.kopf"; then echo 'HTTP/3 wird weiterhin angekündigt.' >&2; exit 1; fi
 # Zweite, beliebige Domain statt fest eingebauter Nutzer-Domain.
 domain=zweite.proxyprobe.test
 bash "$script" "$domain" "$ip"
@@ -60,6 +71,13 @@ for origin in "https://$domain" https://fremd.example.org; do
     -H "Origin: $origin" -H 'Content-Type: application/json' -d '{}' \
     "https://$domain/api/v1/anmeldung" -o "$work/anmeldung.json" -w '%{http_code}')
   if [[ $origin == "https://$domain" ]]; then [[ $status == 400 ]]; else [[ $status == 403 ]]; fi
+done
+# Die lokale Adresse bleibt neben der Domain als Herkunft zulässig; fremde Herkünfte auch dort nicht.
+for origin in "https://$ip" https://fremd.example.org; do
+  status=$(curl -sS --cacert "$ca" --resolve "$ip:443:127.0.0.1" \
+    -H "Origin: $origin" -H 'Content-Type: application/json' -d '{}' \
+    "https://$ip/api/v1/anmeldung" -o "$work/anmeldung.json" -w '%{http_code}')
+  if [[ $origin == "https://$ip" ]]; then [[ $status == 400 ]]; else [[ $status == 403 ]]; fi
 done
 cp -p /etc/timereal/{Caddyfile,dienst.conf} "$work/"
 # Einmaliger Neustartfehler; Rückbau verwendet anschließend echtes systemctl.
@@ -90,4 +108,4 @@ if bash "$script" --check vierte.proxyprobe.test "$ip" >"$work/custom.log" 2>&1;
 fi
 cmp "$work/custom" /etc/timereal/Caddyfile
 cmp "$work/dienst.conf" /etc/timereal/dienst.conf
-echo 'Proxy-Patch: Prüfung, Hostrouting, Domainwechsel, Wiederholung, Origin und Rückbau erfolgreich.'
+echo 'Proxy-Patch: Prüfung, Hostrouting, Fehlerantwort für fremde Hostnamen, kein HTTP/3, Domainwechsel, Wiederholung, Origin (Domain und lokale Adresse) und Rückbau erfolgreich.'

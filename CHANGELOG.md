@@ -1,5 +1,11 @@
 # Änderungen
 
+## Unveröffentlicht
+
+- Domainzugriff: Die Domain kommt zur Container-IP hinzu, statt sie zu ersetzen. Die Anmeldung über die lokale Adresse bleibt möglich; Bestätigungsfrist und automatische Rücknahme nach drei Minuten entfallen.
+- Nicht eingerichtete Hostnamen erhalten den Fehler 421 mit `Cache-Control: no-store` statt einer leeren Erfolgsantwort. HTTP/3 wird nicht mehr angekündigt.
+- Betriebsdienst, `proxy-einrichten.sh` und `install.sh` verwenden dieselbe HTTPS-Vorlage. Die Vorlage bis 0.9.4 wird weiter erkannt; nach dem Update die Domain einmal erneut speichern.
+
 ## 0.9.4 — 20. November 2026
 
 - Gitleaks prüft die Git-Historie auf eingecheckte Zugangsdaten. Der automatische Lastprofil-Job entfällt; Lastmessungen bleiben manuell möglich.

@@ -2,6 +2,7 @@
 import pg from "pg";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { request } from "node:http";
 import { randomUUID, randomBytes } from "node:crypto";
 import { passwordHash } from "../dist/session.js";
 
@@ -67,40 +68,55 @@ try {
     await warten(j.id, "geprueft");
     await q(`/verwaltung/betrieb/domain/${j.id}/uebernehmen`, { passwort });
   }
-  await warten(j.id, "bestaetigung_ausstehend");
-  await assert.rejects(
-    q(`/verwaltung/betrieb/domain/${j.id}/bestaetigen`, {}),
-    /403/,
+  const fertig = await warten(j.id, "erfolgreich");
+  // Kein Bestätigungsfenster mehr: Der Auftrag endet ohne Frist und ohne Rücknahme.
+  assert.equal(fertig.frist, undefined);
+  const ip = new URL(fertig.proxyZiel).hostname;
+  assert.match(
+    fertig.meldung,
+    new RegExp("https://" + ip.replaceAll(".", "\\.")),
   );
+  const conf = await readFile("/etc/timereal/dienst.conf", "utf8");
+  assert.match(conf, new RegExp("^PUBLIC_ORIGIN=https://" + domain + "$", "m"));
+  // Anmeldung über die lokale Adresse bleibt möglich. Caddy reicht den
+  // angefragten Host durch; hier setzt ihn die Probe selbst.
+  const lokal = (herkunft) =>
+    new Promise((resolve, reject) => {
+      const req = request(
+        {
+          host: "127.0.0.1",
+          port: 3040,
+          path: "/api/v1/anmeldung",
+          method: "POST",
+          headers: {
+            host: ip,
+            origin: herkunft,
+            "content-type": "application/json",
+          },
+        },
+        (res) => {
+          res.resume();
+          res.on("end", () => resolve(res.statusCode));
+        },
+      );
+      req.on("error", reject);
+      req.end(JSON.stringify({ login, passwort }));
+    });
+  assert.equal(await lokal("https://" + ip), 200);
+  assert.equal(await lokal("https://fremd.example.org"), 403);
+  // Eine zuvor eingerichtete, jetzt ersetzte Domain ist keine zulässige Herkunft mehr.
+  if (origin !== "https://" + ip)
+    await assert.rejects(q("/anmeldung", { login, passwort }), /403/);
   origin = "https://" + domain;
   cookie = "";
   await q("/anmeldung", { login, passwort });
-  await q(`/verwaltung/betrieb/domain/${j.id}/bestaetigen`, {});
-  await warten(j.id, "erfolgreich");
-  console.log(
-    "Domain mit realem Caddy/TLS übernommen; neue Anmeldung und Bestätigung erfolgreich; alter Ursprung abgewiesen.",
+  assert.equal(
+    (await q("/verwaltung/betrieb/auftraege/" + j.id)).zustand,
+    "erfolgreich",
   );
-  if (!automatisch) {
-    const vorher = await readFile("/etc/timereal/dienst.conf", "utf8");
-    const zweite = await q("/verwaltung/betrieb/domain/pruefen", {
-      domain: domain === "example.org" ? "example.net" : "example.org",
-    });
-    await warten(zweite.id, "geprueft");
-    await q(`/verwaltung/betrieb/domain/${zweite.id}/uebernehmen`, {
-      passwort,
-    });
-    await warten(zweite.id, "bestaetigung_ausstehend");
-    console.log(
-      "Unbestätigter Wechsel: automatische Rücknahme nach echter Dreiminutenfrist wird geprüft.",
-    );
-    await warten(zweite.id, "zurueckgesetzt");
-    assert.equal(await readFile("/etc/timereal/dienst.conf", "utf8"), vorher);
-    cookie = "";
-    await q("/anmeldung", { login, passwort });
-    console.log(
-      "Automatischer Rückbau und erneute Anmeldung an der vorherigen Adresse bestanden.",
-    );
-  }
+  console.log(
+    "Domain mit realem Caddy/TLS eingerichtet; Anmeldung über Domain und lokale Adresse möglich, fremde und ersetzte Herkunft abgewiesen; keine Frist.",
+  );
 } finally {
   await db.end();
 }
