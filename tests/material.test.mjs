@@ -18,10 +18,16 @@ test("Das Bündel entsteht genau aus den Quellen und nennt Herkunft und Lizenz",
 });
 
 test("Die Seite lädt das Bündel vor der Anwendung; der Server liefert es als Modul aus", async () => {
-  const html = await readFile("web/index.html", "utf8");
-  const material = html.indexOf('<script type="module" src="/material.js">'),
-    anwendung = html.indexOf('<script type="module" src="/app.js">');
-  assert.ok(material > 0 && anwendung > material, "Reihenfolge im Kopf");
+  // Jede Seite, die Material-Elemente zeigt, lädt das Bündel vor ihrem Skript.
+  for (const [seite, skript] of [
+    ["web/index.html", "/app.js"],
+    ["web/erweiterung-anmelden.html", "/erweiterung-anmelden.js"],
+  ]) {
+    const html = await readFile(seite, "utf8");
+    const material = html.indexOf('<script type="module" src="/material.js">'),
+      anwendung = html.indexOf(`<script type="module" src="${skript}">`);
+    assert.ok(material > 0 && anwendung > material, seite);
+  }
   // Statische Auslieferung ohne Datenbankzugriff; der Pool wird nicht benutzt.
   const app = createApp({ end: async () => {} }, { secure: true });
   try {
@@ -33,4 +39,32 @@ test("Die Seite lädt das Bündel vor der Anwendung; der Server liefert es als M
   } finally {
     await app.close();
   }
+});
+
+// Abschnitt 2: Aktionsschaltflächen sind Material-Schaltflächen. Navigation
+// und Register bleiben bis Abschnitt 4 native Schaltflächen.
+test("Außerhalb der Navigation gibt es keine nativen Schaltflächen mehr", async () => {
+  const html = await readFile("web/index.html", "utf8");
+  const navs = [...html.matchAll(/<nav\b[\s\S]*?<\/nav>/g)].map((m) => [
+    m.index,
+    m.index + m[0].length,
+  ]);
+  const zeile = (i) => html.slice(0, i).split("\n").length;
+  const html_befunde = [...html.matchAll(/<button\b/g)]
+    .filter((m) => !navs.some(([a, b]) => m.index > a && m.index < b))
+    .map((m) => "web/index.html:" + zeile(m.index));
+  const { readdirSync } = await import("node:fs");
+  const js_befunde = [];
+  for (const d of readdirSync("web").filter(
+    (d) => d.endsWith(".js") && d !== "material.js",
+  )) {
+    const text = await readFile("web/" + d, "utf8");
+    for (const m of text.matchAll(
+      /<button\b|createElement\(\s*["']button["']/g,
+    ))
+      js_befunde.push(
+        "web/" + d + ":" + text.slice(0, m.index).split("\n").length,
+      );
+  }
+  assert.deepEqual([...html_befunde, ...js_befunde], []);
 });

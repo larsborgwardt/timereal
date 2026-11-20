@@ -54,7 +54,14 @@ try {
     .waitFor();
   const row = page.locator("#kontoliste article").filter({ hasText: berater });
   const own = page.locator("#kontoliste article").filter({ hasText: admin });
-  assert.equal(await own.locator("button,select").count(), 0);
+  assert.equal(
+    await own
+      .locator(
+        "button,select,md-filled-button,md-outlined-button,md-text-button",
+      )
+      .count(),
+    0,
+  );
   await row.getByLabel("Rolle").selectOption("betrieb");
   // Reguläre Hintergrundaktualisierung darf den Entwurf nicht überschreiben.
   const nextRefresh = page.waitForResponse(

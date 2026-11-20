@@ -22,6 +22,10 @@
   --md-sys-color-outline-variant: #bec9c5;
   --md-ref-typeface-brand: Inter, system-ui, sans-serif;
   --md-ref-typeface-plain: Inter, system-ui, sans-serif;
+  /* Trefferfläche wie bisher mindestens 44 Pixel. */
+  --md-filled-button-container-height: 44px;
+  --md-outlined-button-container-height: 44px;
+  --md-text-button-container-height: 44px;
   font-family: Inter, system-ui, sans-serif;
   color: #102542;
   background: #f8fafb;
@@ -231,7 +235,8 @@ dialog {
   .logaktionen {
     gap: 12px;
   }
-  .logaktionen button {
+  .logaktionen
+    :is(button, md-filled-button, md-outlined-button, md-text-button) {
     flex: 1 1 100%;
   }
   .konsole {
@@ -389,9 +394,20 @@ label {
   min-width: 0;
   max-width: 100%;
 }
-button {
+button,
+md-filled-button,
+md-outlined-button,
+md-text-button {
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+/* Material setzt text-wrap: nowrap; lange Beschriftungen müssen bei schmalen
+   Ansichten und vergrößerter Schrift umbrechen statt überzulaufen. */
+md-filled-button,
+md-outlined-button,
+md-text-button {
+  text-wrap: wrap;
+  text-overflow: clip;
 }
 .suche {
   font-size: 0.9rem;
@@ -541,7 +557,7 @@ dialog .aktionen {
   .karte {
     padding: 16px;
   }
-  .ziel button {
+  .ziel :is(button, md-filled-button, md-outlined-button, md-text-button) {
     margin-left: 0;
   }
   .zeile {
@@ -790,7 +806,8 @@ h2:focus-visible {
   color: #4b6475;
 }
 @media (max-width: 760px) {
-  .exportaktionen button {
+  .exportaktionen
+    :is(button, md-filled-button, md-outlined-button, md-text-button) {
     width: 100%;
   }
 }

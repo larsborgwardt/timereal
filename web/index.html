@@ -40,7 +40,7 @@
             Verwaltung
           </button>
         </nav>
-        <button id="logout" class="text" hidden>Abmelden</button>
+        <md-text-button id="logout" hidden>Abmelden</md-text-button>
       </div>
     </header>
     <main>
@@ -59,7 +59,9 @@
           Eine Antwort fehlt. Lade den aktuellen Stand und bestätige danach
           deinen Wechsel.
         </p>
-        <button id="verbindung-laden">Aktuellen Stand laden</button>
+        <md-filled-button id="verbindung-laden"
+          >Aktuellen Stand laden</md-filled-button
+        >
       </section>
       <section id="login" hidden>
         <h1>Anmelden</h1>
@@ -75,24 +77,24 @@
               name="passwort"
               required
               autocomplete="current-password" /></label
-          ><button>Anmelden</button>
+          ><md-filled-button>Anmelden</md-filled-button>
         </form>
-        <button id="vergessen" class="text">Passwort vergessen?</button>
+        <md-text-button id="vergessen">Passwort vergessen?</md-text-button>
         <div id="faktor-anmeldung"></div>
       </section>
       <section id="heute" hidden>
         <div class="zeile">
           <h1>Heute</h1>
           <div class="aktionen">
-            <button id="sofort">Sofort starten</button
-            ><button id="intern" class="sek">Interne Zeit</button>
+            <md-filled-button id="sofort">Sofort starten</md-filled-button
+            ><md-outlined-button id="intern">Interne Zeit</md-outlined-button>
           </div>
         </div>
         <section class="karte" id="timer" aria-label="Timer"></section>
         <section class="karte">
           <div class="zeile">
             <h2>Buchungsziel wählen</h2>
-            <button id="neu">+ Neues Buchungsziel</button>
+            <md-filled-button id="neu">+ Neues Buchungsziel</md-filled-button>
           </div>
           <label class="suche"
             >Suchen<input
@@ -105,9 +107,9 @@
         <section class="karte">
           <div class="zeile">
             <h2>Tagesverlauf</h2>
-            <button type="button" data-arbeit="nachtrag">
+            <md-filled-button type="button" data-arbeit="nachtrag">
               Zeit nachtragen
-            </button>
+            </md-filled-button>
           </div>
           <div id="tageseintraege"></div>
         </section>
@@ -120,9 +122,12 @@
         </p>
         <div class="karte">
           <div class="zeile">
-            <button id="woche-vorher" class="sek">← Vorherige Woche</button
+            <md-outlined-button id="woche-vorher"
+              >← Vorherige Woche</md-outlined-button
             ><strong id="wochentitel"></strong
-            ><button id="woche-nachher" class="sek">Nächste Woche →</button>
+            ><md-outlined-button id="woche-nachher"
+              >Nächste Woche →</md-outlined-button
+            >
           </div>
           <div class="kennzahlen">
             <div><span>Erfasst</span><strong id="wochensumme"></strong></div>
@@ -143,35 +148,38 @@
               <tbody id="wochenzeilen"></tbody>
             </table>
           </div>
-          <button id="wochennacharbeit">Offene Nacharbeiten</button>
+          <md-filled-button id="wochennacharbeit"
+            >Offene Nacharbeiten</md-filled-button
+          >
         </div>
       </section>
       <section id="nachweise" hidden>
         <h1>Stundennachweise</h1>
         <div class="register">
-          <button id="liste">Übernahme</button
-          ><button id="historie">Historie</button>
+          <md-filled-button id="liste">Übernahme</md-filled-button
+          ><md-filled-button id="historie">Historie</md-filled-button>
         </div>
         <form id="filter" class="karte filter">
           <label>Von<input type="date" name="von" required /></label
           ><label>Bis<input type="date" name="bis" required /></label
           ><label
             >Kunde oder Buchungsziel<input name="suche" type="search" /></label
-          ><button>Filtern</button>
+          ><md-filled-button>Filtern</md-filled-button>
         </form>
         <div class="aktionen exportaktionen">
-          <button type="button" class="sek" id="filter-reset">
+          <md-outlined-button type="button" id="filter-reset">
             Filter zurücksetzen
-          </button>
-          <button type="button" data-arbeit="nachtrag">Zeit nachtragen</button>
-          <button
+          </md-outlined-button>
+          <md-filled-button type="button" data-arbeit="nachtrag"
+            >Zeit nachtragen</md-filled-button
+          >
+          <md-outlined-button
             type="button"
-            class="sek"
             id="nachweise-excel"
             aria-describedby="exporthilfe"
           >
             Als Excel exportieren
-          </button>
+          </md-outlined-button>
         </div>
         <p id="exporthilfe" class="exporthilfe">
           Exportiert die aktuelle Ansicht mit den gewählten Filtern. Der
@@ -234,7 +242,7 @@
                 required
                 maxlength="250"
             /></label>
-            <button>Berater einladen</button>
+            <md-filled-button>Berater einladen</md-filled-button>
             <p id="mailhinweis"></p>
           </form>
           <section class="karte">
@@ -328,10 +336,12 @@
                   autocomplete="current-password"
               /></label>
               <div class="aktionen">
-                <button id="mail-speichern">Prüfen und speichern</button>
-                <button type="button" id="mail-verwerfen" class="sek">
+                <md-filled-button id="mail-speichern"
+                  >Prüfen und speichern</md-filled-button
+                >
+                <md-outlined-button type="button" id="mail-verwerfen">
                   Änderungen verwerfen
-                </button>
+                </md-outlined-button>
               </div>
               <p class="hinweis">
                 Die Verbindung wird vor dem Speichern geprüft. Bei einem Fehler
@@ -357,9 +367,9 @@
                     maxlength="254"
                     placeholder="dein.name@example.org"
                 /></label>
-                <button id="mail-senden" class="sek" disabled>
+                <md-outlined-button id="mail-senden" disabled>
                   Testmail senden
-                </button>
+                </md-outlined-button>
               </form>
               <p id="mail-testhinweis" class="hinweis">
                 Richte zuerst den Mailversand ein.
@@ -397,7 +407,7 @@
             <label
               >Suchbegriff<input name="suche" type="search" maxlength="200"
             /></label>
-            <button id="audit-filtern">Filtern</button>
+            <md-filled-button id="audit-filtern">Filtern</md-filled-button>
           </form>
           <p id="audit-status" role="status"></p>
           <p id="audit-fehler" role="alert" hidden></p>
@@ -408,15 +418,15 @@
           ></ul>
           <p id="audit-leer" hidden>Keine Ereignisse für diese Filter.</p>
           <div class="aktionen">
-            <button type="button" id="audit-laden" class="sek">
+            <md-outlined-button type="button" id="audit-laden">
               Aktualisieren
-            </button>
-            <button type="button" id="audit-download" class="sek" disabled>
+            </md-outlined-button>
+            <md-outlined-button type="button" id="audit-download" disabled>
               Auswahl herunterladen
-            </button>
-            <button type="button" id="audit-mehr" class="sek" disabled>
+            </md-outlined-button>
+            <md-outlined-button type="button" id="audit-mehr" disabled>
               Weitere laden
-            </button>
+            </md-outlined-button>
           </div>
           <p class="hinweis">
             Download als JSON, bis zu 5.000 Ereignisse. Der Zeitraum bezieht
@@ -465,7 +475,7 @@
                 maxlength="200"
                 placeholder="Logs durchsuchen …"
             /></label>
-            <button>Filtern</button>
+            <md-filled-button>Filtern</md-filled-button>
           </form>
           <div class="aktionen logaktionen">
             <label class="logschalter"
@@ -478,12 +488,12 @@
                 checked
               />Automatisch scrollen</label
             >
-            <button type="button" class="sek" id="konsole-laden">
+            <md-outlined-button type="button" id="konsole-laden">
               Aktualisieren
-            </button>
-            <button type="button" class="sek" id="konsole-download" disabled>
+            </md-outlined-button>
+            <md-outlined-button type="button" id="konsole-download" disabled>
               Herunterladen
-            </button>
+            </md-outlined-button>
           </div>
           <p id="konsole-fehler" role="alert" hidden></p>
           <div
@@ -508,9 +518,9 @@
         <div id="betrieb-bereich" hidden>
           <p id="betrieb-status" role="status" aria-live="polite"></p>
           <p id="betrieb-fehler" role="alert" hidden></p>
-          <button type="button" class="sek" id="betrieb-aktualisieren">
+          <md-outlined-button type="button" id="betrieb-aktualisieren">
             Status aktualisieren
-          </button>
+          </md-outlined-button>
           <div
             id="betrieb-updates"
             data-betrieb-panel
@@ -538,9 +548,13 @@
                 >Änderungsnotizen ansehen ↗</a
               >
               <div class="aktionen">
-                <button type="button" id="betrieb-vorbereiten" disabled>
+                <md-filled-button
+                  type="button"
+                  id="betrieb-vorbereiten"
+                  disabled
+                >
                   Update starten
-                </button>
+                </md-filled-button>
               </div>
               <section
                 id="betrieb-updateauftrag"
@@ -566,7 +580,9 @@
                     angehalten. Laufende Timer bleiben zeitlich erhalten.
                   </p>
 
-                  <button>Vorbereitetes Update installieren</button>
+                  <md-filled-button
+                    >Vorbereitetes Update installieren</md-filled-button
+                  >
                 </form>
                 <p>
                   Du kannst diesen Tab schließen. Der Auftrag läuft auf dem
@@ -623,7 +639,7 @@
                   Reverse Proxy ein. Timereal übernimmt hier die passende App-
                   und Serverkonfiguration.
                 </p>
-                <button>Domain speichern</button>
+                <md-filled-button>Domain speichern</md-filled-button>
               </form>
               <section
                 id="betrieb-domainauftrag"
@@ -641,7 +657,7 @@
                     im lokalen Netz bleibt möglich.
                   </p>
 
-                  <button>Domain übernehmen</button>
+                  <md-filled-button>Domain übernehmen</md-filled-button>
                 </form>
                 <div id="betrieb-bestaetigung" hidden>
                   <p id="betrieb-frist"></p>
@@ -652,9 +668,9 @@
                     >Neue Adresse öffnen und anmelden ↗</a
                   >
                   <div class="aktionen">
-                    <button type="button" class="sek" id="betrieb-zurueck">
+                    <md-outlined-button type="button" id="betrieb-zurueck">
                       Änderung zurücknehmen
-                    </button>
+                    </md-outlined-button>
                   </div>
                 </div>
               </section>
@@ -696,15 +712,15 @@
               Für eine neue E-Mail-Adresse erhältst du einen Bestätigungslink.
             </p>
             <p id="profil-ausstehend" class="neben" hidden></p>
-            <button>Profil speichern</button>
+            <md-filled-button>Profil speichern</md-filled-button>
           </form>
           <div>
             <section class="karte">
               <h2>Passwort</h2>
               <p>Ändere dein Passwort für die Anmeldung.</p>
-              <button class="sek" type="button" id="passwort-oeffnen">
+              <md-outlined-button type="button" id="passwort-oeffnen">
                 Passwort ändern
-              </button>
+              </md-outlined-button>
             </section>
             <section class="karte" id="mfa-karte">
               <h2>Zwei-Faktor-Anmeldung</h2>
@@ -714,14 +730,16 @@
                 Der Betreiber muss den Zwei-Faktor-Schlüssel im Dienst
                 einrichten.
               </p>
-              <button type="button" id="mfa-start">Einrichten</button>
+              <md-filled-button type="button" id="mfa-start"
+                >Einrichten</md-filled-button
+              >
             </section>
             <section class="karte">
               <h2>Angemeldete Geräte</h2>
               <p>Browser und Erweiterungen haben eigene Sitzungen.</p>
-              <button class="sek" type="button" id="sitzungen-oeffnen">
+              <md-outlined-button type="button" id="sitzungen-oeffnen">
                 Sitzungen verwalten
-              </button>
+              </md-outlined-button>
             </section>
           </div>
         </div>
@@ -745,7 +763,7 @@
               max="1440"
               step="1"
               required /></label
-          ><button>Einstellungen speichern</button>
+          ><md-filled-button>Einstellungen speichern</md-filled-button>
         </form>
         <section id="mfa-bereich" class="mfa-bereich" hidden></section>
         <dialog id="passwortfenster" aria-labelledby="passworttitel">
@@ -768,8 +786,10 @@
                 autocomplete="new-password"
             /></label>
             <div class="aktionen">
-              <button>Passwort ändern und abmelden</button
-              ><button type="button" class="sek" data-close>Abbrechen</button>
+              <md-filled-button>Passwort ändern und abmelden</md-filled-button
+              ><md-outlined-button type="button" data-close
+                >Abbrechen</md-outlined-button
+              >
             </div>
           </form>
         </dialog>
@@ -778,7 +798,9 @@
           <p>Du kannst Browser und Erweiterung einzeln abmelden.</p>
           <div id="sitzungsliste"></div>
           <div class="aktionen">
-            <button class="sek" type="button" data-close>Schließen</button>
+            <md-outlined-button type="button" data-close
+              >Schließen</md-outlined-button
+            >
           </div>
         </dialog>
         <p id="versionsnummer" class="neben"></p>
@@ -788,8 +810,11 @@
       <h2 id="emailtitel">Neue E-Mail-Adresse</h2>
       <p>Übernimm die bestätigte Adresse für dein angemeldetes Konto.</p>
       <div class="aktionen">
-        <button id="email-bestaetigen">E-Mail-Adresse bestätigen</button
-        ><button type="button" class="sek" data-close>Abbrechen</button>
+        <md-filled-button id="email-bestaetigen"
+          >E-Mail-Adresse bestätigen</md-filled-button
+        ><md-outlined-button type="button" data-close
+          >Abbrechen</md-outlined-button
+        >
       </div>
     </dialog>
     <dialog id="zielfenster" aria-labelledby="zieltitel">
@@ -818,8 +843,11 @@
           Abrechenbar</label
         >
         <div class="aktionen">
-          <button id="zielspeichern">Speichern und starten</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button id="zielspeichern"
+            >Speichern und starten</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -829,8 +857,10 @@
         <label id="notizbez" for="notiz">Tätigkeit</label
         ><textarea id="notiz" rows="5" maxlength="4000"></textarea>
         <div class="aktionen">
-          <button>Speichern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Speichern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -846,8 +876,10 @@
             autocomplete="email"
         /></label>
         <div class="aktionen">
-          <button>Rücksetzlink anfordern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Rücksetzlink anfordern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -872,8 +904,10 @@
             autocomplete="new-password"
         /></label>
         <div class="aktionen">
-          <button>Passwort speichern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Passwort speichern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -886,8 +920,10 @@
           beim Start beendet.
         </p>
         <div class="aktionen">
-          <button>Timer starten</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Timer starten</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -924,8 +960,10 @@
         >
         <div id="zeitvorschau"></div>
         <div class="aktionen">
-          <button>Übernehmen</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Übernehmen</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>
@@ -933,7 +971,9 @@
       <h2 id="vergleichtitel">Buchung vergleichen</h2>
       <div id="vergleichinhalt"></div>
       <div class="aktionen">
-        <button type="button" class="sek" data-close>Schließen</button>
+        <md-outlined-button type="button" data-close
+          >Schließen</md-outlined-button
+        >
       </div>
     </dialog>
     <dialog id="zielpflegefenster" aria-labelledby="zielpflegetitel">
@@ -955,8 +995,10 @@
           Abschnitten</label
         >
         <div class="aktionen">
-          <button>Änderungen speichern</button
-          ><button type="button" class="sek" data-close>Abbrechen</button>
+          <md-filled-button>Änderungen speichern</md-filled-button
+          ><md-outlined-button type="button" data-close
+            >Abbrechen</md-outlined-button
+          >
         </div>
       </form>
     </dialog>

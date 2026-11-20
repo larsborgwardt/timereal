@@ -25,7 +25,9 @@ export async function pruefeAnsicht(
           el.getClientRects().length &&
           getComputedStyle(el).visibility !== "hidden";
         const controls = [
-          ...root.querySelectorAll("button,input,select,textarea,a[href]"),
+          ...root.querySelectorAll(
+            "button,md-filled-button,md-outlined-button,md-text-button,input,select,textarea,a[href]",
+          ),
         ].filter(shown);
         const label = (el) =>
           el.id ||
@@ -79,7 +81,10 @@ export async function pruefeAnsicht(
         // Aktionsbuttons brauchen neben ihrer Trefferfläche auch freien Abstand.
         // Navigationsregister können bewusst unmittelbar aneinander anschließen.
         const actions = controls.filter(
-          (el) => el.matches("button") && !el.closest("nav,.register"),
+          (el) =>
+            el.matches(
+              "button,md-filled-button,md-outlined-button,md-text-button",
+            ) && !el.closest("nav,.register"),
         );
         const crowdedActions = [];
         for (let i = 0; i < actions.length; i++) {

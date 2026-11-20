@@ -7,7 +7,7 @@ export function faktorAnmeldung({ host, request, erfolgreich, zurueck }) {
     <p id="login-faktor-hilfe">Gib den aktuellen Code aus deiner Authenticator-App ein.</p>
     <p id="login-faktor-fehler" role="alert" hidden></p>
     <label><span id="login-faktor-label">Sechsstelliger Code</span><input id="login-faktor-code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"></label>
-    <div class="aktionen"><button>Anmelden</button><button type="button" class="sek" id="login-faktor-zurueck">Zurück zur Anmeldung</button><button type="button" class="sek" id="login-faktor-wechsel">Wiederherstellungscode verwenden</button></div>
+    <div class="aktionen"><md-filled-button>Anmelden</md-filled-button><md-outlined-button type="button" id="login-faktor-zurueck">Zurück zur Anmeldung</md-outlined-button><md-outlined-button type="button" id="login-faktor-wechsel">Wiederherstellungscode verwenden</md-outlined-button></div>
     <p class="neben">Die Bestätigung ist für fünf Minuten gültig. Danach meldest du dich erneut mit deinem Passwort an.</p>
     </form>`;
   const $ = (s) => host.querySelector(s),
@@ -35,7 +35,9 @@ export function faktorAnmeldung({ host, request, erfolgreich, zurueck }) {
   async function ausfuehren(fn) {
     if (busy) return;
     busy = true;
-    form.querySelectorAll("button").forEach((b) => (b.disabled = true));
+    form
+      .querySelectorAll("md-filled-button, md-outlined-button")
+      .forEach((b) => (b.disabled = true));
     $("#login-faktor-fehler").hidden = true;
     try {
       await fn();
@@ -45,7 +47,9 @@ export function faktorAnmeldung({ host, request, erfolgreich, zurueck }) {
       input.focus();
     } finally {
       busy = false;
-      form.querySelectorAll("button").forEach((b) => (b.disabled = false));
+      form
+        .querySelectorAll("md-filled-button, md-outlined-button")
+        .forEach((b) => (b.disabled = false));
     }
   }
   function loeschen() {

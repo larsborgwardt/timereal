@@ -216,7 +216,7 @@ try {
   // Filter dürfen weder heutige Zeiten verbergen noch nach Abmelden sensible Einträge zurücklassen.
   await history();
   await page.locator("#filter [name=suche]").fill("kein-treffer");
-  await page.locator("#filter button").click();
+  await page.locator("#filter md-filled-button").click();
   await btn("Heute").click();
   await page.waitForFunction(() => !document.querySelector("#sofort").disabled);
   if (!(await page.locator("#tageseintraege article").count()))

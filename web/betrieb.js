@@ -157,10 +157,10 @@ export function betriebsOberflaeche({
       stand?.hinweis ??
         "Nach dem Speichern ist Timereal zusätzlich über die Domain erreichbar. Die Anmeldung über die bisherige Adresse im lokalen Netz bleibt möglich.",
     );
-    $("#betrieb-domainpruefen button").disabled =
+    $("#betrieb-domainpruefen md-filled-button").disabled =
       beschaeftigt || !stand?.domainUnterstuetzt || aktiv;
-    if ($("#betrieb-domainpruefen button").disabled)
-      delete $("#betrieb-domainpruefen button").dataset.wartet;
+    if ($("#betrieb-domainpruefen md-filled-button").disabled)
+      delete $("#betrieb-domainpruefen md-filled-button").dataset.wartet;
     for (const typ of ["update", "domain"]) {
       const j = job(typ);
       $("#betrieb-" + typ + "auftrag").hidden = !j;
@@ -222,7 +222,7 @@ export function betriebsOberflaeche({
         "https://" + d.domain + "/#betrieb-domain";
     }
     for (const f of ["installieren", "uebernehmen"])
-      $("#betrieb-" + f + " button").disabled = beschaeftigt || aktiv;
+      $("#betrieb-" + f + " md-filled-button").disabled = beschaeftigt || aktiv;
     sperren("zurueck", beschaeftigt);
   }
   function fehler(e) {
